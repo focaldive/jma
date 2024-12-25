@@ -10,40 +10,46 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { cn } from "@/lib/utils";
+import { EmblaCarouselType } from "embla-carousel";
 
 const causes = [
   {
     title: "Zakat Al-Fitr",
     description:
       "When you give Zakat al-Fitrah, your fasting is increased in reward.",
-    image: "/zakat-bg.jpg",
+    image:
+      "https://images.unsplash.com/photo-1512358958014-b651a7ee1773?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8bW9uZXklMjBnaXZpbmd8ZW58MHwwfDB8fHwy",
   },
   {
     title: "Sadaqah Jariyah",
     description:
       "Your generosity can not only give people living in extreme poverty the help",
-    image: "/sadaqah-bg.jpg",
+    image:
+      "https://images.unsplash.com/photo-1619149769183-01fc5bccc153?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mjh8fG1vbmV5JTIwZ2l2aW5nfGVufDB8MHwwfHx8Mg%3D%3D",
   },
   {
     title: "Medical Help",
     description: "Provide help for medical related issues for the needy",
-    image: "/medical-bg.jpg",
+    image:
+      "https://images.unsplash.com/photo-1542884841-9f546e727bca?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fG1lZGljYWx8ZW58MHwwfDB8fHwy",
   },
   {
     title: "Orphans & Widows",
     description:
       "Across the world, millions of families have been torn apart by the death of...",
-    image: "/orphans-bg.jpg",
+    image:
+      "https://images.unsplash.com/photo-1497655392221-e645087843da?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8b3JwaGFuJTIwJTI2JTIwd2lkb3dzfGVufDB8MHwwfHx8Mg%3D%3D",
   },
   {
     title: "Water for All",
     description: "Every 2 minutes a child dies from a water-related disease",
-    image: "/water-bg.jpg",
+    image:
+      "https://media.istockphoto.com/id/600999260/photo/hands-of-poor-african-children-asking-for-drinking-water.webp?a=1&b=1&s=612x612&w=0&k=20&c=Ev7WU39mC-XPkcsfhRBRJv6cKSeEsR01-yrcuQYUa_0=",
   },
 ];
 
 export function GetInvolved() {
-  const [api, setApi] = useState<any>();
+  const [api, setApi] = useState<EmblaCarouselType | null>(null);
   const [current, setCurrent] = useState(0);
   const [count, setCount] = useState(0);
 
@@ -63,7 +69,7 @@ export function GetInvolved() {
   return (
     <section className="py-12 md:py-16 lg:py-24">
       <div className="container px-4 mx-auto">
-        <h2 className="mb-8 text-center text-2xl font-bold tracking-tight sm:text-3xl md:mb-12 md:text-4xl lg:text-6xl">
+        <h2 className="mb-8 text-center text-2xl capitalize font-bold tracking-tight sm:text-3xl md:mb-12 md:text-4xl lg:text-6xl">
           Get involved, here are some great
           <br />
           ways to make a difference
@@ -71,7 +77,7 @@ export function GetInvolved() {
 
         <div className="relative mx-auto max-w-6xl">
           <Carousel
-            setApi={setApi}
+            setApi={(api) => setApi(api || null)}
             className="w-full"
             opts={{
               align: "start",
@@ -97,7 +103,7 @@ export function GetInvolved() {
                       </p>
                       <Button
                         size="lg"
-                        className="bg-[#82B440] text-white hover:bg-[#72a038]"
+                        className="bg-[#82B440] uppercase text-white hover:bg-[#72a038]"
                       >
                         Donate
                       </Button>
