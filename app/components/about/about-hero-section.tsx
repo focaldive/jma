@@ -11,12 +11,6 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
 
-const fadeIn = {
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.6 },
-};
-
 const stats = [
   { icon: Users, value: "20+", label: "Years serving the community" },
   { icon: HeartHandshake, value: "200+", label: "Projects & Services" },
@@ -35,23 +29,39 @@ const services = [
   "Qurbani & Fitra",
 ];
 
+const fadeInUp = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.5 },
+};
+
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <motion.div
-        className="relative h-[60vh] bg-gradient-to-r from-blue-900 to-blue-800 flex items-center justify-center text-white"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1 }}
-      >
-        <motion.h1 className="text-5xl font-bold tracking-tight" {...fadeIn}>
-          About Us
+      <div className="space-y-8 text-center mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-20 lg:py-40">
+        <motion.h1
+          variants={fadeInUp}
+          initial="initial"
+          animate="animate"
+          className="mb-3 text-2xl font-semibold tracking-tight sm:text-3xl md:text-4xl lg:text-6xl"
+        >
+          Who We Are?
         </motion.h1>
-      </motion.div>
+        <motion.p
+          variants={fadeInUp}
+          initial="initial"
+          animate="animate"
+          transition={{ delay: 0.1 }}
+          className="text-muted-foreground max-w-2xl mx-auto"
+        >
+          Empowering and supporting the Jaffna Muslim community since 2002
+          through humanitarian aid and sustainable development
+        </motion.p>
+      </div>
 
       {/* Main Content */}
-      <div className="max-w-6xl mx-auto px-4 py-16 space-y-24">
+      <div className="max-w-6xl mx-auto px-4 space-y-24">
         {/* Introduction */}
         <motion.div
           className="grid md:grid-cols-2 gap-12 items-center"
