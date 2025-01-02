@@ -13,8 +13,7 @@ const teamMembers = [
     name: "Mr. IMRAN JUNOOB",
     role: "PRESIDENT",
     phone: "+44 (0)75 1XX XXX",
-    image:
-      "https://jaffnamuslimuk.org/wp-content/uploads/2020/10/Imran-138x300.jpg  ",
+    image: "/assets/pres.png",
   },
   {
     name: "Mr. SALMAN MOHAMED SHAWJEER",
@@ -74,65 +73,90 @@ const itemVariants = {
   },
 };
 
+const fadeIn = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.5 },
+};
+
 export default function ContactPage() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-20 lg:py-40">
       {/* Hero Section */}
-      <motion.div
-        className="relative h-[60vh] bg-gradient-to-r from-blue-900 to-blue-800 flex items-center justify-center text-white"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1 }}
-      >
+      <div className="space-y-8 text-center ">
         <motion.h1
-          className="text-5xl font-bold tracking-tight"
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.2 }}
+          variants={fadeIn}
+          initial="initial"
+          animate="animate"
+          className="mb-3 text-2xl font-semibold tracking-tight sm:text-3xl md:text-4xl lg:text-6xl"
         >
-          Contact Us
+          Meet Our Team
         </motion.h1>
-      </motion.div>
-
-      <div className="max-w-7xl mx-auto px-4 py-16 space-y-24">
-        {/* Team Members */}
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+        <motion.p
+          variants={fadeIn}
+          initial="initial"
+          animate="animate"
+          transition={{ delay: 0.1 }}
+          className="text-muted-foreground max-w-2xl mx-auto"
         >
-          {teamMembers.map((member, index) => (
-            <motion.div
-              key={index}
-              variants={itemVariants}
-              whileHover={{ y: -5 }}
-              className="h-full"
-            >
-              <Card className="h-full border-none shadow-lg hover:shadow-xl transition-shadow duration-300">
-                <CardContent className="p-6 flex flex-col items-center text-center space-y-4">
-                  <div className="relative w-32 h-32 rounded-full overflow-hidden">
-                    <Image
-                      src={member.image}
-                      alt={member.name}
-                      layout="fill"
-                      objectFit="cover"
-                      className="rounded-full"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <h3 className="font-semibold text-lg text-gray-900">
-                      {member.name}
-                    </h3>
-                    <p className="text-sm text-gray-600">{member.role}</p>
-                    <p className="text-sm text-gray-600">{member.phone}</p>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
-        </motion.div>
+          Empowering and supporting the Jaffna Muslim community since 2002
+          through humanitarian aid and sustainable development
+        </motion.p>
+      </div>
 
+      <div className="max-w-7xl mx-auto px-4 space-y-24">
+        {/* Team Members */}
+        <section className="py-24 px-4">
+          <div className="max-w-7xl mx-auto">
+            {/* <motion.div
+              className="text-center mb-16"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              <h2 className="text-gray-900 mb-3 text-2xl font-semibold tracking-tight sm:text-3xl md:text-4xl lg:text-6xl">
+                Meet Our Team
+              </h2>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                Dedicated individuals committed to serving the Jaffna Muslim
+                community
+              </p>
+            </motion.div> */}
+
+            <motion.div
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10"
+            >
+              {teamMembers.map((member, index) => (
+                <motion.div key={index} variants={itemVariants}>
+                  <Card className="border-0 shadow-none">
+                    <CardContent className="p-0 space-y-4">
+                      <div className="aspect-[4/5] relative bg-gray-100 rounded-lg overflow-hidden">
+                        <Image
+                          src={member.image}
+                          alt={member.name}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <h3 className="font-semibold text-gray-900">
+                          {member.name}
+                        </h3>
+                        <p className="text-gray-600">{member.role}</p>
+                        <p className="text-sm text-gray-500 leading-normal">
+                          {member.phone}
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))}
+            </motion.div>
+          </div>
+        </section>
         {/* Contact Information */}
         <motion.div
           className="grid md:grid-cols-2 gap-12"
@@ -142,7 +166,9 @@ export default function ContactPage() {
         >
           <div className="space-y-8">
             <div className="space-y-4">
-              <h2 className="text-2xl font-bold text-gray-900">Get in Touch</h2>
+              <h2 className=" text-gray-900 mb-3 text-2xl font-semibold tracking-tight sm:text-3xl md:text-4xl lg:text-6xl">
+                Get in Touch
+              </h2>
               <p className="text-gray-600">
                 Feel free to reach out to us through any of the following
                 channels:
@@ -197,7 +223,13 @@ export default function ContactPage() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="space-y-6"
           >
-            <h2 className="text-2xl font-bold text-gray-900">Send a Message</h2>
+            <h2 className="mb-3 text-2xl font-semibold tracking-tight sm:text-3xl md:text-4xl lg:text-6xl">
+              Send a Message
+            </h2>
+            <p className="text-gray-600">
+              We&apos;re here to help and support our community. Get in touch
+              with us for any inquiries or assistance.
+            </p>
             <form className="space-y-4">
               <div className="space-y-2">
                 <Input
