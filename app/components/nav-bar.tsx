@@ -65,12 +65,11 @@ export function NavBar() {
                 </Link>
               ))}
             </div>
-            <Button
-              className="bg-[#1F294A] hover:bg-[#2a3761] text-white"
-              size="sm"
-            >
-              DONATE
-            </Button>
+            <Link href="/donate" className="">
+              <Button className="bg-[#1F294A] hover:bg-[#2a3761] text-white w-full">
+                DONATE
+              </Button>
+            </Link>
           </div>
 
           {/* Mobile Navigation */}
@@ -105,9 +104,11 @@ export function NavBar() {
                     {item.label}
                   </Link>
                 ))}
-                <Button className="bg-[#1F294A] hover:bg-[#2a3761] text-white w-full">
-                  DONATE
-                </Button>
+                <Link href="/donate" className="mt-4">
+                  <Button className="bg-[#1F294A] hover:bg-[#2a3761] text-white w-full">
+                    DONATE
+                  </Button>
+                </Link>
               </div>
             </SheetContent>
           </Sheet>
