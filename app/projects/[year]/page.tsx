@@ -17,9 +17,7 @@ export default async function YearProjectPage({ params }: { params: params }) {
   return (
     <>
       <YearPageHeader year={year} />
-
       <SummaryCards />
-
       <div className="grid gap-8">
         <div className="grid md:grid-cols-2 gap-8">
           <ProjectChart />
