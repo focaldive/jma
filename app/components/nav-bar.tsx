@@ -41,14 +41,14 @@ export function NavBar() {
           <Link href="/" className="flex items-center space-x-3">
             <Image
               src="/assets/logo.png"
-              alt="Jaffna Muslim Org Logo"
+              alt="Jaffna Muslim Assoc Logo"
               width={50}
               height={40}
               priority
               className="w-auto h-10"
             />
             <span className="text-lg font-semibold text-[#1F294A]">
-              JAFFNA MUSLIM ORG
+              JAFFNA MUSLIM ASSOC
             </span>
           </Link>
 
@@ -83,14 +83,14 @@ export function NavBar() {
               <Link href="/" className="flex items-center space-x-3">
                 <Image
                   src="/assets/logo.png"
-                  alt="Jaffna Muslim Org Logo"
+                  alt="Jaffna Muslim Assoc Logo"
                   width={50}
                   height={40}
                   priority
                   className="w-auto h-10"
                 />
                 <span className="text-lg font-semibold text-[#1F294A]">
-                  JAFFNA MUSLIM ORG
+                  JAFFNA MUSLIM ASSOC
                 </span>
               </Link>
 
