@@ -1,5 +1,5 @@
 import React from "react";
-import GalleryPage from "../components/gallery/gallery-section";
+import GalleryPage from "@/components/gallery/gallery-section";
 
 const About = () => {
   return (

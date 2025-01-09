@@ -1,7 +1,7 @@
-import { ProjectChart } from "../../components/projects/project-chart";
-import { ProjectTable } from "../../components/projects/project-table";
-import { ProjectGallery } from "../../components/projects/project-gallery";
-import { SummaryCards } from "../../components/projects/summary-cards";
+import { ProjectChart } from "@/components/projects/project-chart";
+import { ProjectTable } from "@/components/projects/project-table";
+import { ProjectGallery } from "@/components/projects/project-gallery";
+import { SummaryCards } from "@/components/projects/summary-cards";
 import { YearPageHeader } from "@/components/projects/year-page-header";
 import { notFound } from "next/navigation";
 
