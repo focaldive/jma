@@ -1,9 +1,9 @@
-import { HeroSection } from "./components/hero-section";
-import { Support } from "./components/support";
-import { Projects } from "./components/projects";
-import { GetInvolved } from "./components/get-involved";
-import { NewsEvents } from "./components/news-events";
-import AboutSection from "./components/about-section";
+import { HeroSection } from "@/components/home/hero-section";
+import { Support } from "@/components/home/support";
+import { Projects } from "@/components/home/projects";
+import { GetInvolved } from "@/components/home/get-involved";
+import { NewsEvents } from "@/components/home/news-events";
+import AboutSection from "@/components/home/about-section";
 
 export default function Home() {
   return (
