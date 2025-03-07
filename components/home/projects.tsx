@@ -68,7 +68,7 @@ export function Projects() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="mt-auto">
-                <Button className="w-full">Support This Project</Button>
+                <Button className="w-full bg-blue-600">Support This Project</Button>
               </CardContent>
             </Card>
           ))}
