@@ -87,7 +87,7 @@ export function GetInvolved() {
             <CarouselContent>
               {causes.map((cause, index) => (
                 <CarouselItem key={index}>
-                  <div className="relative aspect-[16/9] overflow-hidden rounded-lg">
+                  <div className="relative aspect-[16/9] overflow-hidden rounded-[50px]">
                     <div
                       className="absolute inset-0 bg-cover bg-center transition-transform duration-500 hover:scale-105"
                       style={{ backgroundImage: `url(${cause.image})` }}
@@ -103,7 +103,7 @@ export function GetInvolved() {
                       </p>
                       <Button
                         size="lg"
-                        className="bg-[#82B440] uppercase text-white hover:bg-[#72a038]"
+                        className="bg-blue-600 uppercase text-white hover:bg-blue-700"
                       >
                         Donate
                       </Button>
