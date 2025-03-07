@@ -1,6 +1,6 @@
 export function Support() {
   return (
-    <section className="bg-primary py-12 text-white md:py-16 lg:py-24">
+    <section className="bg-foreground py-12 text-white md:py-16 lg:py-24">
       <div className="container px-4 mx-auto">
         <div className="mx-auto max-w-3xl text-center">
           <h2 className="mb-4 text-2xl font-bold tracking-tight sm:text-3xl md:mb-6 md:text-4xl lg:text-6xl">
