@@ -90,7 +90,7 @@ export function HeroSection() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="relative min-h-screen pt-20 overflow-hidden mx-auto"
+      className="relative min-h-screen pt-20 overflow-hidden xl:mx-24 lg:mx-24"
     >
       <AnimatePresence mode="wait">
         <motion.div
@@ -99,21 +99,21 @@ export function HeroSection() {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 1 }}
-          className="absolute inset-0"
+          className="absolute inset-0 rounded-b-[50px]"
         >
           <Image
             src={heroContent[currentIndex].image.src}
             alt={heroContent[currentIndex].image.alt}
             fill
-            className="object-cover"
+            className="object-cover rounded-b-[50px]"
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-black/40" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-black/40 rounded-b-[50px]" />
         </motion.div>
       </AnimatePresence>
 
       <div className="relative container mx-auto px-4 py-24">
-        <div className="flex flex-col gap-10 lg:flex-row justify-between items-center mx-auto">
+        <div className="flex flex-col gap-10 lg:flex-row justify-center items-center mx-auto">
           <motion.div
             initial={{ x: -50, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
@@ -136,6 +136,7 @@ export function HeroSection() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
+                className="text-center"
                 transition={{ duration: 0.5 }}
               >
                 <motion.h1 className="text-4xl lg:text-6xl font-bold text-white uppercase leading-tight tracking-tight">
@@ -160,7 +161,7 @@ export function HeroSection() {
             </AnimatePresence>
           </motion.div>
 
-          <motion.div
+          {/* <motion.div
             initial={{ x: 50, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.2 }}
@@ -239,7 +240,7 @@ export function HeroSection() {
                 </Button>
               </div>
             </Card>
-          </motion.div>
+          </motion.div> */}
         </div>
       </div>
 
