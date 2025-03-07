@@ -17,7 +17,7 @@ export default function AboutSection() {
             transition={{ duration: 0.8 }}
             className="relative aspect-square max-w-2xl mx-auto lg:mx-0"
           >
-            <div className="absolute inset-0 bg-white rounded-2xl shadow-2xl overflow-hidden">
+            <div className="absolute inset-0 bg-white rounded-[50px] shadow-2xl overflow-hidden">
               <div className="relative w-full h-full bg-[#e8f4ff] flex items-center justify-center p-8">
                 <Image
                   src="https://jaffnamuslimuk.org/wp-content/uploads/2013/10/Fitra-Post.jpg"
@@ -75,7 +75,7 @@ export default function AboutSection() {
                 <Link href="/about">
                   <Button
                     size="lg"
-                    className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-8 py-6 rounded-lg text-lg transition-all duration-200 hover:shadow-lg"
+                    className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-8 py-6 rounded-lg text-lg transition-all duration-200 hover:shadow-lg"
                   >
                     Know More
                   </Button>
