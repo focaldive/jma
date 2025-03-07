@@ -152,7 +152,7 @@ export default function AboutPage() {
 
         {/* Bank Details */}
         <motion.div
-          className="max-w-lg mx-auto text-center space-y-4 bg-gray-50 p-8 rounded-lg"
+          className="max-w-lg mx-auto text-center space-y-10 bg-gray-50 p-8 rounded-lg"
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.8 }}
@@ -167,6 +167,9 @@ export default function AboutPage() {
             <p>Sort Code: 30-94-66</p>
           </div>
         </motion.div>
+        <br />
+        <br />
+        <br />
       </div>
     </div>
   );
