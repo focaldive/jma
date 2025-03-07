@@ -31,9 +31,8 @@ export function NavBar() {
 
   return (
     <header
-      className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-        isScrolled ? "bg-white/95 backdrop-blur-sm shadow-sm" : "bg-white"
-      }`}
+      className={`fixed top-0 w-full z-50 transition-all duration-300 ${isScrolled ? "bg-white/95 backdrop-blur-sm shadow-sm" : "bg-white"
+        }`}
     >
       <div className="container mx-auto px-4">
         <nav className="flex items-center justify-between h-20">
@@ -47,8 +46,8 @@ export function NavBar() {
               priority
               className="w-auto h-10"
             />
-            <span className="text-lg font-semibold text-[#1F294A]">
-              JAFFNA MUSLIM ASSOC
+            <span className="text-lg font-bold text-[#1F294A]">
+              JMA
             </span>
           </Link>
 
@@ -66,7 +65,7 @@ export function NavBar() {
               ))}
             </div>
             <Link href="/donate" className="">
-              <Button className="bg-[#1F294A] hover:bg-[#2a3761] text-white w-full">
+              <Button className="bg-blue-600 hover:bg-blue-700 text-white w-full" size={"lg"}>
                 DONATE
               </Button>
             </Link>
@@ -105,7 +104,7 @@ export function NavBar() {
                   </Link>
                 ))}
                 <Link href="/donate" className="mt-4">
-                  <Button className="bg-[#1F294A] hover:bg-[#2a3761] text-white w-full">
+                  <Button className="bg-blue-600 hover:bg-blue-700 text-white w-full">
                     DONATE
                   </Button>
                 </Link>
