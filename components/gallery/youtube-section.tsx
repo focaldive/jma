@@ -2,8 +2,6 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Image from "next/image";
-import { Play } from "lucide-react";
 
 const videos = [
   {
@@ -43,6 +41,7 @@ const YouTubeSection = () => {
           Featured Videos
         </motion.h2>
         <div className="flex flex-col lg:flex-row gap-12 items-start">
+          {/* Video Player Section */}
           <motion.div
             className="lg:w-2/3"
             initial={{ x: -50, opacity: 0 }}
@@ -50,27 +49,15 @@ const YouTubeSection = () => {
             transition={{ delay: 0.3, duration: 0.5 }}
           >
             <div className="relative aspect-video rounded-lg overflow-hidden shadow-md">
-              <Image
-                src={`https://img.youtube.com/vi/${activeVideo.id}/0.jpg`}
-                alt={activeVideo.title}
-                layout="fill"
-                objectFit="cover"
-              />
-              <div className="absolute inset-0 bg-black bg-opacity-20 transition-opacity duration-300 hover:bg-opacity-30 flex items-center justify-center">
-                <motion.div
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  className="bg-white bg-opacity-90 rounded-full p-4 cursor-pointer"
-                  onClick={() =>
-                    window.open(
-                      `https://www.youtube.com/watch?v=${activeVideo.id}`,
-                      "_blank"
-                    )
-                  }
-                >
-                  <Play className="w-8 h-8 text-gray-900" />
-                </motion.div>
-              </div>
+              {/* Embed YouTube Iframe */}
+              <iframe
+                className="w-full h-full"
+                src={`https://www.youtube.com/embed/${activeVideo.id}?autoplay=1&rel=0`}
+                title={activeVideo.title}
+                frameBorder="0"
+                allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              ></iframe>
             </div>
             <motion.div
               className="mt-4"
@@ -84,6 +71,8 @@ const YouTubeSection = () => {
               <p className="text-sm text-gray-600">{activeVideo.artist}</p>
             </motion.div>
           </motion.div>
+
+          {/* Video List */}
           <motion.div
             className="lg:w-1/3"
             initial={{ x: 50, opacity: 0 }}
@@ -116,11 +105,10 @@ const YouTubeSection = () => {
                     >
                       <div className="flex items-center">
                         <div className="w-20 h-12 relative mr-3 rounded overflow-hidden">
-                          <Image
+                          <img
                             src={`https://img.youtube.com/vi/${video.id}/0.jpg`}
                             alt={video.title}
-                            layout="fill"
-                            objectFit="cover"
+                            className="w-full h-full object-cover"
                           />
                         </div>
                         <div>
