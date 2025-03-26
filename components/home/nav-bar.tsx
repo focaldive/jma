@@ -31,10 +31,12 @@ export function NavBar() {
 
   return (
     <header
-      className={`fixed top-0 w-full z-[1000] transition-all duration-300 ${isScrolled ? "bg-white/95 backdrop-blur-sm shadow-sm" : "bg-white"
-        }`}
-    >
-      <div className="container mx-auto px-4">
+  className={`fixed top-0 w-full z-[1000] h-20 flex items-center transition-all duration-300 ${
+    isScrolled ? "bg-white/95 backdrop-blur-sm shadow-sm" : "bg-white"
+  }`}
+>
+<div className="container mx-auto min-h-20 flex items-center px-4">
+
         <nav className="flex items-center justify-between h-20">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-3">
