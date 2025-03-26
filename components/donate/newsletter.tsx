@@ -38,7 +38,7 @@ export function NewsletterSignup() {
                         <Alert className="bg-green-50 border-green-200">
                             <CheckCircle2 className="h-4 w-4 text-green-600 mr-2" />
                             <AlertDescription className="text-green-800">
-                                Thank you for subscribing! We'll keep you updated on our initiatives and impact.
+                                Thank you for subscribing! We&apos;ll keep you updated on our initiatives and impact.
                             </AlertDescription>
                         </Alert>
                     ) : (

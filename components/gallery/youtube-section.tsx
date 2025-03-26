@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 
 const videos = [
   {
@@ -104,11 +105,14 @@ const YouTubeSection = () => {
                       whileTap={{ scale: 0.98 }}
                     >
                       <div className="flex items-center">
-                        <div className="w-20 h-12 relative mr-3 rounded overflow-hidden">
-                          <img
+                        <div className="relative w-20 h-20 mr-3 overflow-hidden rounded-md">
+                          <Image
                             src={`https://img.youtube.com/vi/${video.id}/0.jpg`}
                             alt={video.title}
-                            className="w-full h-full object-cover"
+                            fill
+                            sizes="(max-width: 768px) 100vw, 80px"
+                            className="object-cover"
+                            priority={activeVideo.id === video.id}
                           />
                         </div>
                         <div>

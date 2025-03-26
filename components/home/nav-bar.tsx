@@ -47,7 +47,7 @@ export function NavBar() {
               className="w-auto h-10"
             />
             <span className="text-lg font-bold text-[#1F294A]">
-              JMA
+            Jaffna Muslim Association UK
             </span>
           </Link>
 

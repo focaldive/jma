@@ -10,7 +10,6 @@ import { PromiseCard } from "@/components/donate/promotion"
 import { NewsletterSignup } from "@/components/donate/newsletter"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
 
 export default function DonationPage() {
   const [donationType, setDonationType] = useState<string>("normal")
@@ -37,20 +36,28 @@ export default function DonationPage() {
               <CardContent className="p-6">
                 <h2 className="font-semibold text-lg mb-4">Select Donation Type</h2>
                 <Tabs defaultValue="normal" className="w-full" onValueChange={(value) => setDonationType(value)}>
-                  <TabsList className="grid w-full grid-cols-2 mb-6">
+                  <TabsList className="grid w-full grid-cols-2 mb-6 relative">
+                    {/* Normal Tab */}
                     <TabsTrigger value="normal">Normal Donation</TabsTrigger>
-                    <TabsTrigger value="live">Live Appeal</TabsTrigger>
+
+                    {/* Live Appeal Tab with "Live" Badge next to it */}
+                    <TabsTrigger value="live" className="relative">
+                      Live Ongoing Appeals
+                    </TabsTrigger>
                   </TabsList>
+
+                  {/* Normal Donation Content */}
                   <TabsContent value="normal" className="space-y-4">
                     <p className="text-sm ">
                       Your donation will support our ongoing programs and initiatives to help those in need.
                     </p>
                   </TabsContent>
+
+                  {/* Live Appeal Content */}
                   <TabsContent value="live" className="space-y-4">
                     <p className="text-sm ">
                       Your donation will go directly to our current live appeal campaign for immediate assistance.
                     </p>
-
                   </TabsContent>
                 </Tabs>
               </CardContent>
@@ -106,4 +113,3 @@ export default function DonationPage() {
     </div>
   )
 }
-

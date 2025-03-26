@@ -9,15 +9,17 @@ import { validateClientEnv } from "@/utils/env-validation";
 import { PayPalScriptProvider, ReactPayPalScriptOptions } from "@paypal/react-paypal-js";
 
 const donationAmounts = [10, 20, 30, 40];
-
-export function DonationForm() {
+interface DonationFormProps {
+  donationType: string;
+}
+export const DonationForm: React.FC<DonationFormProps> = () => {
   const [selectedAmount, setSelectedAmount] = useState<number>(40);
   const [customAmount, setCustomAmount] = useState<string>("");
   const [error, setError] = useState<string>("");
   const [success, setSuccess] = useState<boolean>(false);
   const [envError, setEnvError] = useState<string>("");
   const [paypalScriptOptions, setPaypalScriptOptions] = useState<ReactPayPalScriptOptions | null>(null);
-
+ 
   useEffect(() => {
     try {
       const env = validateClientEnv();

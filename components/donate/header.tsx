@@ -20,7 +20,7 @@ export function Header() {
                 transition={{ delay: 0.3 }}
             >
                 Your generosity can make a real difference. Every donation helps us support those in need and create lasting
-                positive change in our community. Choose how you'd like to contribute today.
+                positive change in our community. Choose how you&apos;d like to contribute today.
             </motion.p>
         </div>
     )
