@@ -37,6 +37,7 @@ export function LoginForm({
     e.preventDefault()
 
     if (email === "admin@gmail.com" && password === "admin123") {
+      localStorage.setItem("loggedIn", "true")
       router.push("/admin") 
     } else {
       setError("Invalid email or password")
