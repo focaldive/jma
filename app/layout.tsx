@@ -1,14 +1,12 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
-import { NavBar } from "@/components/home/nav-bar";
-import { Footer } from "@/components/home/footer";
+import { Inter } from "next/font/google";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Jaffna Muslim Association",
-  description: "Together, we turn water into action",
+  title: "JMA",
+  description: "JMA Application",
 };
 
 export default function RootLayout({
@@ -18,11 +16,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        <NavBar />
-        {children}
-        <Footer />
-      </body>
+      <body className={inter.className}>{children}</body>
     </html>
   );
 }
