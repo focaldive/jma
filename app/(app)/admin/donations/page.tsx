@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useMemo } from "react"
+import { useRouter } from "next/navigation"
 import { StatsCard } from "@/components/admin/StatsCard"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -53,6 +54,7 @@ const statusStyles = {
 }
 
 export default function DonationsPage() {
+  const router = useRouter()
   const [searchQuery, setSearchQuery] = useState("")
   const [sortField, setSortField] = useState<SortField>("date")
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc")
@@ -295,7 +297,11 @@ export default function DonationsPage() {
                 </TableRow>
               ) : (
                 filteredData.map((donation) => (
-                  <TableRow key={donation.id} className="hover:bg-gray-50/50">
+                  <TableRow 
+                    key={donation.id} 
+                    className="hover:bg-blue-50/50 cursor-pointer transition-colors"
+                    onClick={() => router.push(`/admin/donations/${donation.id}`)}
+                  >
                     <TableCell className="font-medium text-gray-900">
                       {donation.donorName}
                     </TableCell>
