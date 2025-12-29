@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
+import { Checkbox } from "@/components/ui/checkbox"
 import {
   Table,
   TableBody,
@@ -23,8 +24,13 @@ import {
   Pencil,
   CalendarDays,
   MapPin,
+  LayoutGrid,
+  LayoutList,
+  Clock,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
+
+type ViewMode = "list" | "grid"
 
 // Sample events data
 const eventsData = [
@@ -73,6 +79,7 @@ export default function EventsPage() {
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false)
   const [showStatusDropdown, setShowStatusDropdown] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
+  const [viewMode, setViewMode] = useState<ViewMode>("list")
 
   // Filter data
   const filteredEvents = useMemo(() => {
@@ -255,152 +262,251 @@ export default function EventsPage() {
                 </div>
               )}
             </div>
-          </div>
-        </div>
-      </div>
 
-      {/* Table */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader className="bg-gray-50">
-              <TableRow>
-                <TableHead>Event Name</TableHead>
-                <TableHead className="w-30">Date</TableHead>
-                <TableHead>Location</TableHead>
-                <TableHead className="w-28">Category</TableHead>
-                <TableHead className="w-28">Status</TableHead>
-                <TableHead className="w-28 text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {paginatedEvents.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={6} className="text-center py-12">
-                    <CalendarDays className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                    <p className="text-gray-500">No events found</p>
-                  </TableCell>
-                </TableRow>
-              ) : (
-                paginatedEvents.map((event) => (
-                  <TableRow
-                    key={event.id}
-                    className="hover:bg-gray-50 transition-colors"
-                  >
-                    <TableCell>
-                      <span className="font-medium text-gray-900">
-                        {event.name}
-                      </span>
-                    </TableCell>
-                    <TableCell className="text-gray-600">
-                      <div className="flex items-center gap-2">
-                        <CalendarDays className="w-4 h-4 text-gray-400" />
-                        {formatDate(event.date)}
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-gray-600">
-                      <div className="flex items-center gap-2">
-                        <MapPin className="w-4 h-4 text-gray-400" />
-                        <span className="truncate max-w-[200px]">{event.location}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        className={cn(
-                          "font-medium",
-                          categoryStyles[event.category] || "bg-gray-100 text-gray-700"
-                        )}
-                      >
-                        {event.category}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        className={cn(
-                          "font-medium",
-                          statusStyles[event.status] || "bg-gray-100 text-gray-700"
-                        )}
-                      >
-                        {event.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center justify-end gap-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleEdit(event.id)}
-                          className="h-8 w-8 p-0 hover:bg-blue-50 hover:text-blue-600"
-                          title="Edit"
-                        >
-                          <Pencil className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleDelete(event.id)}
-                          className="h-8 w-8 p-0 hover:bg-red-50 hover:text-red-600"
-                          title="Delete"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </div>
-
-        {/* Pagination */}
-        {filteredEvents.length > 0 && (
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 py-4 border-t border-gray-100 bg-gray-50">
-            <p className="text-sm text-gray-600">
-              Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1} to{" "}
-              {Math.min(currentPage * ITEMS_PER_PAGE, filteredEvents.length)} of{" "}
-              {filteredEvents.length} events
-            </p>
-
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
-                className="rounded-lg"
+            {/* View Toggle */}
+            <div className="flex items-center bg-gray-100 rounded-xl p-1">
+              <button
+                onClick={() => setViewMode("list")}
+                className={cn(
+                  "p-2 rounded-lg transition-colors",
+                  viewMode === "list" ? "bg-white shadow-sm text-blue-600" : "text-gray-500 hover:text-gray-700"
+                )}
               >
-                <ChevronLeft className="w-4 h-4" />
-              </Button>
-
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                <Button
-                  key={page}
-                  variant={currentPage === page ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setCurrentPage(page)}
-                  className={cn(
-                    "rounded-lg w-8",
-                    currentPage === page && "bg-blue-600 hover:bg-blue-700"
-                  )}
-                >
-                  {page}
-                </Button>
-              ))}
-
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                disabled={currentPage === totalPages}
-                className="rounded-lg"
+                <LayoutList className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setViewMode("grid")}
+                className={cn(
+                  "p-2 rounded-lg transition-colors",
+                  viewMode === "grid" ? "bg-white shadow-sm text-blue-600" : "text-gray-500 hover:text-gray-700"
+                )}
               >
-                <ChevronRight className="w-4 h-4" />
-              </Button>
+                <LayoutGrid className="w-4 h-4" />
+              </button>
             </div>
           </div>
-        )}
+        </div>
       </div>
+
+      {/* List View */}
+      {viewMode === "list" && (
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader className="bg-gray-50">
+                <TableRow>
+                  <TableHead>Event Name</TableHead>
+                  <TableHead className="w-30">Date</TableHead>
+                  <TableHead>Location</TableHead>
+                  <TableHead className="w-28">Category</TableHead>
+                  <TableHead className="w-28">Status</TableHead>
+                  <TableHead className="w-28 text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {paginatedEvents.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={6} className="text-center py-12">
+                      <CalendarDays className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                      <p className="text-gray-500">No events found</p>
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  paginatedEvents.map((event) => (
+                    <TableRow
+                      key={event.id}
+                      className="hover:bg-gray-50 transition-colors"
+                    >
+                      <TableCell>
+                        <span className="font-medium text-gray-900">
+                          {event.name}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-gray-600">
+                        <div className="flex items-center gap-2">
+                          <CalendarDays className="w-4 h-4 text-gray-400" />
+                          {formatDate(event.date)}
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-gray-600">
+                        <div className="flex items-center gap-2">
+                          <MapPin className="w-4 h-4 text-gray-400" />
+                          <span className="truncate max-w-[200px]">{event.location}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          className={cn(
+                            "font-medium",
+                            categoryStyles[event.category] || "bg-gray-100 text-gray-700"
+                          )}
+                        >
+                          {event.category}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          className={cn(
+                            "font-medium",
+                            statusStyles[event.status] || "bg-gray-100 text-gray-700"
+                          )}
+                        >
+                          {event.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center justify-end gap-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleEdit(event.id)}
+                            className="h-8 w-8 p-0 hover:bg-blue-50 hover:text-blue-600"
+                            title="Edit"
+                          >
+                            <Pencil className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDelete(event.id)}
+                            className="h-8 w-8 p-0 hover:bg-red-50 hover:text-red-600"
+                            title="Delete"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
+
+          {/* Pagination */}
+          {filteredEvents.length > 0 && (
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 py-4 border-t border-gray-100 bg-gray-50">
+              <p className="text-sm text-gray-600">
+                Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1} to{" "}
+                {Math.min(currentPage * ITEMS_PER_PAGE, filteredEvents.length)} of{" "}
+                {filteredEvents.length} events
+              </p>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                  className="rounded-lg"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </Button>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <Button
+                    key={page}
+                    variant={currentPage === page ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setCurrentPage(page)}
+                    className={cn(
+                      "rounded-lg w-8",
+                      currentPage === page && "bg-blue-600 hover:bg-blue-700"
+                    )}
+                  >
+                    {page}
+                  </Button>
+                ))}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                  disabled={currentPage === totalPages}
+                  className="rounded-lg"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Grid View */}
+      {viewMode === "grid" && (
+        <div>
+          {paginatedEvents.length === 0 ? (
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center">
+              <CalendarDays className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+              <p className="text-gray-500">No events found</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {paginatedEvents.map((event) => (
+                <div
+                  key={event.id}
+                  className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 transition-all hover:shadow-md hover:border-gray-200 relative group"
+                >
+                  {/* Actions */}
+                  <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+                    <button onClick={() => handleEdit(event.id)} className="p-1.5 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100">
+                      <Pencil className="w-3.5 h-3.5" />
+                    </button>
+                    <button onClick={() => handleDelete(event.id)} className="p-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100">
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+
+                  {/* Status Badge */}
+                  <Badge className={cn("text-xs mb-3", statusStyles[event.status] || "bg-gray-100 text-gray-700")}>
+                    {event.status}
+                  </Badge>
+
+                  {/* Content */}
+                  <h3 className="font-semibold text-gray-900 line-clamp-2 mb-3">{event.name}</h3>
+                  
+                  <div className="space-y-2 text-sm text-gray-500">
+                    <div className="flex items-center gap-2">
+                      <CalendarDays className="w-4 h-4" />
+                      <span>{formatDate(event.date)}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <MapPin className="w-4 h-4" />
+                      <span className="truncate">{event.location}</span>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 pt-4 border-t border-gray-100">
+                    <Badge className={cn("text-xs", categoryStyles[event.category] || "bg-gray-100 text-gray-700")}>
+                      {event.category}
+                    </Badge>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Pagination */}
+          {filteredEvents.length > 0 && (
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 py-4 mt-4 bg-white rounded-2xl shadow-sm border border-gray-100">
+              <p className="text-sm text-gray-600">
+                Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1} to{" "}
+                {Math.min(currentPage * ITEMS_PER_PAGE, filteredEvents.length)} of{" "}
+                {filteredEvents.length} events
+              </p>
+              <div className="flex items-center gap-2">
+                <Button variant="outline" size="sm" onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))} disabled={currentPage === 1} className="rounded-lg">
+                  <ChevronLeft className="w-4 h-4" />
+                </Button>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <Button key={page} variant={currentPage === page ? "default" : "outline"} size="sm" onClick={() => setCurrentPage(page)} className={cn("rounded-lg w-8", currentPage === page && "bg-blue-600 hover:bg-blue-700")}>{page}</Button>
+                ))}
+                <Button variant="outline" size="sm" onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))} disabled={currentPage === totalPages} className="rounded-lg">
+                  <ChevronRight className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   )
 }

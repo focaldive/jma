@@ -23,8 +23,13 @@ import {
   Trash2,
   Pencil,
   Newspaper,
+  LayoutGrid,
+  LayoutList,
+  CalendarDays,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
+
+type ViewMode = "list" | "grid"
 
 // Sample news data
 const newsData = [
@@ -119,6 +124,7 @@ export default function NewsPage() {
   const [showStatusDropdown, setShowStatusDropdown] = useState(false)
   const [selectedIds, setSelectedIds] = useState<number[]>([])
   const [currentPage, setCurrentPage] = useState(1)
+  const [viewMode, setViewMode] = useState<ViewMode>("list")
 
   // Filter data
   const filteredNews = useMemo(() => {
@@ -302,12 +308,110 @@ export default function NewsPage() {
                 Delete Selected ({selectedIds.length})
               </Button>
             )}
+
+            {/* View Toggle */}
+            <div className="flex items-center bg-gray-100 rounded-xl p-1">
+              <button
+                onClick={() => setViewMode("list")}
+                className={cn(
+                  "p-2 rounded-lg transition-colors",
+                  viewMode === "list" ? "bg-white shadow-sm text-blue-600" : "text-gray-500 hover:text-gray-700"
+                )}
+              >
+                <LayoutList className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setViewMode("grid")}
+                className={cn(
+                  "p-2 rounded-lg transition-colors",
+                  viewMode === "grid" ? "bg-white shadow-sm text-blue-600" : "text-gray-500 hover:text-gray-700"
+                )}
+              >
+                <LayoutGrid className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Table */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+      {/* Grid View */}
+      {viewMode === "grid" && (
+        <div>
+          {paginatedNews.length === 0 ? (
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center">
+              <Newspaper className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+              <p className="text-gray-500">No articles found</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {paginatedNews.map((news) => (
+                <div
+                  key={news.id}
+                  className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden transition-all hover:shadow-md hover:border-gray-200 relative group"
+                >
+                  {/* Thumbnail */}
+                  <div className="h-32 bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center">
+                    <Newspaper className="w-10 h-10 text-blue-400" />
+                  </div>
+
+                  {/* Actions */}
+                  <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+                    <button onClick={() => handleEdit(news.id)} className="p-1.5 rounded-lg bg-white/90 text-blue-600 hover:bg-blue-100 shadow-sm">
+                      <Pencil className="w-3.5 h-3.5" />
+                    </button>
+                    <button onClick={() => handleDelete(news.id)} className="p-1.5 rounded-lg bg-white/90 text-red-600 hover:bg-red-100 shadow-sm">
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+
+                  {/* Content */}
+                  <div className="p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Badge className={cn("text-xs", statusStyles[news.status as keyof typeof statusStyles])}>
+                        {news.status}
+                      </Badge>
+                      <Badge className={cn("text-xs", categoryStyles[news.category as keyof typeof categoryStyles])}>
+                        {news.category}
+                      </Badge>
+                    </div>
+                    <h3 className="font-semibold text-gray-900 line-clamp-2 mb-2">{news.title}</h3>
+                    <div className="flex items-center gap-2 text-sm text-gray-500">
+                      <CalendarDays className="w-4 h-4" />
+                      <span>{new Date(news.date).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Pagination */}
+          {filteredNews.length > 0 && (
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 py-4 mt-4 bg-white rounded-2xl shadow-sm border border-gray-100">
+              <p className="text-sm text-gray-600">
+                Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1} to{" "}
+                {Math.min(currentPage * ITEMS_PER_PAGE, filteredNews.length)} of{" "}
+                {filteredNews.length} articles
+              </p>
+              <div className="flex items-center gap-2">
+                <Button variant="outline" size="sm" onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))} disabled={currentPage === 1} className="rounded-lg">
+                  <ChevronLeft className="w-4 h-4" />
+                </Button>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <Button key={page} variant={currentPage === page ? "default" : "outline"} size="sm" onClick={() => setCurrentPage(page)} className={cn("rounded-lg w-8", currentPage === page && "bg-blue-600 hover:bg-blue-700")}>{page}</Button>
+                ))}
+                <Button variant="outline" size="sm" onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))} disabled={currentPage === totalPages} className="rounded-lg">
+                  <ChevronRight className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* List View */}
+      {viewMode === "list" && (
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader className="bg-gray-50">
@@ -359,6 +463,7 @@ export default function NewsPage() {
                         {/* <Image src={news.thumbnail} alt="" fill className="object-cover" /> */}
                       </div>
                     </TableCell>
+          
                     <TableCell>
                       <span className="font-medium text-gray-900 line-clamp-1">
                         {news.title}
@@ -465,6 +570,7 @@ export default function NewsPage() {
           </div>
         )}
       </div>
+    )}
     </div>
   )
 }

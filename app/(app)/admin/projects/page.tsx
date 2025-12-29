@@ -23,8 +23,14 @@ import {
   Trash2,
   Pencil,
   FolderKanban,
+  LayoutGrid,
+  LayoutList,
+  MapPin,
+  Calendar,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
+
+type ViewMode = "list" | "grid"
 
 // Sample projects data
 const projectsData = [
@@ -69,6 +75,7 @@ export default function ProjectsPage() {
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false)
   const [selectedIds, setSelectedIds] = useState<number[]>([])
   const [currentPage, setCurrentPage] = useState(1)
+  const [viewMode, setViewMode] = useState<ViewMode>("grid")
 
   // Filter data
   const filteredProjects = useMemo(() => {
@@ -291,172 +298,290 @@ export default function ProjectsPage() {
                 Delete Selected ({selectedIds.length})
               </Button>
             )}
+
+            {/* View Toggle */}
+            <div className="flex items-center bg-gray-100 rounded-xl p-1">
+              <button
+                onClick={() => setViewMode("list")}
+                className={cn(
+                  "p-2 rounded-lg transition-colors",
+                  viewMode === "list" ? "bg-white shadow-sm text-blue-600" : "text-gray-500 hover:text-gray-700"
+                )}
+              >
+                <LayoutList className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setViewMode("grid")}
+                className={cn(
+                  "p-2 rounded-lg transition-colors",
+                  viewMode === "grid" ? "bg-white shadow-sm text-blue-600" : "text-gray-500 hover:text-gray-700"
+                )}
+              >
+                <LayoutGrid className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Table */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader className="bg-gray-50">
-              <TableRow>
-                <TableHead className="w-12">
-                  <Checkbox
-                    checked={isAllSelected}
-                    onCheckedChange={handleSelectAll}
-                    aria-label="Select all"
-                  />
-                </TableHead>
-                <TableHead className="w-20">Year</TableHead>
-                <TableHead className="w-28">Month</TableHead>
-                <TableHead>Description</TableHead>
-                <TableHead className="w-32">Location</TableHead>
-                <TableHead className="w-32">Category</TableHead>
-                <TableHead className="w-32 text-right">Amount</TableHead>
-                <TableHead className="w-28 text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {paginatedProjects.length === 0 ? (
+      {/* List View */}
+      {viewMode === "list" && (
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader className="bg-gray-50">
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center py-12">
-                    <FolderKanban className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                    <p className="text-gray-500">No projects found</p>
-                  </TableCell>
+                  <TableHead className="w-12">
+                    <Checkbox
+                      checked={isAllSelected}
+                      onCheckedChange={handleSelectAll}
+                      aria-label="Select all"
+                    />
+                  </TableHead>
+                  <TableHead className="w-20">Year</TableHead>
+                  <TableHead className="w-28">Month</TableHead>
+                  <TableHead>Description</TableHead>
+                  <TableHead className="w-32">Location</TableHead>
+                  <TableHead className="w-32">Category</TableHead>
+                  <TableHead className="w-32 text-right">Amount</TableHead>
+                  <TableHead className="w-28 text-right">Actions</TableHead>
                 </TableRow>
-              ) : (
-                paginatedProjects.map((project) => (
-                  <TableRow
-                    key={project.id}
-                    className={cn(
-                      "hover:bg-gray-50 transition-colors",
-                      selectedIds.includes(project.id) && "bg-blue-50/50"
-                    )}
-                  >
-                    <TableCell>
-                      <Checkbox
-                        checked={selectedIds.includes(project.id)}
-                        onCheckedChange={(checked) =>
-                          handleSelectOne(project.id, checked as boolean)
-                        }
-                        aria-label={`Select ${project.description}`}
-                      />
-                    </TableCell>
-                    <TableCell className="font-medium text-gray-900">
-                      {project.year}
-                    </TableCell>
-                    <TableCell className="text-gray-600">
-                      {project.month}
-                    </TableCell>
-                    <TableCell>
-                      <span className="font-medium text-gray-900 line-clamp-1">
-                        {project.description}
-                      </span>
-                    </TableCell>
-                    <TableCell className="text-gray-600">
-                      {project.location}
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        className={cn(
-                          "font-medium",
-                          categoryStyles[project.category] || "bg-gray-100 text-gray-700"
-                        )}
-                      >
-                        {project.category}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right font-semibold text-gray-900">
-                      {formatAmount(project.amount)}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center justify-end gap-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            handleEdit(project.id)
-                          }}
-                          className="h-8 w-8 p-0 hover:bg-blue-50 hover:text-blue-600"
-                        >
-                          <Pencil className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            handleDelete(project.id)
-                          }}
-                          className="h-8 w-8 p-0 hover:bg-red-50 hover:text-red-600"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
+              </TableHeader>
+              <TableBody>
+                {paginatedProjects.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={8} className="text-center py-12">
+                      <FolderKanban className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                      <p className="text-gray-500">No projects found</p>
                     </TableCell>
                   </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </div>
+                ) : (
+                  paginatedProjects.map((project) => (
+                    <TableRow
+                      key={project.id}
+                      className={cn(
+                        "hover:bg-gray-50 transition-colors",
+                        selectedIds.includes(project.id) && "bg-blue-50/50"
+                      )}
+                    >
+                      <TableCell>
+                        <Checkbox
+                          checked={selectedIds.includes(project.id)}
+                          onCheckedChange={(checked) =>
+                            handleSelectOne(project.id, checked as boolean)
+                          }
+                          aria-label={`Select ${project.description}`}
+                        />
+                      </TableCell>
+                      <TableCell className="font-medium text-gray-900">
+                        {project.year}
+                      </TableCell>
+                      <TableCell className="text-gray-600">
+                        {project.month}
+                      </TableCell>
+                      <TableCell>
+                        <span className="font-medium text-gray-900 line-clamp-1">
+                          {project.description}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-gray-600">
+                        {project.location}
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          className={cn(
+                            "font-medium",
+                            categoryStyles[project.category] || "bg-gray-100 text-gray-700"
+                          )}
+                        >
+                          {project.category}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right font-semibold text-gray-900">
+                        {formatAmount(project.amount)}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center justify-end gap-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              handleEdit(project.id)
+                            }}
+                            className="h-8 w-8 p-0 hover:bg-blue-50 hover:text-blue-600"
+                          >
+                            <Pencil className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              handleDelete(project.id)
+                            }}
+                            className="h-8 w-8 p-0 hover:bg-red-50 hover:text-red-600"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
 
-        {/* Footer with Total and Pagination */}
-        {filteredProjects.length > 0 && (
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 py-4 border-t border-gray-100 bg-gray-50">
-            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6">
-              <p className="text-sm text-gray-600">
-                Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1} to{" "}
-                {Math.min(currentPage * ITEMS_PER_PAGE, filteredProjects.length)} of{" "}
-                {filteredProjects.length} projects
-              </p>
-              <div className="flex items-center gap-2 px-4 py-2 bg-blue-50 rounded-xl">
-                <span className="text-sm text-blue-700 font-medium">Total Amount:</span>
-                <span className="text-lg font-bold text-blue-700">{formatAmount(totalAmount)}</span>
+          {/* Footer with Total and Pagination */}
+          {filteredProjects.length > 0 && (
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 py-4 border-t border-gray-100 bg-gray-50">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6">
+                <p className="text-sm text-gray-600">
+                  Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1} to{" "}
+                  {Math.min(currentPage * ITEMS_PER_PAGE, filteredProjects.length)} of{" "}
+                  {filteredProjects.length} projects
+                </p>
+                <div className="flex items-center gap-2 px-4 py-2 bg-blue-50 rounded-xl">
+                  <span className="text-sm text-blue-700 font-medium">Total Amount:</span>
+                  <span className="text-lg font-bold text-blue-700">{formatAmount(totalAmount)}</span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                  className="rounded-lg"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </Button>
+
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <Button
+                    key={page}
+                    variant={currentPage === page ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setCurrentPage(page)}
+                    className={cn(
+                      "rounded-lg w-8",
+                      currentPage === page && "bg-blue-600 hover:bg-blue-700"
+                    )}
+                  >
+                    {page}
+                  </Button>
+                ))}
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                  disabled={currentPage === totalPages}
+                  className="rounded-lg"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </Button>
               </div>
             </div>
+          )}
+        </div>
+      )}
 
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
-                className="rounded-lg"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </Button>
-
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                <Button
-                  key={page}
-                  variant={currentPage === page ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setCurrentPage(page)}
+      {/* Grid View */}
+      {viewMode === "grid" && (
+        <div>
+          {paginatedProjects.length === 0 ? (
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center">
+              <FolderKanban className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+              <p className="text-gray-500">No projects found</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {paginatedProjects.map((project) => (
+                <div
+                  key={project.id}
                   className={cn(
-                    "rounded-lg w-8",
-                    currentPage === page && "bg-blue-600 hover:bg-blue-700"
+                    "bg-white rounded-2xl shadow-sm border border-gray-100 p-5 transition-all hover:shadow-md hover:border-gray-200 relative group",
+                    selectedIds.includes(project.id) && "ring-2 ring-blue-500 border-blue-200"
                   )}
                 >
-                  {page}
-                </Button>
-              ))}
+                  {/* Selection Checkbox */}
+                  <div className="absolute top-4 left-4">
+                    <Checkbox
+                      checked={selectedIds.includes(project.id)}
+                      onCheckedChange={(checked) => handleSelectOne(project.id, checked as boolean)}
+                      className="bg-white"
+                    />
+                  </div>
 
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                disabled={currentPage === totalPages}
-                className="rounded-lg"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </Button>
+                  {/* Actions */}
+                  <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+                    <button onClick={() => handleEdit(project.id)} className="p-1.5 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100">
+                      <Pencil className="w-3.5 h-3.5" />
+                    </button>
+                    <button onClick={() => handleDelete(project.id)} className="p-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100">
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+
+                  {/* Content */}
+                  <div className="pt-6">
+                    <Badge className={cn("text-xs mb-3", categoryStyles[project.category] || "bg-gray-100 text-gray-700")}>
+                      {project.category}
+                    </Badge>
+                    <h3 className="font-semibold text-gray-900 line-clamp-2 mb-2">{project.description}</h3>
+                    
+                    <div className="space-y-2 text-sm text-gray-500">
+                      <div className="flex items-center gap-2">
+                        <MapPin className="w-4 h-4" />
+                        <span>{project.location}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Calendar className="w-4 h-4" />
+                        <span>{project.month} {project.year}</span>
+                      </div>
+                    </div>
+
+                    <div className="mt-4 pt-4 border-t border-gray-100">
+                      <p className="text-lg font-bold text-blue-600">{formatAmount(project.amount)}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
-          </div>
-        )}
-      </div>
+          )}
+
+          {/* Pagination */}
+          {filteredProjects.length > 0 && (
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 py-4 mt-4 bg-white rounded-2xl shadow-sm border border-gray-100">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6">
+                <p className="text-sm text-gray-600">
+                  Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1} to{" "}
+                  {Math.min(currentPage * ITEMS_PER_PAGE, filteredProjects.length)} of{" "}
+                  {filteredProjects.length} projects
+                </p>
+                <div className="flex items-center gap-2 px-4 py-2 bg-blue-50 rounded-xl">
+                  <span className="text-sm text-blue-700 font-medium">Total:</span>
+                  <span className="text-lg font-bold text-blue-700">{formatAmount(totalAmount)}</span>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button variant="outline" size="sm" onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))} disabled={currentPage === 1} className="rounded-lg">
+                  <ChevronLeft className="w-4 h-4" />
+                </Button>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <Button key={page} variant={currentPage === page ? "default" : "outline"} size="sm" onClick={() => setCurrentPage(page)} className={cn("rounded-lg w-8", currentPage === page && "bg-blue-600 hover:bg-blue-700")}>{page}</Button>
+                ))}
+                <Button variant="outline" size="sm" onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))} disabled={currentPage === totalPages} className="rounded-lg">
+                  <ChevronRight className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   )
 }
