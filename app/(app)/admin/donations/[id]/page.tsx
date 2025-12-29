@@ -110,7 +110,7 @@ export default function DonationDetailPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col  ">
         <div className="flex items-center gap-4">
           <Button
             variant="outline"
@@ -127,7 +127,7 @@ export default function DonationDetailPage() {
         </div>
         <Badge
           className={cn(
-            "px-4 py-2 text-sm font-medium",
+            "px-2 py-2 text-sm font-medium w-28 mt-2 ml-28",
             statusStyles[donation.status as keyof typeof statusStyles]
           )}
         >
