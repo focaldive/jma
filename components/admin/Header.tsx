@@ -10,9 +10,14 @@ import {
   LogOut,
   ChevronDown,
   Calendar,
+  Menu,
 } from "lucide-react"
 
-export function Header() {
+interface HeaderProps {
+  onMenuClick?: () => void
+}
+
+export function Header({ onMenuClick }: HeaderProps) {
   const router = useRouter()
   const [showNotifications, setShowNotifications] = useState(false)
 
@@ -34,23 +39,39 @@ export function Header() {
   })
 
   return (
-    <header className="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-6 sticky top-0 z-30">
-      {/* Search Bar */}
-      <div className="flex-1 max-w-md px-2">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search anything..."
-            className="w-full pl-8 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
-          />
+    <header className="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-4 sm:px-6 sticky top-0 z-30">
+      {/* Left Section - Menu + Search */}
+      <div className="flex items-center gap-3 flex-1">
+        {/* Mobile Menu Button */}
+        <button
+          onClick={onMenuClick}
+          className="p-2 rounded-xl hover:bg-gray-100 transition-colors lg:hidden"
+        >
+          <Menu className="w-6 h-6 text-gray-600" />
+        </button>
+
+        {/* Search Bar */}
+        <div className="hidden sm:block flex-1 max-w-md">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search anything..."
+              className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+            />
+          </div>
         </div>
+
+        {/* Mobile Search Icon */}
+        <button className="p-2 rounded-xl hover:bg-gray-100 transition-colors sm:hidden">
+          <Search className="w-5 h-5 text-gray-600" />
+        </button>
       </div>
 
       {/* Right Section */}
-      <div className="flex items-center gap-4">
-        {/* Date & Time */}
-        <div className="hidden md:flex items-center gap-2 text-sm text-gray-600">
+      <div className="flex items-center gap-2 sm:gap-4">
+        {/* Date & Time - Hidden on mobile */}
+        <div className="hidden xl:flex items-center gap-2 text-sm text-gray-600">
           <Calendar className="w-4 h-4 text-gray-400" />
           <span>{currentDate}</span>
           <span className="text-gray-300">|</span>
@@ -69,7 +90,7 @@ export function Header() {
 
           {/* Notifications Dropdown */}
           {showNotifications && (
-            <div className="absolute right-0 top-full mt-2 w-80 bg-white rounded-2xl shadow-xl border border-gray-100 py-4 z-50">
+            <div className="absolute right-0 top-full mt-2 w-72 sm:w-80 bg-white rounded-2xl shadow-xl border border-gray-100 py-4 z-50">
               <div className="px-4 pb-3 border-b border-gray-100">
                 <h3 className="font-semibold text-gray-900">Notifications</h3>
               </div>
@@ -98,10 +119,10 @@ export function Header() {
         </div>
 
         {/* User Profile */}
-        <div className="flex items-center gap-3 pl-4 border-l border-gray-200">
-          <Avatar className="w-10 h-10 ring-2 ring-gray-100">
+        <div className="flex items-center gap-2 sm:gap-3 pl-2 sm:pl-4 border-l border-gray-200">
+          <Avatar className="w-9 h-9 sm:w-10 sm:h-10 ring-2 ring-gray-100">
             <AvatarImage src="/assets/avatar.png" alt="Admin" />
-            <AvatarFallback className="bg-blue-100 text-blue-600 font-semibold">AD</AvatarFallback>
+            <AvatarFallback className="bg-blue-100 text-blue-600 font-semibold text-sm">AD</AvatarFallback>
           </Avatar>
           <div className="hidden md:block">
             <p className="text-sm font-semibold text-gray-900">Admin User</p>
@@ -110,16 +131,22 @@ export function Header() {
           <ChevronDown className="w-4 h-4 text-gray-400 hidden md:block" />
         </div>
 
-        {/* Logout */}
+        {/* Logout - Desktop: Full button, Mobile: Icon only */}
         <Button
           variant="outline"
           size="sm"
           onClick={handleLogout}
-          className="hidden md:flex items-center gap-2 text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700 hover:border-red-300"
+          className="hidden sm:flex items-center gap-2 text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700 hover:border-red-300"
         >
           <LogOut className="w-4 h-4" />
-          Logout
+          <span className="hidden md:inline">Logout</span>
         </Button>
+        <button
+          onClick={handleLogout}
+          className="p-2.5 rounded-xl bg-red-50 text-red-600 hover:bg-red-100 transition-colors sm:hidden"
+        >
+          <LogOut className="w-5 h-5" />
+        </button>
       </div>
     </header>
   )

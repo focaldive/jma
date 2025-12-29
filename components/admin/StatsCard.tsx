@@ -25,7 +25,7 @@ export function StatsCard({
       <div className="flex items-start justify-between">
         <div>
           <p className="text-sm font-medium text-gray-500">{title}</p>
-          <p className="text-3xl font-bold text-gray-900 mt-2">{value}</p>
+          <p className="text-2xl sm:text-3xl font-bold text-gray-900 mt-2">{value}</p>
           {change && (
             <p
               className={cn(
