@@ -41,8 +41,8 @@ export function StatsCard({
             </p>
           )}
         </div>
-        <div className={cn("p-3 rounded-xl", iconBgColor)}>
-          <Icon className={cn("w-6 h-6", iconColor)} />
+        <div className={cn("p-2 rounded-xl", iconBgColor)}>
+          <Icon className={cn("w-6 h-6 ", iconColor)} />
         </div>
       </div>
     </div>
