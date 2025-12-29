@@ -24,6 +24,7 @@ import {
 const menuItems = [
   { name: "Dashboard", icon: LayoutDashboard, href: "/admin" },
   { name: "Donations", icon: Heart, href: "/admin/donations" },
+  { name: "Donors", icon: Users, href: "/admin/donors" },
   { name: "News", icon: Newspaper, href: "/admin/news" },
   { name: "Projects", icon: FolderKanban, href: "/admin/projects" },
   { name: "Events", icon: CalendarDays, href: "/admin/events" },
