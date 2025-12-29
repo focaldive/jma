@@ -292,13 +292,7 @@ export default function DonorDetailsPage() {
             <p className="text-sm text-gray-500">View and manage donor information</p>
           </div>
         </div>
-        <Button
-          onClick={() => router.push(`/admin/donors/${donorId}/edit`)}
-          className="bg-blue-600 hover:bg-blue-700 text-white"
-        >
-          <Pencil className="w-4 h-4 mr-2" />
-          Edit Donor
-        </Button>
+       
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

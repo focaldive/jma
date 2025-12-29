@@ -109,9 +109,7 @@ export default function DonorsPage() {
     }
   }
 
-  const handleEdit = (id: number) => {
-    router.push(`/admin/donors/${id}/edit`)
-  }
+ 
 
   const handleDelete = (id: number) => {
     console.log("Deleting donor:", id)
@@ -133,13 +131,7 @@ export default function DonorsPage() {
           <h1 className="text-2xl font-bold text-gray-900">Donors</h1>
           <p className="text-sm text-gray-500 mt-1">Manage your donor database</p>
         </div>
-        <Button
-          onClick={() => router.push("/admin/donors/new")}
-          className="bg-blue-600 hover:bg-blue-700 text-white"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Add Donor
-        </Button>
+       
       </div>
 
       {/* Search */}
@@ -241,15 +233,7 @@ export default function DonorsPage() {
                         >
                           <Eye className="w-4 h-4" />
                         </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleEdit(donor.id)}
-                          className="h-8 w-8 p-0 hover:bg-blue-50 hover:text-blue-600"
-                          title="Edit"
-                        >
-                          <Pencil className="w-4 h-4" />
-                        </Button>
+                        
                         <Button
                           variant="ghost"
                           size="sm"
