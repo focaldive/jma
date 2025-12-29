@@ -219,7 +219,7 @@ export default function JanazaPage() {
   }
 
   const handleEdit = (id: number) => {
-    router.push(`/admin/janaza/${id}/edit`)
+    router.push(`/admin/janaza/new/${id}/edit`)
   }
 
   const handleDelete = (id: number) => {
@@ -395,15 +395,7 @@ export default function JanazaPage() {
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center justify-end gap-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleView(item.id)}
-                          className="h-8 w-8 p-0 hover:bg-green-50 hover:text-green-600"
-                          title="View Details"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </Button>
+                       
                         <Button
                           variant="ghost"
                           size="sm"
