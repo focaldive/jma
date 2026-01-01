@@ -33,6 +33,11 @@ export type ContactSubmission = $Result.DefaultSelection<Prisma.$ContactSubmissi
  * 
  */
 export type NewsletterSubscriber = $Result.DefaultSelection<Prisma.$NewsletterSubscriberPayload>
+/**
+ * Model Donation
+ * 
+ */
+export type Donation = $Result.DefaultSelection<Prisma.$DonationPayload>
 
 /**
  * Enums
@@ -67,6 +72,16 @@ export const Priority: {
 
 export type Priority = (typeof Priority)[keyof typeof Priority]
 
+
+export const DonationStatus: {
+  PENDING: 'PENDING',
+  COMPLETED: 'COMPLETED',
+  FAILED: 'FAILED',
+  REFUNDED: 'REFUNDED'
+};
+
+export type DonationStatus = (typeof DonationStatus)[keyof typeof DonationStatus]
+
 }
 
 export type Role = $Enums.Role
@@ -80,6 +95,10 @@ export const MessageStatus: typeof $Enums.MessageStatus
 export type Priority = $Enums.Priority
 
 export const Priority: typeof $Enums.Priority
+
+export type DonationStatus = $Enums.DonationStatus
+
+export const DonationStatus: typeof $Enums.DonationStatus
 
 /**
  * ##  Prisma Client ʲˢ
@@ -237,6 +256,16 @@ export class PrismaClient<
     * ```
     */
   get newsletterSubscriber(): Prisma.NewsletterSubscriberDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.donation`: Exposes CRUD operations for the **Donation** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Donations
+    * const donations = await prisma.donation.findMany()
+    * ```
+    */
+  get donation(): Prisma.DonationDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -674,7 +703,8 @@ export namespace Prisma {
     User: 'User',
     AdminUser: 'AdminUser',
     ContactSubmission: 'ContactSubmission',
-    NewsletterSubscriber: 'NewsletterSubscriber'
+    NewsletterSubscriber: 'NewsletterSubscriber',
+    Donation: 'Donation'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -690,7 +720,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "adminUser" | "contactSubmission" | "newsletterSubscriber"
+      modelProps: "user" | "adminUser" | "contactSubmission" | "newsletterSubscriber" | "donation"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -990,6 +1020,80 @@ export namespace Prisma {
           }
         }
       }
+      Donation: {
+        payload: Prisma.$DonationPayload<ExtArgs>
+        fields: Prisma.DonationFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.DonationFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DonationPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.DonationFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DonationPayload>
+          }
+          findFirst: {
+            args: Prisma.DonationFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DonationPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.DonationFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DonationPayload>
+          }
+          findMany: {
+            args: Prisma.DonationFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DonationPayload>[]
+          }
+          create: {
+            args: Prisma.DonationCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DonationPayload>
+          }
+          createMany: {
+            args: Prisma.DonationCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.DonationCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DonationPayload>[]
+          }
+          delete: {
+            args: Prisma.DonationDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DonationPayload>
+          }
+          update: {
+            args: Prisma.DonationUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DonationPayload>
+          }
+          deleteMany: {
+            args: Prisma.DonationDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.DonationUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.DonationUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DonationPayload>[]
+          }
+          upsert: {
+            args: Prisma.DonationUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DonationPayload>
+          }
+          aggregate: {
+            args: Prisma.DonationAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateDonation>
+          }
+          groupBy: {
+            args: Prisma.DonationGroupByArgs<ExtArgs>
+            result: $Utils.Optional<DonationGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.DonationCountArgs<ExtArgs>
+            result: $Utils.Optional<DonationCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1102,6 +1206,7 @@ export namespace Prisma {
     adminUser?: AdminUserOmit
     contactSubmission?: ContactSubmissionOmit
     newsletterSubscriber?: NewsletterSubscriberOmit
+    donation?: DonationOmit
   }
 
   /* Types for Logging */
@@ -5778,6 +5883,1230 @@ export namespace Prisma {
 
 
   /**
+   * Model Donation
+   */
+
+  export type AggregateDonation = {
+    _count: DonationCountAggregateOutputType | null
+    _avg: DonationAvgAggregateOutputType | null
+    _sum: DonationSumAggregateOutputType | null
+    _min: DonationMinAggregateOutputType | null
+    _max: DonationMaxAggregateOutputType | null
+  }
+
+  export type DonationAvgAggregateOutputType = {
+    amount: Decimal | null
+  }
+
+  export type DonationSumAggregateOutputType = {
+    amount: Decimal | null
+  }
+
+  export type DonationMinAggregateOutputType = {
+    id: string | null
+    amount: Decimal | null
+    currency: string | null
+    category: string | null
+    paymentMethod: string | null
+    notes: string | null
+    message: string | null
+    status: $Enums.DonationStatus | null
+    firstName: string | null
+    lastName: string | null
+    email: string | null
+    phone: string | null
+    address: string | null
+    country: string | null
+    region: string | null
+    isAnonymous: boolean | null
+    acceptedTerms: boolean | null
+    wantsUpdates: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type DonationMaxAggregateOutputType = {
+    id: string | null
+    amount: Decimal | null
+    currency: string | null
+    category: string | null
+    paymentMethod: string | null
+    notes: string | null
+    message: string | null
+    status: $Enums.DonationStatus | null
+    firstName: string | null
+    lastName: string | null
+    email: string | null
+    phone: string | null
+    address: string | null
+    country: string | null
+    region: string | null
+    isAnonymous: boolean | null
+    acceptedTerms: boolean | null
+    wantsUpdates: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type DonationCountAggregateOutputType = {
+    id: number
+    amount: number
+    currency: number
+    category: number
+    paymentMethod: number
+    notes: number
+    message: number
+    status: number
+    firstName: number
+    lastName: number
+    email: number
+    phone: number
+    address: number
+    country: number
+    region: number
+    isAnonymous: number
+    acceptedTerms: number
+    wantsUpdates: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type DonationAvgAggregateInputType = {
+    amount?: true
+  }
+
+  export type DonationSumAggregateInputType = {
+    amount?: true
+  }
+
+  export type DonationMinAggregateInputType = {
+    id?: true
+    amount?: true
+    currency?: true
+    category?: true
+    paymentMethod?: true
+    notes?: true
+    message?: true
+    status?: true
+    firstName?: true
+    lastName?: true
+    email?: true
+    phone?: true
+    address?: true
+    country?: true
+    region?: true
+    isAnonymous?: true
+    acceptedTerms?: true
+    wantsUpdates?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type DonationMaxAggregateInputType = {
+    id?: true
+    amount?: true
+    currency?: true
+    category?: true
+    paymentMethod?: true
+    notes?: true
+    message?: true
+    status?: true
+    firstName?: true
+    lastName?: true
+    email?: true
+    phone?: true
+    address?: true
+    country?: true
+    region?: true
+    isAnonymous?: true
+    acceptedTerms?: true
+    wantsUpdates?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type DonationCountAggregateInputType = {
+    id?: true
+    amount?: true
+    currency?: true
+    category?: true
+    paymentMethod?: true
+    notes?: true
+    message?: true
+    status?: true
+    firstName?: true
+    lastName?: true
+    email?: true
+    phone?: true
+    address?: true
+    country?: true
+    region?: true
+    isAnonymous?: true
+    acceptedTerms?: true
+    wantsUpdates?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type DonationAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Donation to aggregate.
+     */
+    where?: DonationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Donations to fetch.
+     */
+    orderBy?: DonationOrderByWithRelationInput | DonationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: DonationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Donations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Donations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Donations
+    **/
+    _count?: true | DonationCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: DonationAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: DonationSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: DonationMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: DonationMaxAggregateInputType
+  }
+
+  export type GetDonationAggregateType<T extends DonationAggregateArgs> = {
+        [P in keyof T & keyof AggregateDonation]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateDonation[P]>
+      : GetScalarType<T[P], AggregateDonation[P]>
+  }
+
+
+
+
+  export type DonationGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DonationWhereInput
+    orderBy?: DonationOrderByWithAggregationInput | DonationOrderByWithAggregationInput[]
+    by: DonationScalarFieldEnum[] | DonationScalarFieldEnum
+    having?: DonationScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: DonationCountAggregateInputType | true
+    _avg?: DonationAvgAggregateInputType
+    _sum?: DonationSumAggregateInputType
+    _min?: DonationMinAggregateInputType
+    _max?: DonationMaxAggregateInputType
+  }
+
+  export type DonationGroupByOutputType = {
+    id: string
+    amount: Decimal
+    currency: string
+    category: string | null
+    paymentMethod: string | null
+    notes: string | null
+    message: string | null
+    status: $Enums.DonationStatus
+    firstName: string | null
+    lastName: string | null
+    email: string | null
+    phone: string | null
+    address: string | null
+    country: string | null
+    region: string | null
+    isAnonymous: boolean
+    acceptedTerms: boolean
+    wantsUpdates: boolean
+    createdAt: Date
+    updatedAt: Date
+    _count: DonationCountAggregateOutputType | null
+    _avg: DonationAvgAggregateOutputType | null
+    _sum: DonationSumAggregateOutputType | null
+    _min: DonationMinAggregateOutputType | null
+    _max: DonationMaxAggregateOutputType | null
+  }
+
+  type GetDonationGroupByPayload<T extends DonationGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<DonationGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof DonationGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], DonationGroupByOutputType[P]>
+            : GetScalarType<T[P], DonationGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type DonationSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    amount?: boolean
+    currency?: boolean
+    category?: boolean
+    paymentMethod?: boolean
+    notes?: boolean
+    message?: boolean
+    status?: boolean
+    firstName?: boolean
+    lastName?: boolean
+    email?: boolean
+    phone?: boolean
+    address?: boolean
+    country?: boolean
+    region?: boolean
+    isAnonymous?: boolean
+    acceptedTerms?: boolean
+    wantsUpdates?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["donation"]>
+
+  export type DonationSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    amount?: boolean
+    currency?: boolean
+    category?: boolean
+    paymentMethod?: boolean
+    notes?: boolean
+    message?: boolean
+    status?: boolean
+    firstName?: boolean
+    lastName?: boolean
+    email?: boolean
+    phone?: boolean
+    address?: boolean
+    country?: boolean
+    region?: boolean
+    isAnonymous?: boolean
+    acceptedTerms?: boolean
+    wantsUpdates?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["donation"]>
+
+  export type DonationSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    amount?: boolean
+    currency?: boolean
+    category?: boolean
+    paymentMethod?: boolean
+    notes?: boolean
+    message?: boolean
+    status?: boolean
+    firstName?: boolean
+    lastName?: boolean
+    email?: boolean
+    phone?: boolean
+    address?: boolean
+    country?: boolean
+    region?: boolean
+    isAnonymous?: boolean
+    acceptedTerms?: boolean
+    wantsUpdates?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["donation"]>
+
+  export type DonationSelectScalar = {
+    id?: boolean
+    amount?: boolean
+    currency?: boolean
+    category?: boolean
+    paymentMethod?: boolean
+    notes?: boolean
+    message?: boolean
+    status?: boolean
+    firstName?: boolean
+    lastName?: boolean
+    email?: boolean
+    phone?: boolean
+    address?: boolean
+    country?: boolean
+    region?: boolean
+    isAnonymous?: boolean
+    acceptedTerms?: boolean
+    wantsUpdates?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type DonationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "amount" | "currency" | "category" | "paymentMethod" | "notes" | "message" | "status" | "firstName" | "lastName" | "email" | "phone" | "address" | "country" | "region" | "isAnonymous" | "acceptedTerms" | "wantsUpdates" | "createdAt" | "updatedAt", ExtArgs["result"]["donation"]>
+
+  export type $DonationPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Donation"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      amount: Prisma.Decimal
+      currency: string
+      category: string | null
+      paymentMethod: string | null
+      notes: string | null
+      message: string | null
+      status: $Enums.DonationStatus
+      firstName: string | null
+      lastName: string | null
+      email: string | null
+      phone: string | null
+      address: string | null
+      country: string | null
+      region: string | null
+      isAnonymous: boolean
+      acceptedTerms: boolean
+      wantsUpdates: boolean
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["donation"]>
+    composites: {}
+  }
+
+  type DonationGetPayload<S extends boolean | null | undefined | DonationDefaultArgs> = $Result.GetResult<Prisma.$DonationPayload, S>
+
+  type DonationCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<DonationFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: DonationCountAggregateInputType | true
+    }
+
+  export interface DonationDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Donation'], meta: { name: 'Donation' } }
+    /**
+     * Find zero or one Donation that matches the filter.
+     * @param {DonationFindUniqueArgs} args - Arguments to find a Donation
+     * @example
+     * // Get one Donation
+     * const donation = await prisma.donation.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends DonationFindUniqueArgs>(args: SelectSubset<T, DonationFindUniqueArgs<ExtArgs>>): Prisma__DonationClient<$Result.GetResult<Prisma.$DonationPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Donation that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {DonationFindUniqueOrThrowArgs} args - Arguments to find a Donation
+     * @example
+     * // Get one Donation
+     * const donation = await prisma.donation.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends DonationFindUniqueOrThrowArgs>(args: SelectSubset<T, DonationFindUniqueOrThrowArgs<ExtArgs>>): Prisma__DonationClient<$Result.GetResult<Prisma.$DonationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Donation that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DonationFindFirstArgs} args - Arguments to find a Donation
+     * @example
+     * // Get one Donation
+     * const donation = await prisma.donation.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends DonationFindFirstArgs>(args?: SelectSubset<T, DonationFindFirstArgs<ExtArgs>>): Prisma__DonationClient<$Result.GetResult<Prisma.$DonationPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Donation that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DonationFindFirstOrThrowArgs} args - Arguments to find a Donation
+     * @example
+     * // Get one Donation
+     * const donation = await prisma.donation.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends DonationFindFirstOrThrowArgs>(args?: SelectSubset<T, DonationFindFirstOrThrowArgs<ExtArgs>>): Prisma__DonationClient<$Result.GetResult<Prisma.$DonationPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Donations that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DonationFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Donations
+     * const donations = await prisma.donation.findMany()
+     * 
+     * // Get first 10 Donations
+     * const donations = await prisma.donation.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const donationWithIdOnly = await prisma.donation.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends DonationFindManyArgs>(args?: SelectSubset<T, DonationFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DonationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Donation.
+     * @param {DonationCreateArgs} args - Arguments to create a Donation.
+     * @example
+     * // Create one Donation
+     * const Donation = await prisma.donation.create({
+     *   data: {
+     *     // ... data to create a Donation
+     *   }
+     * })
+     * 
+     */
+    create<T extends DonationCreateArgs>(args: SelectSubset<T, DonationCreateArgs<ExtArgs>>): Prisma__DonationClient<$Result.GetResult<Prisma.$DonationPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Donations.
+     * @param {DonationCreateManyArgs} args - Arguments to create many Donations.
+     * @example
+     * // Create many Donations
+     * const donation = await prisma.donation.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends DonationCreateManyArgs>(args?: SelectSubset<T, DonationCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Donations and returns the data saved in the database.
+     * @param {DonationCreateManyAndReturnArgs} args - Arguments to create many Donations.
+     * @example
+     * // Create many Donations
+     * const donation = await prisma.donation.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Donations and only return the `id`
+     * const donationWithIdOnly = await prisma.donation.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends DonationCreateManyAndReturnArgs>(args?: SelectSubset<T, DonationCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DonationPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Donation.
+     * @param {DonationDeleteArgs} args - Arguments to delete one Donation.
+     * @example
+     * // Delete one Donation
+     * const Donation = await prisma.donation.delete({
+     *   where: {
+     *     // ... filter to delete one Donation
+     *   }
+     * })
+     * 
+     */
+    delete<T extends DonationDeleteArgs>(args: SelectSubset<T, DonationDeleteArgs<ExtArgs>>): Prisma__DonationClient<$Result.GetResult<Prisma.$DonationPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Donation.
+     * @param {DonationUpdateArgs} args - Arguments to update one Donation.
+     * @example
+     * // Update one Donation
+     * const donation = await prisma.donation.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends DonationUpdateArgs>(args: SelectSubset<T, DonationUpdateArgs<ExtArgs>>): Prisma__DonationClient<$Result.GetResult<Prisma.$DonationPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Donations.
+     * @param {DonationDeleteManyArgs} args - Arguments to filter Donations to delete.
+     * @example
+     * // Delete a few Donations
+     * const { count } = await prisma.donation.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends DonationDeleteManyArgs>(args?: SelectSubset<T, DonationDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Donations.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DonationUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Donations
+     * const donation = await prisma.donation.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends DonationUpdateManyArgs>(args: SelectSubset<T, DonationUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Donations and returns the data updated in the database.
+     * @param {DonationUpdateManyAndReturnArgs} args - Arguments to update many Donations.
+     * @example
+     * // Update many Donations
+     * const donation = await prisma.donation.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Donations and only return the `id`
+     * const donationWithIdOnly = await prisma.donation.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends DonationUpdateManyAndReturnArgs>(args: SelectSubset<T, DonationUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DonationPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Donation.
+     * @param {DonationUpsertArgs} args - Arguments to update or create a Donation.
+     * @example
+     * // Update or create a Donation
+     * const donation = await prisma.donation.upsert({
+     *   create: {
+     *     // ... data to create a Donation
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Donation we want to update
+     *   }
+     * })
+     */
+    upsert<T extends DonationUpsertArgs>(args: SelectSubset<T, DonationUpsertArgs<ExtArgs>>): Prisma__DonationClient<$Result.GetResult<Prisma.$DonationPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Donations.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DonationCountArgs} args - Arguments to filter Donations to count.
+     * @example
+     * // Count the number of Donations
+     * const count = await prisma.donation.count({
+     *   where: {
+     *     // ... the filter for the Donations we want to count
+     *   }
+     * })
+    **/
+    count<T extends DonationCountArgs>(
+      args?: Subset<T, DonationCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], DonationCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Donation.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DonationAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends DonationAggregateArgs>(args: Subset<T, DonationAggregateArgs>): Prisma.PrismaPromise<GetDonationAggregateType<T>>
+
+    /**
+     * Group by Donation.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DonationGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends DonationGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: DonationGroupByArgs['orderBy'] }
+        : { orderBy?: DonationGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, DonationGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetDonationGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Donation model
+   */
+  readonly fields: DonationFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Donation.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__DonationClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Donation model
+   */
+  interface DonationFieldRefs {
+    readonly id: FieldRef<"Donation", 'String'>
+    readonly amount: FieldRef<"Donation", 'Decimal'>
+    readonly currency: FieldRef<"Donation", 'String'>
+    readonly category: FieldRef<"Donation", 'String'>
+    readonly paymentMethod: FieldRef<"Donation", 'String'>
+    readonly notes: FieldRef<"Donation", 'String'>
+    readonly message: FieldRef<"Donation", 'String'>
+    readonly status: FieldRef<"Donation", 'DonationStatus'>
+    readonly firstName: FieldRef<"Donation", 'String'>
+    readonly lastName: FieldRef<"Donation", 'String'>
+    readonly email: FieldRef<"Donation", 'String'>
+    readonly phone: FieldRef<"Donation", 'String'>
+    readonly address: FieldRef<"Donation", 'String'>
+    readonly country: FieldRef<"Donation", 'String'>
+    readonly region: FieldRef<"Donation", 'String'>
+    readonly isAnonymous: FieldRef<"Donation", 'Boolean'>
+    readonly acceptedTerms: FieldRef<"Donation", 'Boolean'>
+    readonly wantsUpdates: FieldRef<"Donation", 'Boolean'>
+    readonly createdAt: FieldRef<"Donation", 'DateTime'>
+    readonly updatedAt: FieldRef<"Donation", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Donation findUnique
+   */
+  export type DonationFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Donation
+     */
+    select?: DonationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Donation
+     */
+    omit?: DonationOmit<ExtArgs> | null
+    /**
+     * Filter, which Donation to fetch.
+     */
+    where: DonationWhereUniqueInput
+  }
+
+  /**
+   * Donation findUniqueOrThrow
+   */
+  export type DonationFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Donation
+     */
+    select?: DonationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Donation
+     */
+    omit?: DonationOmit<ExtArgs> | null
+    /**
+     * Filter, which Donation to fetch.
+     */
+    where: DonationWhereUniqueInput
+  }
+
+  /**
+   * Donation findFirst
+   */
+  export type DonationFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Donation
+     */
+    select?: DonationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Donation
+     */
+    omit?: DonationOmit<ExtArgs> | null
+    /**
+     * Filter, which Donation to fetch.
+     */
+    where?: DonationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Donations to fetch.
+     */
+    orderBy?: DonationOrderByWithRelationInput | DonationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Donations.
+     */
+    cursor?: DonationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Donations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Donations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Donations.
+     */
+    distinct?: DonationScalarFieldEnum | DonationScalarFieldEnum[]
+  }
+
+  /**
+   * Donation findFirstOrThrow
+   */
+  export type DonationFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Donation
+     */
+    select?: DonationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Donation
+     */
+    omit?: DonationOmit<ExtArgs> | null
+    /**
+     * Filter, which Donation to fetch.
+     */
+    where?: DonationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Donations to fetch.
+     */
+    orderBy?: DonationOrderByWithRelationInput | DonationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Donations.
+     */
+    cursor?: DonationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Donations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Donations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Donations.
+     */
+    distinct?: DonationScalarFieldEnum | DonationScalarFieldEnum[]
+  }
+
+  /**
+   * Donation findMany
+   */
+  export type DonationFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Donation
+     */
+    select?: DonationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Donation
+     */
+    omit?: DonationOmit<ExtArgs> | null
+    /**
+     * Filter, which Donations to fetch.
+     */
+    where?: DonationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Donations to fetch.
+     */
+    orderBy?: DonationOrderByWithRelationInput | DonationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Donations.
+     */
+    cursor?: DonationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Donations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Donations.
+     */
+    skip?: number
+    distinct?: DonationScalarFieldEnum | DonationScalarFieldEnum[]
+  }
+
+  /**
+   * Donation create
+   */
+  export type DonationCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Donation
+     */
+    select?: DonationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Donation
+     */
+    omit?: DonationOmit<ExtArgs> | null
+    /**
+     * The data needed to create a Donation.
+     */
+    data: XOR<DonationCreateInput, DonationUncheckedCreateInput>
+  }
+
+  /**
+   * Donation createMany
+   */
+  export type DonationCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Donations.
+     */
+    data: DonationCreateManyInput | DonationCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Donation createManyAndReturn
+   */
+  export type DonationCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Donation
+     */
+    select?: DonationSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Donation
+     */
+    omit?: DonationOmit<ExtArgs> | null
+    /**
+     * The data used to create many Donations.
+     */
+    data: DonationCreateManyInput | DonationCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Donation update
+   */
+  export type DonationUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Donation
+     */
+    select?: DonationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Donation
+     */
+    omit?: DonationOmit<ExtArgs> | null
+    /**
+     * The data needed to update a Donation.
+     */
+    data: XOR<DonationUpdateInput, DonationUncheckedUpdateInput>
+    /**
+     * Choose, which Donation to update.
+     */
+    where: DonationWhereUniqueInput
+  }
+
+  /**
+   * Donation updateMany
+   */
+  export type DonationUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Donations.
+     */
+    data: XOR<DonationUpdateManyMutationInput, DonationUncheckedUpdateManyInput>
+    /**
+     * Filter which Donations to update
+     */
+    where?: DonationWhereInput
+    /**
+     * Limit how many Donations to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Donation updateManyAndReturn
+   */
+  export type DonationUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Donation
+     */
+    select?: DonationSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Donation
+     */
+    omit?: DonationOmit<ExtArgs> | null
+    /**
+     * The data used to update Donations.
+     */
+    data: XOR<DonationUpdateManyMutationInput, DonationUncheckedUpdateManyInput>
+    /**
+     * Filter which Donations to update
+     */
+    where?: DonationWhereInput
+    /**
+     * Limit how many Donations to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Donation upsert
+   */
+  export type DonationUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Donation
+     */
+    select?: DonationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Donation
+     */
+    omit?: DonationOmit<ExtArgs> | null
+    /**
+     * The filter to search for the Donation to update in case it exists.
+     */
+    where: DonationWhereUniqueInput
+    /**
+     * In case the Donation found by the `where` argument doesn't exist, create a new Donation with this data.
+     */
+    create: XOR<DonationCreateInput, DonationUncheckedCreateInput>
+    /**
+     * In case the Donation was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<DonationUpdateInput, DonationUncheckedUpdateInput>
+  }
+
+  /**
+   * Donation delete
+   */
+  export type DonationDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Donation
+     */
+    select?: DonationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Donation
+     */
+    omit?: DonationOmit<ExtArgs> | null
+    /**
+     * Filter which Donation to delete.
+     */
+    where: DonationWhereUniqueInput
+  }
+
+  /**
+   * Donation deleteMany
+   */
+  export type DonationDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Donations to delete
+     */
+    where?: DonationWhereInput
+    /**
+     * Limit how many Donations to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Donation without action
+   */
+  export type DonationDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Donation
+     */
+    select?: DonationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Donation
+     */
+    omit?: DonationOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -5861,6 +7190,32 @@ export namespace Prisma {
   };
 
   export type NewsletterSubscriberScalarFieldEnum = (typeof NewsletterSubscriberScalarFieldEnum)[keyof typeof NewsletterSubscriberScalarFieldEnum]
+
+
+  export const DonationScalarFieldEnum: {
+    id: 'id',
+    amount: 'amount',
+    currency: 'currency',
+    category: 'category',
+    paymentMethod: 'paymentMethod',
+    notes: 'notes',
+    message: 'message',
+    status: 'status',
+    firstName: 'firstName',
+    lastName: 'lastName',
+    email: 'email',
+    phone: 'phone',
+    address: 'address',
+    country: 'country',
+    region: 'region',
+    isAnonymous: 'isAnonymous',
+    acceptedTerms: 'acceptedTerms',
+    wantsUpdates: 'wantsUpdates',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type DonationScalarFieldEnum = (typeof DonationScalarFieldEnum)[keyof typeof DonationScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -5966,6 +7321,34 @@ export namespace Prisma {
    * Reference to a field of type 'Priority[]'
    */
   export type ListEnumPriorityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Priority[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'Decimal'
+   */
+  export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal'>
+    
+
+
+  /**
+   * Reference to a field of type 'Decimal[]'
+   */
+  export type ListDecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'DonationStatus'
+   */
+  export type EnumDonationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DonationStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'DonationStatus[]'
+   */
+  export type ListEnumDonationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DonationStatus[]'>
     
 
 
@@ -6344,6 +7727,135 @@ export namespace Prisma {
     verifiedAt?: DateTimeNullableWithAggregatesFilter<"NewsletterSubscriber"> | Date | string | null
     unsubscribedAt?: DateTimeNullableWithAggregatesFilter<"NewsletterSubscriber"> | Date | string | null
     unsubscribeReason?: StringNullableWithAggregatesFilter<"NewsletterSubscriber"> | string | null
+  }
+
+  export type DonationWhereInput = {
+    AND?: DonationWhereInput | DonationWhereInput[]
+    OR?: DonationWhereInput[]
+    NOT?: DonationWhereInput | DonationWhereInput[]
+    id?: StringFilter<"Donation"> | string
+    amount?: DecimalFilter<"Donation"> | Decimal | DecimalJsLike | number | string
+    currency?: StringFilter<"Donation"> | string
+    category?: StringNullableFilter<"Donation"> | string | null
+    paymentMethod?: StringNullableFilter<"Donation"> | string | null
+    notes?: StringNullableFilter<"Donation"> | string | null
+    message?: StringNullableFilter<"Donation"> | string | null
+    status?: EnumDonationStatusFilter<"Donation"> | $Enums.DonationStatus
+    firstName?: StringNullableFilter<"Donation"> | string | null
+    lastName?: StringNullableFilter<"Donation"> | string | null
+    email?: StringNullableFilter<"Donation"> | string | null
+    phone?: StringNullableFilter<"Donation"> | string | null
+    address?: StringNullableFilter<"Donation"> | string | null
+    country?: StringNullableFilter<"Donation"> | string | null
+    region?: StringNullableFilter<"Donation"> | string | null
+    isAnonymous?: BoolFilter<"Donation"> | boolean
+    acceptedTerms?: BoolFilter<"Donation"> | boolean
+    wantsUpdates?: BoolFilter<"Donation"> | boolean
+    createdAt?: DateTimeFilter<"Donation"> | Date | string
+    updatedAt?: DateTimeFilter<"Donation"> | Date | string
+  }
+
+  export type DonationOrderByWithRelationInput = {
+    id?: SortOrder
+    amount?: SortOrder
+    currency?: SortOrder
+    category?: SortOrderInput | SortOrder
+    paymentMethod?: SortOrderInput | SortOrder
+    notes?: SortOrderInput | SortOrder
+    message?: SortOrderInput | SortOrder
+    status?: SortOrder
+    firstName?: SortOrderInput | SortOrder
+    lastName?: SortOrderInput | SortOrder
+    email?: SortOrderInput | SortOrder
+    phone?: SortOrderInput | SortOrder
+    address?: SortOrderInput | SortOrder
+    country?: SortOrderInput | SortOrder
+    region?: SortOrderInput | SortOrder
+    isAnonymous?: SortOrder
+    acceptedTerms?: SortOrder
+    wantsUpdates?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DonationWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: DonationWhereInput | DonationWhereInput[]
+    OR?: DonationWhereInput[]
+    NOT?: DonationWhereInput | DonationWhereInput[]
+    amount?: DecimalFilter<"Donation"> | Decimal | DecimalJsLike | number | string
+    currency?: StringFilter<"Donation"> | string
+    category?: StringNullableFilter<"Donation"> | string | null
+    paymentMethod?: StringNullableFilter<"Donation"> | string | null
+    notes?: StringNullableFilter<"Donation"> | string | null
+    message?: StringNullableFilter<"Donation"> | string | null
+    status?: EnumDonationStatusFilter<"Donation"> | $Enums.DonationStatus
+    firstName?: StringNullableFilter<"Donation"> | string | null
+    lastName?: StringNullableFilter<"Donation"> | string | null
+    email?: StringNullableFilter<"Donation"> | string | null
+    phone?: StringNullableFilter<"Donation"> | string | null
+    address?: StringNullableFilter<"Donation"> | string | null
+    country?: StringNullableFilter<"Donation"> | string | null
+    region?: StringNullableFilter<"Donation"> | string | null
+    isAnonymous?: BoolFilter<"Donation"> | boolean
+    acceptedTerms?: BoolFilter<"Donation"> | boolean
+    wantsUpdates?: BoolFilter<"Donation"> | boolean
+    createdAt?: DateTimeFilter<"Donation"> | Date | string
+    updatedAt?: DateTimeFilter<"Donation"> | Date | string
+  }, "id">
+
+  export type DonationOrderByWithAggregationInput = {
+    id?: SortOrder
+    amount?: SortOrder
+    currency?: SortOrder
+    category?: SortOrderInput | SortOrder
+    paymentMethod?: SortOrderInput | SortOrder
+    notes?: SortOrderInput | SortOrder
+    message?: SortOrderInput | SortOrder
+    status?: SortOrder
+    firstName?: SortOrderInput | SortOrder
+    lastName?: SortOrderInput | SortOrder
+    email?: SortOrderInput | SortOrder
+    phone?: SortOrderInput | SortOrder
+    address?: SortOrderInput | SortOrder
+    country?: SortOrderInput | SortOrder
+    region?: SortOrderInput | SortOrder
+    isAnonymous?: SortOrder
+    acceptedTerms?: SortOrder
+    wantsUpdates?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: DonationCountOrderByAggregateInput
+    _avg?: DonationAvgOrderByAggregateInput
+    _max?: DonationMaxOrderByAggregateInput
+    _min?: DonationMinOrderByAggregateInput
+    _sum?: DonationSumOrderByAggregateInput
+  }
+
+  export type DonationScalarWhereWithAggregatesInput = {
+    AND?: DonationScalarWhereWithAggregatesInput | DonationScalarWhereWithAggregatesInput[]
+    OR?: DonationScalarWhereWithAggregatesInput[]
+    NOT?: DonationScalarWhereWithAggregatesInput | DonationScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Donation"> | string
+    amount?: DecimalWithAggregatesFilter<"Donation"> | Decimal | DecimalJsLike | number | string
+    currency?: StringWithAggregatesFilter<"Donation"> | string
+    category?: StringNullableWithAggregatesFilter<"Donation"> | string | null
+    paymentMethod?: StringNullableWithAggregatesFilter<"Donation"> | string | null
+    notes?: StringNullableWithAggregatesFilter<"Donation"> | string | null
+    message?: StringNullableWithAggregatesFilter<"Donation"> | string | null
+    status?: EnumDonationStatusWithAggregatesFilter<"Donation"> | $Enums.DonationStatus
+    firstName?: StringNullableWithAggregatesFilter<"Donation"> | string | null
+    lastName?: StringNullableWithAggregatesFilter<"Donation"> | string | null
+    email?: StringNullableWithAggregatesFilter<"Donation"> | string | null
+    phone?: StringNullableWithAggregatesFilter<"Donation"> | string | null
+    address?: StringNullableWithAggregatesFilter<"Donation"> | string | null
+    country?: StringNullableWithAggregatesFilter<"Donation"> | string | null
+    region?: StringNullableWithAggregatesFilter<"Donation"> | string | null
+    isAnonymous?: BoolWithAggregatesFilter<"Donation"> | boolean
+    acceptedTerms?: BoolWithAggregatesFilter<"Donation"> | boolean
+    wantsUpdates?: BoolWithAggregatesFilter<"Donation"> | boolean
+    createdAt?: DateTimeWithAggregatesFilter<"Donation"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Donation"> | Date | string
   }
 
   export type UserCreateInput = {
@@ -6772,6 +8284,167 @@ export namespace Prisma {
     unsubscribeReason?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
+  export type DonationCreateInput = {
+    id?: string
+    amount: Decimal | DecimalJsLike | number | string
+    currency?: string
+    category?: string | null
+    paymentMethod?: string | null
+    notes?: string | null
+    message?: string | null
+    status?: $Enums.DonationStatus
+    firstName?: string | null
+    lastName?: string | null
+    email?: string | null
+    phone?: string | null
+    address?: string | null
+    country?: string | null
+    region?: string | null
+    isAnonymous?: boolean
+    acceptedTerms?: boolean
+    wantsUpdates?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DonationUncheckedCreateInput = {
+    id?: string
+    amount: Decimal | DecimalJsLike | number | string
+    currency?: string
+    category?: string | null
+    paymentMethod?: string | null
+    notes?: string | null
+    message?: string | null
+    status?: $Enums.DonationStatus
+    firstName?: string | null
+    lastName?: string | null
+    email?: string | null
+    phone?: string | null
+    address?: string | null
+    country?: string | null
+    region?: string | null
+    isAnonymous?: boolean
+    acceptedTerms?: boolean
+    wantsUpdates?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DonationUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    currency?: StringFieldUpdateOperationsInput | string
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    message?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumDonationStatusFieldUpdateOperationsInput | $Enums.DonationStatus
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    region?: NullableStringFieldUpdateOperationsInput | string | null
+    isAnonymous?: BoolFieldUpdateOperationsInput | boolean
+    acceptedTerms?: BoolFieldUpdateOperationsInput | boolean
+    wantsUpdates?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DonationUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    currency?: StringFieldUpdateOperationsInput | string
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    message?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumDonationStatusFieldUpdateOperationsInput | $Enums.DonationStatus
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    region?: NullableStringFieldUpdateOperationsInput | string | null
+    isAnonymous?: BoolFieldUpdateOperationsInput | boolean
+    acceptedTerms?: BoolFieldUpdateOperationsInput | boolean
+    wantsUpdates?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DonationCreateManyInput = {
+    id?: string
+    amount: Decimal | DecimalJsLike | number | string
+    currency?: string
+    category?: string | null
+    paymentMethod?: string | null
+    notes?: string | null
+    message?: string | null
+    status?: $Enums.DonationStatus
+    firstName?: string | null
+    lastName?: string | null
+    email?: string | null
+    phone?: string | null
+    address?: string | null
+    country?: string | null
+    region?: string | null
+    isAnonymous?: boolean
+    acceptedTerms?: boolean
+    wantsUpdates?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DonationUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    currency?: StringFieldUpdateOperationsInput | string
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    message?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumDonationStatusFieldUpdateOperationsInput | $Enums.DonationStatus
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    region?: NullableStringFieldUpdateOperationsInput | string | null
+    isAnonymous?: BoolFieldUpdateOperationsInput | boolean
+    acceptedTerms?: BoolFieldUpdateOperationsInput | boolean
+    wantsUpdates?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DonationUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    currency?: StringFieldUpdateOperationsInput | string
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    message?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumDonationStatusFieldUpdateOperationsInput | $Enums.DonationStatus
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    region?: NullableStringFieldUpdateOperationsInput | string | null
+    isAnonymous?: BoolFieldUpdateOperationsInput | boolean
+    acceptedTerms?: BoolFieldUpdateOperationsInput | boolean
+    wantsUpdates?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -7152,6 +8825,127 @@ export namespace Prisma {
     unsubscribeReason?: SortOrder
   }
 
+  export type DecimalFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
+  }
+
+  export type EnumDonationStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.DonationStatus | EnumDonationStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.DonationStatus[] | ListEnumDonationStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.DonationStatus[] | ListEnumDonationStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumDonationStatusFilter<$PrismaModel> | $Enums.DonationStatus
+  }
+
+  export type DonationCountOrderByAggregateInput = {
+    id?: SortOrder
+    amount?: SortOrder
+    currency?: SortOrder
+    category?: SortOrder
+    paymentMethod?: SortOrder
+    notes?: SortOrder
+    message?: SortOrder
+    status?: SortOrder
+    firstName?: SortOrder
+    lastName?: SortOrder
+    email?: SortOrder
+    phone?: SortOrder
+    address?: SortOrder
+    country?: SortOrder
+    region?: SortOrder
+    isAnonymous?: SortOrder
+    acceptedTerms?: SortOrder
+    wantsUpdates?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DonationAvgOrderByAggregateInput = {
+    amount?: SortOrder
+  }
+
+  export type DonationMaxOrderByAggregateInput = {
+    id?: SortOrder
+    amount?: SortOrder
+    currency?: SortOrder
+    category?: SortOrder
+    paymentMethod?: SortOrder
+    notes?: SortOrder
+    message?: SortOrder
+    status?: SortOrder
+    firstName?: SortOrder
+    lastName?: SortOrder
+    email?: SortOrder
+    phone?: SortOrder
+    address?: SortOrder
+    country?: SortOrder
+    region?: SortOrder
+    isAnonymous?: SortOrder
+    acceptedTerms?: SortOrder
+    wantsUpdates?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DonationMinOrderByAggregateInput = {
+    id?: SortOrder
+    amount?: SortOrder
+    currency?: SortOrder
+    category?: SortOrder
+    paymentMethod?: SortOrder
+    notes?: SortOrder
+    message?: SortOrder
+    status?: SortOrder
+    firstName?: SortOrder
+    lastName?: SortOrder
+    email?: SortOrder
+    phone?: SortOrder
+    address?: SortOrder
+    country?: SortOrder
+    region?: SortOrder
+    isAnonymous?: SortOrder
+    acceptedTerms?: SortOrder
+    wantsUpdates?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DonationSumOrderByAggregateInput = {
+    amount?: SortOrder
+  }
+
+  export type DecimalWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalWithAggregatesFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedDecimalFilter<$PrismaModel>
+    _sum?: NestedDecimalFilter<$PrismaModel>
+    _min?: NestedDecimalFilter<$PrismaModel>
+    _max?: NestedDecimalFilter<$PrismaModel>
+  }
+
+  export type EnumDonationStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.DonationStatus | EnumDonationStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.DonationStatus[] | ListEnumDonationStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.DonationStatus[] | ListEnumDonationStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumDonationStatusWithAggregatesFilter<$PrismaModel> | $Enums.DonationStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumDonationStatusFilter<$PrismaModel>
+    _max?: NestedEnumDonationStatusFilter<$PrismaModel>
+  }
+
   export type StringFieldUpdateOperationsInput = {
     set?: string
   }
@@ -7298,6 +9092,18 @@ export namespace Prisma {
     delete?: AdminUserWhereInput | boolean
     connect?: AdminUserWhereUniqueInput
     update?: XOR<XOR<AdminUserUpdateToOneWithWhereWithoutAssignedSubmissionsInput, AdminUserUpdateWithoutAssignedSubmissionsInput>, AdminUserUncheckedUpdateWithoutAssignedSubmissionsInput>
+  }
+
+  export type DecimalFieldUpdateOperationsInput = {
+    set?: Decimal | DecimalJsLike | number | string
+    increment?: Decimal | DecimalJsLike | number | string
+    decrement?: Decimal | DecimalJsLike | number | string
+    multiply?: Decimal | DecimalJsLike | number | string
+    divide?: Decimal | DecimalJsLike | number | string
+  }
+
+  export type EnumDonationStatusFieldUpdateOperationsInput = {
+    set?: $Enums.DonationStatus
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -7496,6 +9302,50 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumPriorityFilter<$PrismaModel>
     _max?: NestedEnumPriorityFilter<$PrismaModel>
+  }
+
+  export type NestedDecimalFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
+  }
+
+  export type NestedEnumDonationStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.DonationStatus | EnumDonationStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.DonationStatus[] | ListEnumDonationStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.DonationStatus[] | ListEnumDonationStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumDonationStatusFilter<$PrismaModel> | $Enums.DonationStatus
+  }
+
+  export type NestedDecimalWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalWithAggregatesFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedDecimalFilter<$PrismaModel>
+    _sum?: NestedDecimalFilter<$PrismaModel>
+    _min?: NestedDecimalFilter<$PrismaModel>
+    _max?: NestedDecimalFilter<$PrismaModel>
+  }
+
+  export type NestedEnumDonationStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.DonationStatus | EnumDonationStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.DonationStatus[] | ListEnumDonationStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.DonationStatus[] | ListEnumDonationStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumDonationStatusWithAggregatesFilter<$PrismaModel> | $Enums.DonationStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumDonationStatusFilter<$PrismaModel>
+    _max?: NestedEnumDonationStatusFilter<$PrismaModel>
   }
 
   export type ContactSubmissionCreateWithoutRepliedByInput = {

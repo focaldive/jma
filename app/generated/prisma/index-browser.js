@@ -180,6 +180,29 @@ exports.Prisma.NewsletterSubscriberScalarFieldEnum = {
   unsubscribeReason: 'unsubscribeReason'
 };
 
+exports.Prisma.DonationScalarFieldEnum = {
+  id: 'id',
+  amount: 'amount',
+  currency: 'currency',
+  category: 'category',
+  paymentMethod: 'paymentMethod',
+  notes: 'notes',
+  message: 'message',
+  status: 'status',
+  firstName: 'firstName',
+  lastName: 'lastName',
+  email: 'email',
+  phone: 'phone',
+  address: 'address',
+  country: 'country',
+  region: 'region',
+  isAnonymous: 'isAnonymous',
+  acceptedTerms: 'acceptedTerms',
+  wantsUpdates: 'wantsUpdates',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -215,11 +238,19 @@ exports.Priority = exports.$Enums.Priority = {
   URGENT: 'URGENT'
 };
 
+exports.DonationStatus = exports.$Enums.DonationStatus = {
+  PENDING: 'PENDING',
+  COMPLETED: 'COMPLETED',
+  FAILED: 'FAILED',
+  REFUNDED: 'REFUNDED'
+};
+
 exports.Prisma.ModelName = {
   User: 'User',
   AdminUser: 'AdminUser',
   ContactSubmission: 'ContactSubmission',
-  NewsletterSubscriber: 'NewsletterSubscriber'
+  NewsletterSubscriber: 'NewsletterSubscriber',
+  Donation: 'Donation'
 };
 
 /**
