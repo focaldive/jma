@@ -91,3 +91,34 @@ model NewsletterSubscriber {
   unsubscribedAt    DateTime?
   unsubscribeReason String? // NEW: Why they left
 }
+
+enum DonationStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+model Donation {
+  id            String         @id @default(cuid())
+  amount        Decimal        @db.Decimal(10, 2)
+  currency      String         @default("USD")
+  category      String? // e.g., "General", "Education", "Healthcare", "Emergency"
+  paymentMethod String? // e.g., "PayPal", "Bank Transfer", "Card", "Cash"
+  notes         String? // Admin notes
+  message       String? // Message from donor
+  status        DonationStatus @default(PENDING)
+  // Donor information
+  firstName     String?
+  lastName      String?
+  email         String?
+  phone         String?
+  address       String?
+  country       String?
+  region        String?
+  isAnonymous   Boolean        @default(false)
+  acceptedTerms Boolean        @default(false)
+  wantsUpdates  Boolean        @default(true)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
