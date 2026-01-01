@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { StatsCard } from "@/components/admin/StatsCard";
 import { Badge } from "@/components/ui/badge";
@@ -24,165 +24,109 @@ import {
   Filter,
   Download,
   ChevronDown,
+  Loader2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-// Sample JSON data
-const donationsData = [
-  {
-    id: 1,
-    donorName: "Ahmed Mohamed",
-    amount: 5000,
-    paymentMethod: "Bank Transfer",
-    date: "2024-12-20",
-    status: "Completed",
-    transactionId: "TXN-001234",
-  },
-  {
-    id: 2,
-    donorName: "Fathima Begum",
-    amount: 2500,
-    paymentMethod: "Card Payment",
-    date: "2024-12-19",
-    status: "Completed",
-    transactionId: "TXN-001235",
-  },
-  {
-    id: 3,
-    donorName: "Ibrahim Khan",
-    amount: 10000,
-    paymentMethod: "Bank Transfer",
-    date: "2024-12-18",
-    status: "Pending",
-    transactionId: "TXN-001236",
-  },
-  {
-    id: 4,
-    donorName: "Zainab Ali",
-    amount: 1500,
-    paymentMethod: "Cash",
-    date: "2024-12-18",
-    status: "Completed",
-    transactionId: "TXN-001237",
-  },
-  {
-    id: 5,
-    donorName: "Mohamed Rafi",
-    amount: 7500,
-    paymentMethod: "Card Payment",
-    date: "2024-12-17",
-    status: "Failed",
-    transactionId: "TXN-001238",
-  },
-  {
-    id: 6,
-    donorName: "Amina Hassan",
-    amount: 3000,
-    paymentMethod: "Bank Transfer",
-    date: "2024-12-16",
-    status: "Completed",
-    transactionId: "TXN-001239",
-  },
-  {
-    id: 7,
-    donorName: "Yusuf Rahman",
-    amount: 20000,
-    paymentMethod: "Bank Transfer",
-    date: "2024-12-15",
-    status: "Completed",
-    transactionId: "TXN-001240",
-  },
-  {
-    id: 8,
-    donorName: "Khadija Noor",
-    amount: 4500,
-    paymentMethod: "Card Payment",
-    date: "2024-12-14",
-    status: "Pending",
-    transactionId: "TXN-001241",
-  },
-  {
-    id: 9,
-    donorName: "Abdul Kareem",
-    amount: 6000,
-    paymentMethod: "Cash",
-    date: "2024-12-13",
-    status: "Completed",
-    transactionId: "TXN-001242",
-  },
-  {
-    id: 10,
-    donorName: "Safiya Jaffar",
-    amount: 8500,
-    paymentMethod: "Bank Transfer",
-    date: "2024-12-12",
-    status: "Completed",
-    transactionId: "TXN-001243",
-  },
-  {
-    id: 11,
-    donorName: "Hamza Ismail",
-    amount: 12000,
-    paymentMethod: "Card Payment",
-    date: "2024-12-11",
-    status: "Failed",
-    transactionId: "TXN-001244",
-  },
-  {
-    id: 12,
-    donorName: "Mariam Saleh",
-    amount: 3500,
-    paymentMethod: "Bank Transfer",
-    date: "2024-12-10",
-    status: "Completed",
-    transactionId: "TXN-001245",
-  },
-];
+interface Donation {
+  id: string;
+  amount: number;
+  currency: string;
+  category: string | null;
+  status: string;
+  firstName: string | null;
+  lastName: string | null;
+  email: string | null;
+  isAnonymous: boolean;
+  createdAt: string;
+}
 
-type SortField = "donorName" | "amount" | "date" | "status";
+type SortField = "name" | "amount" | "date" | "status" | "category";
 type SortOrder = "asc" | "desc";
-type StatusFilter = "all" | "Completed" | "Pending" | "Failed";
+type StatusFilter = "all" | "COMPLETED" | "PENDING" | "FAILED" | "REFUNDED";
 
-const statusStyles = {
-  Completed: "bg-green-100 text-green-700 hover:bg-green-100",
-  Pending: "bg-yellow-100 text-yellow-700 hover:bg-yellow-100",
-  Failed: "bg-red-100 text-red-700 hover:bg-red-100",
+const statusStyles: Record<string, string> = {
+  COMPLETED: "bg-green-100 text-green-700 hover:bg-green-100",
+  PENDING: "bg-yellow-100 text-yellow-700 hover:bg-yellow-100",
+  FAILED: "bg-red-100 text-red-700 hover:bg-red-100",
+  REFUNDED: "bg-gray-100 text-gray-700 hover:bg-gray-100",
 };
 
 export default function DonationsPage() {
   const router = useRouter();
+  const [donations, setDonations] = useState<Donation[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [sortField, setSortField] = useState<SortField>("date");
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
 
+  // Fetch donations from API
+  useEffect(() => {
+    const fetchDonations = async () => {
+      try {
+        const res = await fetch("/api/donations");
+        const data = await res.json();
+        if (data.success) {
+          setDonations(data.donations);
+        } else {
+          setError(data.message || "Failed to fetch donations");
+        }
+      } catch (err) {
+        setError("Failed to fetch donations");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchDonations();
+  }, []);
+
   // Calculate summary stats
   const stats = useMemo(() => {
-    const completed = donationsData.filter((d) => d.status === "Completed");
-    const pending = donationsData.filter((d) => d.status === "Pending");
+    const completed = donations.filter((d) => d.status === "COMPLETED");
+    const pending = donations.filter((d) => d.status === "PENDING");
+    const totalCompleted = completed.reduce(
+      (sum, d) => sum + Number(d.amount),
+      0
+    );
     return {
-      total: completed.reduce((sum, d) => sum + d.amount, 0),
-      count: donationsData.length,
-      average: Math.round(
-        completed.reduce((sum, d) => sum + d.amount, 0) / completed.length
-      ),
-      pending: pending.reduce((sum, d) => sum + d.amount, 0),
+      total: totalCompleted,
+      count: donations.length,
+      average:
+        completed.length > 0
+          ? Math.round(totalCompleted / completed.length)
+          : 0,
+      pending: pending.reduce((sum, d) => sum + Number(d.amount), 0),
     };
-  }, []);
+  }, [donations]);
+
+  // Get donor name
+  const getDonorName = (donation: Donation) => {
+    if (donation.isAnonymous) return "Anonymous";
+    const name = [donation.firstName, donation.lastName]
+      .filter(Boolean)
+      .join(" ");
+    return name || "Unknown";
+  };
 
   // Filter and sort data
   const filteredData = useMemo(() => {
-    let result = [...donationsData];
+    let result = [...donations];
 
     // Search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      result = result.filter(
-        (d) =>
-          d.donorName.toLowerCase().includes(query) ||
-          d.transactionId.toLowerCase().includes(query)
-      );
+      result = result.filter((d) => {
+        const name = getDonorName(d).toLowerCase();
+        const email = d.email?.toLowerCase() || "";
+        const id = d.id.toLowerCase();
+        return (
+          name.includes(query) || email.includes(query) || id.includes(query)
+        );
+      });
     }
 
     // Status filter
@@ -194,24 +138,28 @@ export default function DonationsPage() {
     result.sort((a, b) => {
       let comparison = 0;
       switch (sortField) {
-        case "donorName":
-          comparison = a.donorName.localeCompare(b.donorName);
+        case "name":
+          comparison = getDonorName(a).localeCompare(getDonorName(b));
           break;
         case "amount":
-          comparison = a.amount - b.amount;
+          comparison = Number(a.amount) - Number(b.amount);
           break;
         case "date":
-          comparison = new Date(a.date).getTime() - new Date(b.date).getTime();
+          comparison =
+            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
           break;
         case "status":
           comparison = a.status.localeCompare(b.status);
+          break;
+        case "category":
+          comparison = (a.category || "").localeCompare(b.category || "");
           break;
       }
       return sortOrder === "asc" ? comparison : -comparison;
     });
 
     return result;
-  }, [searchQuery, statusFilter, sortField, sortOrder]);
+  }, [donations, searchQuery, statusFilter, sortField, sortOrder]);
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -222,11 +170,11 @@ export default function DonationsPage() {
     }
   };
 
-  const formatAmount = (amount: number) => {
-    return new Intl.NumberFormat("en-LK", {
+  const formatAmount = (amount: number, currency: string = "USD") => {
+    return new Intl.NumberFormat("en-US", {
       style: "currency",
-      currency: "LKR",
-      minimumFractionDigits: 0,
+      currency: currency,
+      minimumFractionDigits: 2,
     }).format(amount);
   };
 
@@ -237,6 +185,14 @@ export default function DonationsPage() {
       day: "numeric",
     });
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -253,6 +209,11 @@ export default function DonationsPage() {
           Export CSV
         </Button>
       </div>
+
+      {/* Error message */}
+      {error && (
+        <div className="bg-red-50 text-red-700 p-4 rounded-lg">{error}</div>
+      )}
 
       {/* Summary Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
@@ -302,7 +263,7 @@ export default function DonationsPage() {
           <div className="relative w-full sm:w-80">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <Input
-              placeholder="Search by name or transaction ID..."
+              placeholder="Search by name, email, or ID..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10 bg-gray-50 border-gray-200 rounded-xl"
@@ -324,7 +285,13 @@ export default function DonationsPage() {
             {showFilterDropdown && (
               <div className="absolute right-0 top-full mt-2 w-40 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-10">
                 {(
-                  ["all", "Completed", "Pending", "Failed"] as StatusFilter[]
+                  [
+                    "all",
+                    "COMPLETED",
+                    "PENDING",
+                    "FAILED",
+                    "REFUNDED",
+                  ] as StatusFilter[]
                 ).map((status) => (
                   <button
                     key={status}
@@ -350,12 +317,13 @@ export default function DonationsPage() {
           <Table>
             <TableHeader className="bg-gray-50 sticky top-0">
               <TableRow>
+                <TableHead className="w-24">ID</TableHead>
                 <TableHead
                   className="cursor-pointer hover:bg-gray-100 transition-colors"
-                  onClick={() => handleSort("donorName")}
+                  onClick={() => handleSort("name")}
                 >
                   <div className="flex items-center gap-2">
-                    Donor Name
+                    Name
                     <ArrowUpDown className="w-4 h-4 text-gray-400" />
                   </div>
                 </TableHead>
@@ -368,13 +336,12 @@ export default function DonationsPage() {
                     <ArrowUpDown className="w-4 h-4 text-gray-400" />
                   </div>
                 </TableHead>
-                <TableHead>Payment Method</TableHead>
                 <TableHead
                   className="cursor-pointer hover:bg-gray-100 transition-colors"
-                  onClick={() => handleSort("date")}
+                  onClick={() => handleSort("category")}
                 >
                   <div className="flex items-center gap-2">
-                    Date
+                    Category
                     <ArrowUpDown className="w-4 h-4 text-gray-400" />
                   </div>
                 </TableHead>
@@ -387,7 +354,15 @@ export default function DonationsPage() {
                     <ArrowUpDown className="w-4 h-4 text-gray-400" />
                   </div>
                 </TableHead>
-                <TableHead>Transaction ID</TableHead>
+                <TableHead
+                  className="cursor-pointer hover:bg-gray-100 transition-colors"
+                  onClick={() => handleSort("date")}
+                >
+                  <div className="flex items-center gap-2">
+                    Date
+                    <ArrowUpDown className="w-4 h-4 text-gray-400" />
+                  </div>
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -397,7 +372,9 @@ export default function DonationsPage() {
                     colSpan={6}
                     className="text-center py-8 text-gray-500"
                   >
-                    No donations found matching your criteria
+                    {donations.length === 0
+                      ? "No donations yet"
+                      : "No donations found matching your criteria"}
                   </TableCell>
                 </TableRow>
               ) : (
@@ -409,32 +386,30 @@ export default function DonationsPage() {
                       router.push(`/admin/donations/${donation.id}`)
                     }
                   >
+                    <TableCell className="font-mono text-sm text-gray-500">
+                      {donation.id.slice(0, 8)}...
+                    </TableCell>
                     <TableCell className="font-medium text-gray-900">
-                      {donation.donorName}
+                      {getDonorName(donation)}
                     </TableCell>
                     <TableCell className="font-semibold text-gray-900">
-                      {formatAmount(donation.amount)}
+                      {formatAmount(Number(donation.amount), donation.currency)}
                     </TableCell>
                     <TableCell className="text-gray-600">
-                      {donation.paymentMethod}
-                    </TableCell>
-                    <TableCell className="text-gray-600">
-                      {formatDate(donation.date)}
+                      {donation.category || "General"}
                     </TableCell>
                     <TableCell>
                       <Badge
                         className={cn(
                           "font-medium",
-                          statusStyles[
-                            donation.status as keyof typeof statusStyles
-                          ]
+                          statusStyles[donation.status] || statusStyles.PENDING
                         )}
                       >
                         {donation.status}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-gray-500 font-mono text-sm">
-                      {donation.transactionId}
+                    <TableCell className="text-gray-600">
+                      {formatDate(donation.createdAt)}
                     </TableCell>
                   </TableRow>
                 ))
@@ -446,11 +421,13 @@ export default function DonationsPage() {
         {/* Table Footer */}
         <div className="p-4 border-t border-gray-100 bg-gray-50 flex flex-col sm:flex-row items-center justify-between gap-2 text-sm text-gray-600">
           <span>
-            Showing {filteredData.length} of {donationsData.length} donations
+            Showing {filteredData.length} of {donations.length} donations
           </span>
           <span>
             Total:{" "}
-            {formatAmount(filteredData.reduce((sum, d) => sum + d.amount, 0))}
+            {formatAmount(
+              filteredData.reduce((sum, d) => sum + Number(d.amount), 0)
+            )}
           </span>
         </div>
       </div>
