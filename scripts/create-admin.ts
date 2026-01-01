@@ -1,10 +1,9 @@
 /**
  * Script to create an admin user
- * Run with: npx ts-node scripts/create-admin.ts
- * Or add to package.json scripts: "create-admin": "ts-node scripts/create-admin.ts"
+ * Run with: npx tsx scripts/create-admin.ts
  */
 
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "../app/generated/prisma";
 import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
@@ -27,7 +26,12 @@ async function createAdminUser() {
     });
 
     console.log("Admin user created successfully:");
-    console.log({ id: user.id, email: user.email, name: user.name, role: user.role });
+    console.log({
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+    });
   } catch (error) {
     console.error("Error creating admin user:", error);
   } finally {

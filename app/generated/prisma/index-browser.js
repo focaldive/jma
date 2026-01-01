@@ -125,6 +125,9 @@ exports.Prisma.UserScalarFieldEnum = {
   name: 'name',
   email: 'email',
   password: 'password',
+  role: 'role',
+  status: 'status',
+  image: 'image',
   createdAt: 'createdAt'
 };
 
@@ -159,6 +162,22 @@ exports.Prisma.ContactSubmissionScalarFieldEnum = {
   userAgent: 'userAgent',
   createdAt: 'createdAt',
   adminUserId: 'adminUserId'
+};
+
+exports.Prisma.NewsletterSubscriberScalarFieldEnum = {
+  id: 'id',
+  email: 'email',
+  firstName: 'firstName',
+  lastName: 'lastName',
+  source: 'source',
+  ipAddress: 'ipAddress',
+  isVerified: 'isVerified',
+  verifyToken: 'verifyToken',
+  unsubscribeToken: 'unsubscribeToken',
+  subscribedAt: 'subscribedAt',
+  verifiedAt: 'verifiedAt',
+  unsubscribedAt: 'unsubscribedAt',
+  unsubscribeReason: 'unsubscribeReason'
 };
 
 exports.Prisma.SortOrder = {
@@ -199,7 +218,8 @@ exports.Priority = exports.$Enums.Priority = {
 exports.Prisma.ModelName = {
   User: 'User',
   AdminUser: 'AdminUser',
-  ContactSubmission: 'ContactSubmission'
+  ContactSubmission: 'ContactSubmission',
+  NewsletterSubscriber: 'NewsletterSubscriber'
 };
 
 /**
