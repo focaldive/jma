@@ -1,10 +1,15 @@
-import { PayPalButtons, type PayPalButtonsComponentProps } from "@paypal/react-paypal-js";
+import {
+  PayPalButtons,
+  type PayPalButtonsComponentProps,
+} from "@paypal/react-paypal-js";
 
 interface PayPalDonationProps {
   selectedAmount: number;
   customAmount: string;
+  currency: string;
   setError: (error: string) => void;
   setSuccess: (success: boolean) => void;
+  setStatus: (status: string) => void;
   setCustomAmount: (amount: string) => void;
   setSelectedAmount: (amount: number) => void;
 }
@@ -12,12 +17,17 @@ interface PayPalDonationProps {
 export function PayPalDonation({
   customAmount,
   selectedAmount,
+  currency,
   setError,
   setSuccess,
+  setStatus,
   setCustomAmount,
   setSelectedAmount,
 }: PayPalDonationProps) {
-  const createOrder: PayPalButtonsComponentProps["createOrder"] = (_, actions) => {
+  const createOrder: PayPalButtonsComponentProps["createOrder"] = (
+    _,
+    actions
+  ) => {
     const finalAmount = getFinalAmount();
 
     if (finalAmount <= 0) {
@@ -25,12 +35,14 @@ export function PayPalDonation({
       return Promise.reject(new Error("Invalid amount"));
     }
 
+    setStatus("processing");
+
     return actions.order.create({
       purchase_units: [
         {
           amount: {
             value: finalAmount.toFixed(2),
-            currency_code: "USD",
+            currency_code: currency,
           },
           description: "Donation",
         },
@@ -39,7 +51,10 @@ export function PayPalDonation({
     });
   };
 
-  const onApprove: PayPalButtonsComponentProps["onApprove"] = async (_, actions) => {
+  const onApprove: PayPalButtonsComponentProps["onApprove"] = async (
+    _,
+    actions
+  ) => {
     try {
       if (!actions.order) {
         throw new Error("Order not found");
@@ -47,11 +62,43 @@ export function PayPalDonation({
       const details = await actions.order.capture();
       console.log("Payment details:", details);
 
+      // Extract payer info from PayPal response
+      const payer = details.payer;
+      const purchaseUnit = details.purchase_units?.[0];
+
+      // Save donation to database
+      const donationData = {
+        paypalOrderId: details.id,
+        payerId: payer?.payer_id || null,
+        payerEmail: payer?.email_address || null,
+        payerName: payer?.name?.given_name
+          ? `${payer.name.given_name} ${payer.name.surname || ""}`.trim()
+          : null,
+        amount: purchaseUnit?.amount?.value || getFinalAmount().toFixed(2),
+        currency: purchaseUnit?.amount?.currency_code || "USD",
+      };
+
+      const response = await fetch("/api/donations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(donationData),
+      });
+
+      const result = await response.json();
+
+      if (!result.success) {
+        console.error("Failed to save donation:", result.message);
+        // Payment was captured but database save failed - still show success to user
+        // since PayPal has the payment. Log for admin review.
+      }
+
+      setStatus("completed");
       setSuccess(true);
       // Reset form
       setCustomAmount("");
       setSelectedAmount(20);
     } catch (err) {
+      setStatus("failed");
       setError("Failed to process payment");
       console.error("Payment capture error:", err);
     }
