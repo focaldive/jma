@@ -1,12 +1,33 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { Facebook, Instagram, Phone } from "lucide-react";
+import {
+  Facebook,
+  Instagram,
+  Phone,
+  Loader2,
+  CheckCircle,
+  AlertCircle,
+} from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+
+interface FormData {
+  name: string;
+  phone: string;
+  email: string;
+  message: string;
+}
+
+interface FormStatus {
+  type: "idle" | "loading" | "success" | "error";
+  message: string;
+  errors?: string[];
+}
 
 const teamMembers = [
   {
@@ -80,6 +101,64 @@ const fadeIn = {
 };
 
 export default function ContactPage() {
+  const [formData, setFormData] = useState<FormData>({
+    name: "",
+    phone: "",
+    email: "",
+    message: "",
+  });
+
+  const [status, setStatus] = useState<FormStatus>({
+    type: "idle",
+    message: "",
+  });
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    setStatus({ type: "loading", message: "" });
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        setStatus({
+          type: "success",
+          message: data.message || "Message sent successfully!",
+        });
+        // Reset form after successful submission
+        setFormData({ name: "", phone: "", email: "", message: "" });
+      } else {
+        setStatus({
+          type: "error",
+          message: "Please fix the errors below:",
+          errors: data.errors || ["Something went wrong"],
+        });
+      }
+    } catch (error) {
+      console.error("Form submission error:", error);
+      setStatus({
+        type: "error",
+        message: "Network error. Please check your connection and try again.",
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-20 lg:py-40">
       {/* Hero Section */}
@@ -217,6 +296,7 @@ export default function ContactPage() {
           </div>
 
           {/* Contact Form */}
+
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -230,38 +310,90 @@ export default function ContactPage() {
               We&apos;re here to help and support our community. Get in touch
               with us for any inquiries or assistance.
             </p>
-            <form className="space-y-4">
+            <form className="space-y-4" onSubmit={handleSubmit}>
+              {/* Status Messages */}
+              {status.type === "success" && (
+                <div className="flex items-center gap-2 p-4 bg-green-50 text-green-700 rounded-lg">
+                  <CheckCircle className="w-5 h-5 flex-shrink-0" />
+                  <span>{status.message}</span>
+                </div>
+              )}
+
+              {status.type === "error" && (
+                <div className="p-4 bg-red-50 text-red-700 rounded-lg space-y-2">
+                  <div className="flex items-center gap-2">
+                    <AlertCircle className="w-5 h-5 flex-shrink-0" />
+                    <span>{status.message}</span>
+                  </div>
+                  {status.errors && status.errors.length > 0 && (
+                    <ul className="list-disc list-inside text-sm ml-7">
+                      {status.errors.map((error, index) => (
+                        <li key={index}>{error}</li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              )}
+
               <div className="space-y-2">
                 <Input
-                  placeholder="Your Name"
+                  name="name"
+                  placeholder="Your Name *"
+                  value={formData.name}
+                  onChange={handleChange}
+                  disabled={status.type === "loading"}
                   className="border-gray-200 focus:border-blue-500"
+                  required
                 />
               </div>
               <div className="space-y-2">
                 <Input
+                  name="phone"
                   type="tel"
-                  placeholder="Phone Number"
+                  placeholder="Phone Number (optional)"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  disabled={status.type === "loading"}
                   className="border-gray-200 focus:border-blue-500"
                 />
               </div>
               <div className="space-y-2">
                 <Input
+                  name="email"
                   type="email"
-                  placeholder="Email Address"
+                  placeholder="Email Address *"
+                  value={formData.email}
+                  onChange={handleChange}
+                  disabled={status.type === "loading"}
                   className="border-gray-200 focus:border-blue-500"
+                  required
                 />
               </div>
               <div className="space-y-2">
                 <Textarea
-                  placeholder="Your Message"
+                  name="message"
+                  placeholder="Your Message *"
+                  value={formData.message}
+                  onChange={handleChange}
+                  disabled={status.type === "loading"}
                   className="min-h-[150px] border-gray-200 focus:border-blue-500"
+                  required
                 />
               </div>
               <Button
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                type="submit"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50"
                 size="lg"
+                disabled={status.type === "loading"}
               >
-                Send Message
+                {status.type === "loading" ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Sending...
+                  </>
+                ) : (
+                  "Send Message"
+                )}
               </Button>
             </form>
           </motion.div>
