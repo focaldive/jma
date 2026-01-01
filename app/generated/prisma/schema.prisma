@@ -12,6 +12,9 @@ model User {
   name      String?
   email     String   @unique
   password  String // hashed password
+  role      String? // e.g., "admin", "user", "editor"
+  status    String? // e.g., "active", "inactive"
+  image     String? // profile image URL
   createdAt DateTime @default(now())
 }
 
@@ -71,4 +74,20 @@ enum Priority {
   NORMAL
   HIGH
   URGENT
+}
+
+model NewsletterSubscriber {
+  id                String    @id @default(cuid())
+  email             String    @unique
+  firstName         String?
+  lastName          String?
+  source            String? // NEW: "donation_page", "footer", etc.
+  ipAddress         String? // NEW: For spam prevention
+  isVerified        Boolean   @default(false)
+  verifyToken       String?   @unique
+  unsubscribeToken  String    @unique @default(cuid())
+  subscribedAt      DateTime  @default(now())
+  verifiedAt        DateTime? // NEW
+  unsubscribedAt    DateTime?
+  unsubscribeReason String? // NEW: Why they left
 }

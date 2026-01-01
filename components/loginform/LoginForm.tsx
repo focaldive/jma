@@ -26,21 +26,41 @@ export function LoginForm({
   ...props
 }: React.ComponentProps<"div">) {
 
-  
   const router = useRouter()
+
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
+  const [loading, setLoading] = useState(false)
 
- 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
+    setError("")
+    setLoading(true)
 
-    if (email === "admin@gmail.com" && password === "admin123") {
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        setError(data.message || "Invalid email or password")
+        setLoading(false)
+        return
+      }
+
+      // save session flag
       localStorage.setItem("loggedIn", "true")
-      router.push("/admin") 
-    } else {
-      setError("Invalid email or password")
+
+      router.push("/admin")
+    } catch (err) {
+      setError("Something went wrong. Try again.")
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -63,13 +83,14 @@ export function LoginForm({
             Enter your email below to login
           </CardDescription>
         </CardHeader>
+        
         <CardContent>
-
-         
           <form className="flex flex-col gap-4" onSubmit={handleLogin}>
+             {error && (
+                <p className="text-red-600 text-sm">{error}</p>
+              )}
             <FieldGroup>
 
-              {/* Email */}
               <Field>
                 <FieldLabel htmlFor="email" className="text-gray-900">
                   Email
@@ -85,7 +106,6 @@ export function LoginForm({
                 />
               </Field>
 
-              {/* Password */}
               <Field>
                 <div className="flex items-center">
                   <FieldLabel htmlFor="password" className="text-gray-900">
@@ -109,24 +129,18 @@ export function LoginForm({
                 </a>
               </Field>
 
-              {/* Error message */}
-              {error && (
-                <p className="text-red-600 text-sm">{error}</p>
-              )}
+             
 
-              {/* Buttons */}
               <Field className="flex flex-col gap-2 ">
-                <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white">
-                  Login
+                <Button
+                  type="submit"
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                  disabled={loading}
+                >
+                  {loading ? "Logging in..." : "Login"}
                 </Button>
-
-                <FieldDescription className="text-center text-gray-600 mt-2">
-                  Don&apos;t have an account?{" "}
-                  <a href="#" className="text-blue-600 hover:underline">
-                    Sign up
-                  </a>
-                </FieldDescription>
               </Field>
+
             </FieldGroup>
           </form>
         </CardContent>
