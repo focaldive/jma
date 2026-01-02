@@ -1,14 +1,14 @@
-import { cn } from "@/lib/utils"
-import { LucideIcon } from "lucide-react"
+import { cn } from "@/lib/utils";
+import { LucideIcon } from "lucide-react";
 
 interface StatsCardProps {
-  title: string
-  value: string | number
-  change?: string
-  changeType?: "increase" | "decrease" | "neutral"
-  icon: LucideIcon
-  iconBgColor?: string
-  iconColor?: string
+  title: string;
+  value: React.ReactNode;
+  change?: string;
+  changeType?: "increase" | "decrease" | "neutral";
+  icon: LucideIcon;
+  iconBgColor?: string;
+  iconColor?: string;
 }
 
 export function StatsCard({
@@ -25,7 +25,12 @@ export function StatsCard({
       <div className="flex items-start justify-between">
         <div>
           <p className="text-sm font-medium text-gray-500">{title}</p>
-          <p className="text-2xl sm:text-3xl font-bold text-gray-900 mt-2">{value}</p>
+          <p
+            className="text-2xl sm:text-3xl font-bold text-gray-900 mt-2"
+            suppressHydrationWarning
+          >
+            {value}
+          </p>
           {change && (
             <p
               className={cn(
@@ -46,5 +51,5 @@ export function StatsCard({
         </div>
       </div>
     </div>
-  )
+  );
 }

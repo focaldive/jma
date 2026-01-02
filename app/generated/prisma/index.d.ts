@@ -38,6 +38,16 @@ export type NewsletterSubscriber = $Result.DefaultSelection<Prisma.$NewsletterSu
  * 
  */
 export type Donation = $Result.DefaultSelection<Prisma.$DonationPayload>
+/**
+ * Model NewsArticle
+ * 
+ */
+export type NewsArticle = $Result.DefaultSelection<Prisma.$NewsArticlePayload>
+/**
+ * Model Project
+ * 
+ */
+export type Project = $Result.DefaultSelection<Prisma.$ProjectPayload>
 
 /**
  * Enums
@@ -82,6 +92,16 @@ export const DonationStatus: {
 
 export type DonationStatus = (typeof DonationStatus)[keyof typeof DonationStatus]
 
+
+export const ProjectStatus: {
+  PLANNED: 'PLANNED',
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED'
+};
+
+export type ProjectStatus = (typeof ProjectStatus)[keyof typeof ProjectStatus]
+
 }
 
 export type Role = $Enums.Role
@@ -99,6 +119,10 @@ export const Priority: typeof $Enums.Priority
 export type DonationStatus = $Enums.DonationStatus
 
 export const DonationStatus: typeof $Enums.DonationStatus
+
+export type ProjectStatus = $Enums.ProjectStatus
+
+export const ProjectStatus: typeof $Enums.ProjectStatus
 
 /**
  * ##  Prisma Client ʲˢ
@@ -266,6 +290,26 @@ export class PrismaClient<
     * ```
     */
   get donation(): Prisma.DonationDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.newsArticle`: Exposes CRUD operations for the **NewsArticle** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more NewsArticles
+    * const newsArticles = await prisma.newsArticle.findMany()
+    * ```
+    */
+  get newsArticle(): Prisma.NewsArticleDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.project`: Exposes CRUD operations for the **Project** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Projects
+    * const projects = await prisma.project.findMany()
+    * ```
+    */
+  get project(): Prisma.ProjectDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -704,7 +748,9 @@ export namespace Prisma {
     AdminUser: 'AdminUser',
     ContactSubmission: 'ContactSubmission',
     NewsletterSubscriber: 'NewsletterSubscriber',
-    Donation: 'Donation'
+    Donation: 'Donation',
+    NewsArticle: 'NewsArticle',
+    Project: 'Project'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -720,7 +766,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "adminUser" | "contactSubmission" | "newsletterSubscriber" | "donation"
+      modelProps: "user" | "adminUser" | "contactSubmission" | "newsletterSubscriber" | "donation" | "newsArticle" | "project"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1094,6 +1140,154 @@ export namespace Prisma {
           }
         }
       }
+      NewsArticle: {
+        payload: Prisma.$NewsArticlePayload<ExtArgs>
+        fields: Prisma.NewsArticleFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.NewsArticleFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NewsArticlePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.NewsArticleFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NewsArticlePayload>
+          }
+          findFirst: {
+            args: Prisma.NewsArticleFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NewsArticlePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.NewsArticleFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NewsArticlePayload>
+          }
+          findMany: {
+            args: Prisma.NewsArticleFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NewsArticlePayload>[]
+          }
+          create: {
+            args: Prisma.NewsArticleCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NewsArticlePayload>
+          }
+          createMany: {
+            args: Prisma.NewsArticleCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.NewsArticleCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NewsArticlePayload>[]
+          }
+          delete: {
+            args: Prisma.NewsArticleDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NewsArticlePayload>
+          }
+          update: {
+            args: Prisma.NewsArticleUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NewsArticlePayload>
+          }
+          deleteMany: {
+            args: Prisma.NewsArticleDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.NewsArticleUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.NewsArticleUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NewsArticlePayload>[]
+          }
+          upsert: {
+            args: Prisma.NewsArticleUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NewsArticlePayload>
+          }
+          aggregate: {
+            args: Prisma.NewsArticleAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateNewsArticle>
+          }
+          groupBy: {
+            args: Prisma.NewsArticleGroupByArgs<ExtArgs>
+            result: $Utils.Optional<NewsArticleGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.NewsArticleCountArgs<ExtArgs>
+            result: $Utils.Optional<NewsArticleCountAggregateOutputType> | number
+          }
+        }
+      }
+      Project: {
+        payload: Prisma.$ProjectPayload<ExtArgs>
+        fields: Prisma.ProjectFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ProjectFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProjectPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ProjectFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProjectPayload>
+          }
+          findFirst: {
+            args: Prisma.ProjectFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProjectPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ProjectFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProjectPayload>
+          }
+          findMany: {
+            args: Prisma.ProjectFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProjectPayload>[]
+          }
+          create: {
+            args: Prisma.ProjectCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProjectPayload>
+          }
+          createMany: {
+            args: Prisma.ProjectCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ProjectCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProjectPayload>[]
+          }
+          delete: {
+            args: Prisma.ProjectDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProjectPayload>
+          }
+          update: {
+            args: Prisma.ProjectUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProjectPayload>
+          }
+          deleteMany: {
+            args: Prisma.ProjectDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ProjectUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ProjectUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProjectPayload>[]
+          }
+          upsert: {
+            args: Prisma.ProjectUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProjectPayload>
+          }
+          aggregate: {
+            args: Prisma.ProjectAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateProject>
+          }
+          groupBy: {
+            args: Prisma.ProjectGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ProjectGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ProjectCountArgs<ExtArgs>
+            result: $Utils.Optional<ProjectCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1207,6 +1401,8 @@ export namespace Prisma {
     contactSubmission?: ContactSubmissionOmit
     newsletterSubscriber?: NewsletterSubscriberOmit
     donation?: DonationOmit
+    newsArticle?: NewsArticleOmit
+    project?: ProjectOmit
   }
 
   /* Types for Logging */
@@ -1289,11 +1485,15 @@ export namespace Prisma {
   export type AdminUserCountOutputType = {
     repliedSubmissions: number
     assignedSubmissions: number
+    createdProjects: number
+    updatedProjects: number
   }
 
   export type AdminUserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     repliedSubmissions?: boolean | AdminUserCountOutputTypeCountRepliedSubmissionsArgs
     assignedSubmissions?: boolean | AdminUserCountOutputTypeCountAssignedSubmissionsArgs
+    createdProjects?: boolean | AdminUserCountOutputTypeCountCreatedProjectsArgs
+    updatedProjects?: boolean | AdminUserCountOutputTypeCountUpdatedProjectsArgs
   }
 
   // Custom InputTypes
@@ -1319,6 +1519,20 @@ export namespace Prisma {
    */
   export type AdminUserCountOutputTypeCountAssignedSubmissionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ContactSubmissionWhereInput
+  }
+
+  /**
+   * AdminUserCountOutputType without action
+   */
+  export type AdminUserCountOutputTypeCountCreatedProjectsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ProjectWhereInput
+  }
+
+  /**
+   * AdminUserCountOutputType without action
+   */
+  export type AdminUserCountOutputTypeCountUpdatedProjectsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ProjectWhereInput
   }
 
 
@@ -2582,6 +2796,8 @@ export namespace Prisma {
     updatedAt?: boolean
     repliedSubmissions?: boolean | AdminUser$repliedSubmissionsArgs<ExtArgs>
     assignedSubmissions?: boolean | AdminUser$assignedSubmissionsArgs<ExtArgs>
+    createdProjects?: boolean | AdminUser$createdProjectsArgs<ExtArgs>
+    updatedProjects?: boolean | AdminUser$updatedProjectsArgs<ExtArgs>
     _count?: boolean | AdminUserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["adminUser"]>
 
@@ -2634,6 +2850,8 @@ export namespace Prisma {
   export type AdminUserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     repliedSubmissions?: boolean | AdminUser$repliedSubmissionsArgs<ExtArgs>
     assignedSubmissions?: boolean | AdminUser$assignedSubmissionsArgs<ExtArgs>
+    createdProjects?: boolean | AdminUser$createdProjectsArgs<ExtArgs>
+    updatedProjects?: boolean | AdminUser$updatedProjectsArgs<ExtArgs>
     _count?: boolean | AdminUserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type AdminUserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -2644,6 +2862,8 @@ export namespace Prisma {
     objects: {
       repliedSubmissions: Prisma.$ContactSubmissionPayload<ExtArgs>[]
       assignedSubmissions: Prisma.$ContactSubmissionPayload<ExtArgs>[]
+      createdProjects: Prisma.$ProjectPayload<ExtArgs>[]
+      updatedProjects: Prisma.$ProjectPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -3054,6 +3274,8 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     repliedSubmissions<T extends AdminUser$repliedSubmissionsArgs<ExtArgs> = {}>(args?: Subset<T, AdminUser$repliedSubmissionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ContactSubmissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     assignedSubmissions<T extends AdminUser$assignedSubmissionsArgs<ExtArgs> = {}>(args?: Subset<T, AdminUser$assignedSubmissionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ContactSubmissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    createdProjects<T extends AdminUser$createdProjectsArgs<ExtArgs> = {}>(args?: Subset<T, AdminUser$createdProjectsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    updatedProjects<T extends AdminUser$updatedProjectsArgs<ExtArgs> = {}>(args?: Subset<T, AdminUser$updatedProjectsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3528,6 +3750,54 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ContactSubmissionScalarFieldEnum | ContactSubmissionScalarFieldEnum[]
+  }
+
+  /**
+   * AdminUser.createdProjects
+   */
+  export type AdminUser$createdProjectsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Project
+     */
+    select?: ProjectSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Project
+     */
+    omit?: ProjectOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectInclude<ExtArgs> | null
+    where?: ProjectWhereInput
+    orderBy?: ProjectOrderByWithRelationInput | ProjectOrderByWithRelationInput[]
+    cursor?: ProjectWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ProjectScalarFieldEnum | ProjectScalarFieldEnum[]
+  }
+
+  /**
+   * AdminUser.updatedProjects
+   */
+  export type AdminUser$updatedProjectsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Project
+     */
+    select?: ProjectSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Project
+     */
+    omit?: ProjectOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectInclude<ExtArgs> | null
+    where?: ProjectWhereInput
+    orderBy?: ProjectOrderByWithRelationInput | ProjectOrderByWithRelationInput[]
+    cursor?: ProjectWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ProjectScalarFieldEnum | ProjectScalarFieldEnum[]
   }
 
   /**
@@ -7107,6 +7377,2441 @@ export namespace Prisma {
 
 
   /**
+   * Model NewsArticle
+   */
+
+  export type AggregateNewsArticle = {
+    _count: NewsArticleCountAggregateOutputType | null
+    _avg: NewsArticleAvgAggregateOutputType | null
+    _sum: NewsArticleSumAggregateOutputType | null
+    _min: NewsArticleMinAggregateOutputType | null
+    _max: NewsArticleMaxAggregateOutputType | null
+  }
+
+  export type NewsArticleAvgAggregateOutputType = {
+    viewCount: number | null
+  }
+
+  export type NewsArticleSumAggregateOutputType = {
+    viewCount: number | null
+  }
+
+  export type NewsArticleMinAggregateOutputType = {
+    id: string | null
+    title: string | null
+    slug: string | null
+    excerpt: string | null
+    content: string | null
+    category: string | null
+    featuredImage: string | null
+    isPublished: boolean | null
+    isFeatured: boolean | null
+    viewCount: number | null
+    publishedAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type NewsArticleMaxAggregateOutputType = {
+    id: string | null
+    title: string | null
+    slug: string | null
+    excerpt: string | null
+    content: string | null
+    category: string | null
+    featuredImage: string | null
+    isPublished: boolean | null
+    isFeatured: boolean | null
+    viewCount: number | null
+    publishedAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type NewsArticleCountAggregateOutputType = {
+    id: number
+    title: number
+    slug: number
+    excerpt: number
+    content: number
+    category: number
+    featuredImage: number
+    isPublished: number
+    isFeatured: number
+    viewCount: number
+    publishedAt: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type NewsArticleAvgAggregateInputType = {
+    viewCount?: true
+  }
+
+  export type NewsArticleSumAggregateInputType = {
+    viewCount?: true
+  }
+
+  export type NewsArticleMinAggregateInputType = {
+    id?: true
+    title?: true
+    slug?: true
+    excerpt?: true
+    content?: true
+    category?: true
+    featuredImage?: true
+    isPublished?: true
+    isFeatured?: true
+    viewCount?: true
+    publishedAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type NewsArticleMaxAggregateInputType = {
+    id?: true
+    title?: true
+    slug?: true
+    excerpt?: true
+    content?: true
+    category?: true
+    featuredImage?: true
+    isPublished?: true
+    isFeatured?: true
+    viewCount?: true
+    publishedAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type NewsArticleCountAggregateInputType = {
+    id?: true
+    title?: true
+    slug?: true
+    excerpt?: true
+    content?: true
+    category?: true
+    featuredImage?: true
+    isPublished?: true
+    isFeatured?: true
+    viewCount?: true
+    publishedAt?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type NewsArticleAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which NewsArticle to aggregate.
+     */
+    where?: NewsArticleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NewsArticles to fetch.
+     */
+    orderBy?: NewsArticleOrderByWithRelationInput | NewsArticleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: NewsArticleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NewsArticles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NewsArticles.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned NewsArticles
+    **/
+    _count?: true | NewsArticleCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: NewsArticleAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: NewsArticleSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: NewsArticleMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: NewsArticleMaxAggregateInputType
+  }
+
+  export type GetNewsArticleAggregateType<T extends NewsArticleAggregateArgs> = {
+        [P in keyof T & keyof AggregateNewsArticle]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateNewsArticle[P]>
+      : GetScalarType<T[P], AggregateNewsArticle[P]>
+  }
+
+
+
+
+  export type NewsArticleGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: NewsArticleWhereInput
+    orderBy?: NewsArticleOrderByWithAggregationInput | NewsArticleOrderByWithAggregationInput[]
+    by: NewsArticleScalarFieldEnum[] | NewsArticleScalarFieldEnum
+    having?: NewsArticleScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: NewsArticleCountAggregateInputType | true
+    _avg?: NewsArticleAvgAggregateInputType
+    _sum?: NewsArticleSumAggregateInputType
+    _min?: NewsArticleMinAggregateInputType
+    _max?: NewsArticleMaxAggregateInputType
+  }
+
+  export type NewsArticleGroupByOutputType = {
+    id: string
+    title: string
+    slug: string
+    excerpt: string | null
+    content: string
+    category: string
+    featuredImage: string | null
+    isPublished: boolean
+    isFeatured: boolean
+    viewCount: number
+    publishedAt: Date | null
+    createdAt: Date
+    updatedAt: Date
+    _count: NewsArticleCountAggregateOutputType | null
+    _avg: NewsArticleAvgAggregateOutputType | null
+    _sum: NewsArticleSumAggregateOutputType | null
+    _min: NewsArticleMinAggregateOutputType | null
+    _max: NewsArticleMaxAggregateOutputType | null
+  }
+
+  type GetNewsArticleGroupByPayload<T extends NewsArticleGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<NewsArticleGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof NewsArticleGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], NewsArticleGroupByOutputType[P]>
+            : GetScalarType<T[P], NewsArticleGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type NewsArticleSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    title?: boolean
+    slug?: boolean
+    excerpt?: boolean
+    content?: boolean
+    category?: boolean
+    featuredImage?: boolean
+    isPublished?: boolean
+    isFeatured?: boolean
+    viewCount?: boolean
+    publishedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["newsArticle"]>
+
+  export type NewsArticleSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    title?: boolean
+    slug?: boolean
+    excerpt?: boolean
+    content?: boolean
+    category?: boolean
+    featuredImage?: boolean
+    isPublished?: boolean
+    isFeatured?: boolean
+    viewCount?: boolean
+    publishedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["newsArticle"]>
+
+  export type NewsArticleSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    title?: boolean
+    slug?: boolean
+    excerpt?: boolean
+    content?: boolean
+    category?: boolean
+    featuredImage?: boolean
+    isPublished?: boolean
+    isFeatured?: boolean
+    viewCount?: boolean
+    publishedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["newsArticle"]>
+
+  export type NewsArticleSelectScalar = {
+    id?: boolean
+    title?: boolean
+    slug?: boolean
+    excerpt?: boolean
+    content?: boolean
+    category?: boolean
+    featuredImage?: boolean
+    isPublished?: boolean
+    isFeatured?: boolean
+    viewCount?: boolean
+    publishedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type NewsArticleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "slug" | "excerpt" | "content" | "category" | "featuredImage" | "isPublished" | "isFeatured" | "viewCount" | "publishedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["newsArticle"]>
+
+  export type $NewsArticlePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "NewsArticle"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      title: string
+      slug: string
+      excerpt: string | null
+      content: string
+      category: string
+      featuredImage: string | null
+      isPublished: boolean
+      isFeatured: boolean
+      viewCount: number
+      publishedAt: Date | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["newsArticle"]>
+    composites: {}
+  }
+
+  type NewsArticleGetPayload<S extends boolean | null | undefined | NewsArticleDefaultArgs> = $Result.GetResult<Prisma.$NewsArticlePayload, S>
+
+  type NewsArticleCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<NewsArticleFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: NewsArticleCountAggregateInputType | true
+    }
+
+  export interface NewsArticleDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['NewsArticle'], meta: { name: 'NewsArticle' } }
+    /**
+     * Find zero or one NewsArticle that matches the filter.
+     * @param {NewsArticleFindUniqueArgs} args - Arguments to find a NewsArticle
+     * @example
+     * // Get one NewsArticle
+     * const newsArticle = await prisma.newsArticle.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends NewsArticleFindUniqueArgs>(args: SelectSubset<T, NewsArticleFindUniqueArgs<ExtArgs>>): Prisma__NewsArticleClient<$Result.GetResult<Prisma.$NewsArticlePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one NewsArticle that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {NewsArticleFindUniqueOrThrowArgs} args - Arguments to find a NewsArticle
+     * @example
+     * // Get one NewsArticle
+     * const newsArticle = await prisma.newsArticle.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends NewsArticleFindUniqueOrThrowArgs>(args: SelectSubset<T, NewsArticleFindUniqueOrThrowArgs<ExtArgs>>): Prisma__NewsArticleClient<$Result.GetResult<Prisma.$NewsArticlePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first NewsArticle that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NewsArticleFindFirstArgs} args - Arguments to find a NewsArticle
+     * @example
+     * // Get one NewsArticle
+     * const newsArticle = await prisma.newsArticle.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends NewsArticleFindFirstArgs>(args?: SelectSubset<T, NewsArticleFindFirstArgs<ExtArgs>>): Prisma__NewsArticleClient<$Result.GetResult<Prisma.$NewsArticlePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first NewsArticle that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NewsArticleFindFirstOrThrowArgs} args - Arguments to find a NewsArticle
+     * @example
+     * // Get one NewsArticle
+     * const newsArticle = await prisma.newsArticle.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends NewsArticleFindFirstOrThrowArgs>(args?: SelectSubset<T, NewsArticleFindFirstOrThrowArgs<ExtArgs>>): Prisma__NewsArticleClient<$Result.GetResult<Prisma.$NewsArticlePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more NewsArticles that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NewsArticleFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all NewsArticles
+     * const newsArticles = await prisma.newsArticle.findMany()
+     * 
+     * // Get first 10 NewsArticles
+     * const newsArticles = await prisma.newsArticle.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const newsArticleWithIdOnly = await prisma.newsArticle.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends NewsArticleFindManyArgs>(args?: SelectSubset<T, NewsArticleFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NewsArticlePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a NewsArticle.
+     * @param {NewsArticleCreateArgs} args - Arguments to create a NewsArticle.
+     * @example
+     * // Create one NewsArticle
+     * const NewsArticle = await prisma.newsArticle.create({
+     *   data: {
+     *     // ... data to create a NewsArticle
+     *   }
+     * })
+     * 
+     */
+    create<T extends NewsArticleCreateArgs>(args: SelectSubset<T, NewsArticleCreateArgs<ExtArgs>>): Prisma__NewsArticleClient<$Result.GetResult<Prisma.$NewsArticlePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many NewsArticles.
+     * @param {NewsArticleCreateManyArgs} args - Arguments to create many NewsArticles.
+     * @example
+     * // Create many NewsArticles
+     * const newsArticle = await prisma.newsArticle.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends NewsArticleCreateManyArgs>(args?: SelectSubset<T, NewsArticleCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many NewsArticles and returns the data saved in the database.
+     * @param {NewsArticleCreateManyAndReturnArgs} args - Arguments to create many NewsArticles.
+     * @example
+     * // Create many NewsArticles
+     * const newsArticle = await prisma.newsArticle.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many NewsArticles and only return the `id`
+     * const newsArticleWithIdOnly = await prisma.newsArticle.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends NewsArticleCreateManyAndReturnArgs>(args?: SelectSubset<T, NewsArticleCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NewsArticlePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a NewsArticle.
+     * @param {NewsArticleDeleteArgs} args - Arguments to delete one NewsArticle.
+     * @example
+     * // Delete one NewsArticle
+     * const NewsArticle = await prisma.newsArticle.delete({
+     *   where: {
+     *     // ... filter to delete one NewsArticle
+     *   }
+     * })
+     * 
+     */
+    delete<T extends NewsArticleDeleteArgs>(args: SelectSubset<T, NewsArticleDeleteArgs<ExtArgs>>): Prisma__NewsArticleClient<$Result.GetResult<Prisma.$NewsArticlePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one NewsArticle.
+     * @param {NewsArticleUpdateArgs} args - Arguments to update one NewsArticle.
+     * @example
+     * // Update one NewsArticle
+     * const newsArticle = await prisma.newsArticle.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends NewsArticleUpdateArgs>(args: SelectSubset<T, NewsArticleUpdateArgs<ExtArgs>>): Prisma__NewsArticleClient<$Result.GetResult<Prisma.$NewsArticlePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more NewsArticles.
+     * @param {NewsArticleDeleteManyArgs} args - Arguments to filter NewsArticles to delete.
+     * @example
+     * // Delete a few NewsArticles
+     * const { count } = await prisma.newsArticle.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends NewsArticleDeleteManyArgs>(args?: SelectSubset<T, NewsArticleDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more NewsArticles.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NewsArticleUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many NewsArticles
+     * const newsArticle = await prisma.newsArticle.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends NewsArticleUpdateManyArgs>(args: SelectSubset<T, NewsArticleUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more NewsArticles and returns the data updated in the database.
+     * @param {NewsArticleUpdateManyAndReturnArgs} args - Arguments to update many NewsArticles.
+     * @example
+     * // Update many NewsArticles
+     * const newsArticle = await prisma.newsArticle.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more NewsArticles and only return the `id`
+     * const newsArticleWithIdOnly = await prisma.newsArticle.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends NewsArticleUpdateManyAndReturnArgs>(args: SelectSubset<T, NewsArticleUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NewsArticlePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one NewsArticle.
+     * @param {NewsArticleUpsertArgs} args - Arguments to update or create a NewsArticle.
+     * @example
+     * // Update or create a NewsArticle
+     * const newsArticle = await prisma.newsArticle.upsert({
+     *   create: {
+     *     // ... data to create a NewsArticle
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the NewsArticle we want to update
+     *   }
+     * })
+     */
+    upsert<T extends NewsArticleUpsertArgs>(args: SelectSubset<T, NewsArticleUpsertArgs<ExtArgs>>): Prisma__NewsArticleClient<$Result.GetResult<Prisma.$NewsArticlePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of NewsArticles.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NewsArticleCountArgs} args - Arguments to filter NewsArticles to count.
+     * @example
+     * // Count the number of NewsArticles
+     * const count = await prisma.newsArticle.count({
+     *   where: {
+     *     // ... the filter for the NewsArticles we want to count
+     *   }
+     * })
+    **/
+    count<T extends NewsArticleCountArgs>(
+      args?: Subset<T, NewsArticleCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], NewsArticleCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a NewsArticle.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NewsArticleAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends NewsArticleAggregateArgs>(args: Subset<T, NewsArticleAggregateArgs>): Prisma.PrismaPromise<GetNewsArticleAggregateType<T>>
+
+    /**
+     * Group by NewsArticle.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NewsArticleGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends NewsArticleGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: NewsArticleGroupByArgs['orderBy'] }
+        : { orderBy?: NewsArticleGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, NewsArticleGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetNewsArticleGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the NewsArticle model
+   */
+  readonly fields: NewsArticleFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for NewsArticle.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__NewsArticleClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the NewsArticle model
+   */
+  interface NewsArticleFieldRefs {
+    readonly id: FieldRef<"NewsArticle", 'String'>
+    readonly title: FieldRef<"NewsArticle", 'String'>
+    readonly slug: FieldRef<"NewsArticle", 'String'>
+    readonly excerpt: FieldRef<"NewsArticle", 'String'>
+    readonly content: FieldRef<"NewsArticle", 'String'>
+    readonly category: FieldRef<"NewsArticle", 'String'>
+    readonly featuredImage: FieldRef<"NewsArticle", 'String'>
+    readonly isPublished: FieldRef<"NewsArticle", 'Boolean'>
+    readonly isFeatured: FieldRef<"NewsArticle", 'Boolean'>
+    readonly viewCount: FieldRef<"NewsArticle", 'Int'>
+    readonly publishedAt: FieldRef<"NewsArticle", 'DateTime'>
+    readonly createdAt: FieldRef<"NewsArticle", 'DateTime'>
+    readonly updatedAt: FieldRef<"NewsArticle", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * NewsArticle findUnique
+   */
+  export type NewsArticleFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NewsArticle
+     */
+    select?: NewsArticleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NewsArticle
+     */
+    omit?: NewsArticleOmit<ExtArgs> | null
+    /**
+     * Filter, which NewsArticle to fetch.
+     */
+    where: NewsArticleWhereUniqueInput
+  }
+
+  /**
+   * NewsArticle findUniqueOrThrow
+   */
+  export type NewsArticleFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NewsArticle
+     */
+    select?: NewsArticleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NewsArticle
+     */
+    omit?: NewsArticleOmit<ExtArgs> | null
+    /**
+     * Filter, which NewsArticle to fetch.
+     */
+    where: NewsArticleWhereUniqueInput
+  }
+
+  /**
+   * NewsArticle findFirst
+   */
+  export type NewsArticleFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NewsArticle
+     */
+    select?: NewsArticleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NewsArticle
+     */
+    omit?: NewsArticleOmit<ExtArgs> | null
+    /**
+     * Filter, which NewsArticle to fetch.
+     */
+    where?: NewsArticleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NewsArticles to fetch.
+     */
+    orderBy?: NewsArticleOrderByWithRelationInput | NewsArticleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for NewsArticles.
+     */
+    cursor?: NewsArticleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NewsArticles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NewsArticles.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of NewsArticles.
+     */
+    distinct?: NewsArticleScalarFieldEnum | NewsArticleScalarFieldEnum[]
+  }
+
+  /**
+   * NewsArticle findFirstOrThrow
+   */
+  export type NewsArticleFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NewsArticle
+     */
+    select?: NewsArticleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NewsArticle
+     */
+    omit?: NewsArticleOmit<ExtArgs> | null
+    /**
+     * Filter, which NewsArticle to fetch.
+     */
+    where?: NewsArticleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NewsArticles to fetch.
+     */
+    orderBy?: NewsArticleOrderByWithRelationInput | NewsArticleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for NewsArticles.
+     */
+    cursor?: NewsArticleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NewsArticles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NewsArticles.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of NewsArticles.
+     */
+    distinct?: NewsArticleScalarFieldEnum | NewsArticleScalarFieldEnum[]
+  }
+
+  /**
+   * NewsArticle findMany
+   */
+  export type NewsArticleFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NewsArticle
+     */
+    select?: NewsArticleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NewsArticle
+     */
+    omit?: NewsArticleOmit<ExtArgs> | null
+    /**
+     * Filter, which NewsArticles to fetch.
+     */
+    where?: NewsArticleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NewsArticles to fetch.
+     */
+    orderBy?: NewsArticleOrderByWithRelationInput | NewsArticleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing NewsArticles.
+     */
+    cursor?: NewsArticleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NewsArticles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NewsArticles.
+     */
+    skip?: number
+    distinct?: NewsArticleScalarFieldEnum | NewsArticleScalarFieldEnum[]
+  }
+
+  /**
+   * NewsArticle create
+   */
+  export type NewsArticleCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NewsArticle
+     */
+    select?: NewsArticleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NewsArticle
+     */
+    omit?: NewsArticleOmit<ExtArgs> | null
+    /**
+     * The data needed to create a NewsArticle.
+     */
+    data: XOR<NewsArticleCreateInput, NewsArticleUncheckedCreateInput>
+  }
+
+  /**
+   * NewsArticle createMany
+   */
+  export type NewsArticleCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many NewsArticles.
+     */
+    data: NewsArticleCreateManyInput | NewsArticleCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * NewsArticle createManyAndReturn
+   */
+  export type NewsArticleCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NewsArticle
+     */
+    select?: NewsArticleSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the NewsArticle
+     */
+    omit?: NewsArticleOmit<ExtArgs> | null
+    /**
+     * The data used to create many NewsArticles.
+     */
+    data: NewsArticleCreateManyInput | NewsArticleCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * NewsArticle update
+   */
+  export type NewsArticleUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NewsArticle
+     */
+    select?: NewsArticleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NewsArticle
+     */
+    omit?: NewsArticleOmit<ExtArgs> | null
+    /**
+     * The data needed to update a NewsArticle.
+     */
+    data: XOR<NewsArticleUpdateInput, NewsArticleUncheckedUpdateInput>
+    /**
+     * Choose, which NewsArticle to update.
+     */
+    where: NewsArticleWhereUniqueInput
+  }
+
+  /**
+   * NewsArticle updateMany
+   */
+  export type NewsArticleUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update NewsArticles.
+     */
+    data: XOR<NewsArticleUpdateManyMutationInput, NewsArticleUncheckedUpdateManyInput>
+    /**
+     * Filter which NewsArticles to update
+     */
+    where?: NewsArticleWhereInput
+    /**
+     * Limit how many NewsArticles to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * NewsArticle updateManyAndReturn
+   */
+  export type NewsArticleUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NewsArticle
+     */
+    select?: NewsArticleSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the NewsArticle
+     */
+    omit?: NewsArticleOmit<ExtArgs> | null
+    /**
+     * The data used to update NewsArticles.
+     */
+    data: XOR<NewsArticleUpdateManyMutationInput, NewsArticleUncheckedUpdateManyInput>
+    /**
+     * Filter which NewsArticles to update
+     */
+    where?: NewsArticleWhereInput
+    /**
+     * Limit how many NewsArticles to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * NewsArticle upsert
+   */
+  export type NewsArticleUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NewsArticle
+     */
+    select?: NewsArticleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NewsArticle
+     */
+    omit?: NewsArticleOmit<ExtArgs> | null
+    /**
+     * The filter to search for the NewsArticle to update in case it exists.
+     */
+    where: NewsArticleWhereUniqueInput
+    /**
+     * In case the NewsArticle found by the `where` argument doesn't exist, create a new NewsArticle with this data.
+     */
+    create: XOR<NewsArticleCreateInput, NewsArticleUncheckedCreateInput>
+    /**
+     * In case the NewsArticle was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<NewsArticleUpdateInput, NewsArticleUncheckedUpdateInput>
+  }
+
+  /**
+   * NewsArticle delete
+   */
+  export type NewsArticleDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NewsArticle
+     */
+    select?: NewsArticleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NewsArticle
+     */
+    omit?: NewsArticleOmit<ExtArgs> | null
+    /**
+     * Filter which NewsArticle to delete.
+     */
+    where: NewsArticleWhereUniqueInput
+  }
+
+  /**
+   * NewsArticle deleteMany
+   */
+  export type NewsArticleDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which NewsArticles to delete
+     */
+    where?: NewsArticleWhereInput
+    /**
+     * Limit how many NewsArticles to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * NewsArticle without action
+   */
+  export type NewsArticleDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NewsArticle
+     */
+    select?: NewsArticleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NewsArticle
+     */
+    omit?: NewsArticleOmit<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Project
+   */
+
+  export type AggregateProject = {
+    _count: ProjectCountAggregateOutputType | null
+    _avg: ProjectAvgAggregateOutputType | null
+    _sum: ProjectSumAggregateOutputType | null
+    _min: ProjectMinAggregateOutputType | null
+    _max: ProjectMaxAggregateOutputType | null
+  }
+
+  export type ProjectAvgAggregateOutputType = {
+    year: number | null
+    amount: Decimal | null
+    beneficiaries: number | null
+  }
+
+  export type ProjectSumAggregateOutputType = {
+    year: number | null
+    amount: Decimal | null
+    beneficiaries: number | null
+  }
+
+  export type ProjectMinAggregateOutputType = {
+    id: string | null
+    title: string | null
+    image: string | null
+    year: number | null
+    month: string | null
+    description: string | null
+    location: string | null
+    currency: string | null
+    amount: Decimal | null
+    status: $Enums.ProjectStatus | null
+    beneficiaries: number | null
+    isPublished: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    categoryId: string | null
+    createdById: string | null
+    updatedById: string | null
+  }
+
+  export type ProjectMaxAggregateOutputType = {
+    id: string | null
+    title: string | null
+    image: string | null
+    year: number | null
+    month: string | null
+    description: string | null
+    location: string | null
+    currency: string | null
+    amount: Decimal | null
+    status: $Enums.ProjectStatus | null
+    beneficiaries: number | null
+    isPublished: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    categoryId: string | null
+    createdById: string | null
+    updatedById: string | null
+  }
+
+  export type ProjectCountAggregateOutputType = {
+    id: number
+    title: number
+    image: number
+    year: number
+    month: number
+    description: number
+    location: number
+    currency: number
+    amount: number
+    status: number
+    beneficiaries: number
+    isPublished: number
+    createdAt: number
+    updatedAt: number
+    categoryId: number
+    createdById: number
+    updatedById: number
+    _all: number
+  }
+
+
+  export type ProjectAvgAggregateInputType = {
+    year?: true
+    amount?: true
+    beneficiaries?: true
+  }
+
+  export type ProjectSumAggregateInputType = {
+    year?: true
+    amount?: true
+    beneficiaries?: true
+  }
+
+  export type ProjectMinAggregateInputType = {
+    id?: true
+    title?: true
+    image?: true
+    year?: true
+    month?: true
+    description?: true
+    location?: true
+    currency?: true
+    amount?: true
+    status?: true
+    beneficiaries?: true
+    isPublished?: true
+    createdAt?: true
+    updatedAt?: true
+    categoryId?: true
+    createdById?: true
+    updatedById?: true
+  }
+
+  export type ProjectMaxAggregateInputType = {
+    id?: true
+    title?: true
+    image?: true
+    year?: true
+    month?: true
+    description?: true
+    location?: true
+    currency?: true
+    amount?: true
+    status?: true
+    beneficiaries?: true
+    isPublished?: true
+    createdAt?: true
+    updatedAt?: true
+    categoryId?: true
+    createdById?: true
+    updatedById?: true
+  }
+
+  export type ProjectCountAggregateInputType = {
+    id?: true
+    title?: true
+    image?: true
+    year?: true
+    month?: true
+    description?: true
+    location?: true
+    currency?: true
+    amount?: true
+    status?: true
+    beneficiaries?: true
+    isPublished?: true
+    createdAt?: true
+    updatedAt?: true
+    categoryId?: true
+    createdById?: true
+    updatedById?: true
+    _all?: true
+  }
+
+  export type ProjectAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Project to aggregate.
+     */
+    where?: ProjectWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Projects to fetch.
+     */
+    orderBy?: ProjectOrderByWithRelationInput | ProjectOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ProjectWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Projects from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Projects.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Projects
+    **/
+    _count?: true | ProjectCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: ProjectAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ProjectSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ProjectMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ProjectMaxAggregateInputType
+  }
+
+  export type GetProjectAggregateType<T extends ProjectAggregateArgs> = {
+        [P in keyof T & keyof AggregateProject]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateProject[P]>
+      : GetScalarType<T[P], AggregateProject[P]>
+  }
+
+
+
+
+  export type ProjectGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ProjectWhereInput
+    orderBy?: ProjectOrderByWithAggregationInput | ProjectOrderByWithAggregationInput[]
+    by: ProjectScalarFieldEnum[] | ProjectScalarFieldEnum
+    having?: ProjectScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ProjectCountAggregateInputType | true
+    _avg?: ProjectAvgAggregateInputType
+    _sum?: ProjectSumAggregateInputType
+    _min?: ProjectMinAggregateInputType
+    _max?: ProjectMaxAggregateInputType
+  }
+
+  export type ProjectGroupByOutputType = {
+    id: string
+    title: string | null
+    image: string | null
+    year: number
+    month: string
+    description: string
+    location: string
+    currency: string
+    amount: Decimal
+    status: $Enums.ProjectStatus
+    beneficiaries: number | null
+    isPublished: boolean
+    createdAt: Date
+    updatedAt: Date
+    categoryId: string | null
+    createdById: string | null
+    updatedById: string | null
+    _count: ProjectCountAggregateOutputType | null
+    _avg: ProjectAvgAggregateOutputType | null
+    _sum: ProjectSumAggregateOutputType | null
+    _min: ProjectMinAggregateOutputType | null
+    _max: ProjectMaxAggregateOutputType | null
+  }
+
+  type GetProjectGroupByPayload<T extends ProjectGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ProjectGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ProjectGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ProjectGroupByOutputType[P]>
+            : GetScalarType<T[P], ProjectGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ProjectSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    title?: boolean
+    image?: boolean
+    year?: boolean
+    month?: boolean
+    description?: boolean
+    location?: boolean
+    currency?: boolean
+    amount?: boolean
+    status?: boolean
+    beneficiaries?: boolean
+    isPublished?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    categoryId?: boolean
+    createdById?: boolean
+    updatedById?: boolean
+    createdBy?: boolean | Project$createdByArgs<ExtArgs>
+    updatedBy?: boolean | Project$updatedByArgs<ExtArgs>
+  }, ExtArgs["result"]["project"]>
+
+  export type ProjectSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    title?: boolean
+    image?: boolean
+    year?: boolean
+    month?: boolean
+    description?: boolean
+    location?: boolean
+    currency?: boolean
+    amount?: boolean
+    status?: boolean
+    beneficiaries?: boolean
+    isPublished?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    categoryId?: boolean
+    createdById?: boolean
+    updatedById?: boolean
+    createdBy?: boolean | Project$createdByArgs<ExtArgs>
+    updatedBy?: boolean | Project$updatedByArgs<ExtArgs>
+  }, ExtArgs["result"]["project"]>
+
+  export type ProjectSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    title?: boolean
+    image?: boolean
+    year?: boolean
+    month?: boolean
+    description?: boolean
+    location?: boolean
+    currency?: boolean
+    amount?: boolean
+    status?: boolean
+    beneficiaries?: boolean
+    isPublished?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    categoryId?: boolean
+    createdById?: boolean
+    updatedById?: boolean
+    createdBy?: boolean | Project$createdByArgs<ExtArgs>
+    updatedBy?: boolean | Project$updatedByArgs<ExtArgs>
+  }, ExtArgs["result"]["project"]>
+
+  export type ProjectSelectScalar = {
+    id?: boolean
+    title?: boolean
+    image?: boolean
+    year?: boolean
+    month?: boolean
+    description?: boolean
+    location?: boolean
+    currency?: boolean
+    amount?: boolean
+    status?: boolean
+    beneficiaries?: boolean
+    isPublished?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    categoryId?: boolean
+    createdById?: boolean
+    updatedById?: boolean
+  }
+
+  export type ProjectOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "image" | "year" | "month" | "description" | "location" | "currency" | "amount" | "status" | "beneficiaries" | "isPublished" | "createdAt" | "updatedAt" | "categoryId" | "createdById" | "updatedById", ExtArgs["result"]["project"]>
+  export type ProjectInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    createdBy?: boolean | Project$createdByArgs<ExtArgs>
+    updatedBy?: boolean | Project$updatedByArgs<ExtArgs>
+  }
+  export type ProjectIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    createdBy?: boolean | Project$createdByArgs<ExtArgs>
+    updatedBy?: boolean | Project$updatedByArgs<ExtArgs>
+  }
+  export type ProjectIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    createdBy?: boolean | Project$createdByArgs<ExtArgs>
+    updatedBy?: boolean | Project$updatedByArgs<ExtArgs>
+  }
+
+  export type $ProjectPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Project"
+    objects: {
+      createdBy: Prisma.$AdminUserPayload<ExtArgs> | null
+      updatedBy: Prisma.$AdminUserPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      title: string | null
+      image: string | null
+      year: number
+      month: string
+      description: string
+      location: string
+      currency: string
+      amount: Prisma.Decimal
+      status: $Enums.ProjectStatus
+      beneficiaries: number | null
+      isPublished: boolean
+      createdAt: Date
+      updatedAt: Date
+      categoryId: string | null
+      createdById: string | null
+      updatedById: string | null
+    }, ExtArgs["result"]["project"]>
+    composites: {}
+  }
+
+  type ProjectGetPayload<S extends boolean | null | undefined | ProjectDefaultArgs> = $Result.GetResult<Prisma.$ProjectPayload, S>
+
+  type ProjectCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ProjectFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ProjectCountAggregateInputType | true
+    }
+
+  export interface ProjectDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Project'], meta: { name: 'Project' } }
+    /**
+     * Find zero or one Project that matches the filter.
+     * @param {ProjectFindUniqueArgs} args - Arguments to find a Project
+     * @example
+     * // Get one Project
+     * const project = await prisma.project.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ProjectFindUniqueArgs>(args: SelectSubset<T, ProjectFindUniqueArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Project that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ProjectFindUniqueOrThrowArgs} args - Arguments to find a Project
+     * @example
+     * // Get one Project
+     * const project = await prisma.project.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ProjectFindUniqueOrThrowArgs>(args: SelectSubset<T, ProjectFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Project that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProjectFindFirstArgs} args - Arguments to find a Project
+     * @example
+     * // Get one Project
+     * const project = await prisma.project.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ProjectFindFirstArgs>(args?: SelectSubset<T, ProjectFindFirstArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Project that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProjectFindFirstOrThrowArgs} args - Arguments to find a Project
+     * @example
+     * // Get one Project
+     * const project = await prisma.project.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ProjectFindFirstOrThrowArgs>(args?: SelectSubset<T, ProjectFindFirstOrThrowArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Projects that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProjectFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Projects
+     * const projects = await prisma.project.findMany()
+     * 
+     * // Get first 10 Projects
+     * const projects = await prisma.project.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const projectWithIdOnly = await prisma.project.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ProjectFindManyArgs>(args?: SelectSubset<T, ProjectFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Project.
+     * @param {ProjectCreateArgs} args - Arguments to create a Project.
+     * @example
+     * // Create one Project
+     * const Project = await prisma.project.create({
+     *   data: {
+     *     // ... data to create a Project
+     *   }
+     * })
+     * 
+     */
+    create<T extends ProjectCreateArgs>(args: SelectSubset<T, ProjectCreateArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Projects.
+     * @param {ProjectCreateManyArgs} args - Arguments to create many Projects.
+     * @example
+     * // Create many Projects
+     * const project = await prisma.project.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ProjectCreateManyArgs>(args?: SelectSubset<T, ProjectCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Projects and returns the data saved in the database.
+     * @param {ProjectCreateManyAndReturnArgs} args - Arguments to create many Projects.
+     * @example
+     * // Create many Projects
+     * const project = await prisma.project.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Projects and only return the `id`
+     * const projectWithIdOnly = await prisma.project.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ProjectCreateManyAndReturnArgs>(args?: SelectSubset<T, ProjectCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Project.
+     * @param {ProjectDeleteArgs} args - Arguments to delete one Project.
+     * @example
+     * // Delete one Project
+     * const Project = await prisma.project.delete({
+     *   where: {
+     *     // ... filter to delete one Project
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ProjectDeleteArgs>(args: SelectSubset<T, ProjectDeleteArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Project.
+     * @param {ProjectUpdateArgs} args - Arguments to update one Project.
+     * @example
+     * // Update one Project
+     * const project = await prisma.project.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ProjectUpdateArgs>(args: SelectSubset<T, ProjectUpdateArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Projects.
+     * @param {ProjectDeleteManyArgs} args - Arguments to filter Projects to delete.
+     * @example
+     * // Delete a few Projects
+     * const { count } = await prisma.project.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ProjectDeleteManyArgs>(args?: SelectSubset<T, ProjectDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Projects.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProjectUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Projects
+     * const project = await prisma.project.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ProjectUpdateManyArgs>(args: SelectSubset<T, ProjectUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Projects and returns the data updated in the database.
+     * @param {ProjectUpdateManyAndReturnArgs} args - Arguments to update many Projects.
+     * @example
+     * // Update many Projects
+     * const project = await prisma.project.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Projects and only return the `id`
+     * const projectWithIdOnly = await prisma.project.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ProjectUpdateManyAndReturnArgs>(args: SelectSubset<T, ProjectUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Project.
+     * @param {ProjectUpsertArgs} args - Arguments to update or create a Project.
+     * @example
+     * // Update or create a Project
+     * const project = await prisma.project.upsert({
+     *   create: {
+     *     // ... data to create a Project
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Project we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ProjectUpsertArgs>(args: SelectSubset<T, ProjectUpsertArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Projects.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProjectCountArgs} args - Arguments to filter Projects to count.
+     * @example
+     * // Count the number of Projects
+     * const count = await prisma.project.count({
+     *   where: {
+     *     // ... the filter for the Projects we want to count
+     *   }
+     * })
+    **/
+    count<T extends ProjectCountArgs>(
+      args?: Subset<T, ProjectCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ProjectCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Project.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProjectAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ProjectAggregateArgs>(args: Subset<T, ProjectAggregateArgs>): Prisma.PrismaPromise<GetProjectAggregateType<T>>
+
+    /**
+     * Group by Project.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProjectGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ProjectGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ProjectGroupByArgs['orderBy'] }
+        : { orderBy?: ProjectGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ProjectGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetProjectGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Project model
+   */
+  readonly fields: ProjectFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Project.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ProjectClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    createdBy<T extends Project$createdByArgs<ExtArgs> = {}>(args?: Subset<T, Project$createdByArgs<ExtArgs>>): Prisma__AdminUserClient<$Result.GetResult<Prisma.$AdminUserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    updatedBy<T extends Project$updatedByArgs<ExtArgs> = {}>(args?: Subset<T, Project$updatedByArgs<ExtArgs>>): Prisma__AdminUserClient<$Result.GetResult<Prisma.$AdminUserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Project model
+   */
+  interface ProjectFieldRefs {
+    readonly id: FieldRef<"Project", 'String'>
+    readonly title: FieldRef<"Project", 'String'>
+    readonly image: FieldRef<"Project", 'String'>
+    readonly year: FieldRef<"Project", 'Int'>
+    readonly month: FieldRef<"Project", 'String'>
+    readonly description: FieldRef<"Project", 'String'>
+    readonly location: FieldRef<"Project", 'String'>
+    readonly currency: FieldRef<"Project", 'String'>
+    readonly amount: FieldRef<"Project", 'Decimal'>
+    readonly status: FieldRef<"Project", 'ProjectStatus'>
+    readonly beneficiaries: FieldRef<"Project", 'Int'>
+    readonly isPublished: FieldRef<"Project", 'Boolean'>
+    readonly createdAt: FieldRef<"Project", 'DateTime'>
+    readonly updatedAt: FieldRef<"Project", 'DateTime'>
+    readonly categoryId: FieldRef<"Project", 'String'>
+    readonly createdById: FieldRef<"Project", 'String'>
+    readonly updatedById: FieldRef<"Project", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Project findUnique
+   */
+  export type ProjectFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Project
+     */
+    select?: ProjectSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Project
+     */
+    omit?: ProjectOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectInclude<ExtArgs> | null
+    /**
+     * Filter, which Project to fetch.
+     */
+    where: ProjectWhereUniqueInput
+  }
+
+  /**
+   * Project findUniqueOrThrow
+   */
+  export type ProjectFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Project
+     */
+    select?: ProjectSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Project
+     */
+    omit?: ProjectOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectInclude<ExtArgs> | null
+    /**
+     * Filter, which Project to fetch.
+     */
+    where: ProjectWhereUniqueInput
+  }
+
+  /**
+   * Project findFirst
+   */
+  export type ProjectFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Project
+     */
+    select?: ProjectSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Project
+     */
+    omit?: ProjectOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectInclude<ExtArgs> | null
+    /**
+     * Filter, which Project to fetch.
+     */
+    where?: ProjectWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Projects to fetch.
+     */
+    orderBy?: ProjectOrderByWithRelationInput | ProjectOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Projects.
+     */
+    cursor?: ProjectWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Projects from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Projects.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Projects.
+     */
+    distinct?: ProjectScalarFieldEnum | ProjectScalarFieldEnum[]
+  }
+
+  /**
+   * Project findFirstOrThrow
+   */
+  export type ProjectFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Project
+     */
+    select?: ProjectSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Project
+     */
+    omit?: ProjectOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectInclude<ExtArgs> | null
+    /**
+     * Filter, which Project to fetch.
+     */
+    where?: ProjectWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Projects to fetch.
+     */
+    orderBy?: ProjectOrderByWithRelationInput | ProjectOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Projects.
+     */
+    cursor?: ProjectWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Projects from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Projects.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Projects.
+     */
+    distinct?: ProjectScalarFieldEnum | ProjectScalarFieldEnum[]
+  }
+
+  /**
+   * Project findMany
+   */
+  export type ProjectFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Project
+     */
+    select?: ProjectSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Project
+     */
+    omit?: ProjectOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectInclude<ExtArgs> | null
+    /**
+     * Filter, which Projects to fetch.
+     */
+    where?: ProjectWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Projects to fetch.
+     */
+    orderBy?: ProjectOrderByWithRelationInput | ProjectOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Projects.
+     */
+    cursor?: ProjectWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Projects from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Projects.
+     */
+    skip?: number
+    distinct?: ProjectScalarFieldEnum | ProjectScalarFieldEnum[]
+  }
+
+  /**
+   * Project create
+   */
+  export type ProjectCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Project
+     */
+    select?: ProjectSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Project
+     */
+    omit?: ProjectOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Project.
+     */
+    data: XOR<ProjectCreateInput, ProjectUncheckedCreateInput>
+  }
+
+  /**
+   * Project createMany
+   */
+  export type ProjectCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Projects.
+     */
+    data: ProjectCreateManyInput | ProjectCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Project createManyAndReturn
+   */
+  export type ProjectCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Project
+     */
+    select?: ProjectSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Project
+     */
+    omit?: ProjectOmit<ExtArgs> | null
+    /**
+     * The data used to create many Projects.
+     */
+    data: ProjectCreateManyInput | ProjectCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Project update
+   */
+  export type ProjectUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Project
+     */
+    select?: ProjectSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Project
+     */
+    omit?: ProjectOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Project.
+     */
+    data: XOR<ProjectUpdateInput, ProjectUncheckedUpdateInput>
+    /**
+     * Choose, which Project to update.
+     */
+    where: ProjectWhereUniqueInput
+  }
+
+  /**
+   * Project updateMany
+   */
+  export type ProjectUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Projects.
+     */
+    data: XOR<ProjectUpdateManyMutationInput, ProjectUncheckedUpdateManyInput>
+    /**
+     * Filter which Projects to update
+     */
+    where?: ProjectWhereInput
+    /**
+     * Limit how many Projects to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Project updateManyAndReturn
+   */
+  export type ProjectUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Project
+     */
+    select?: ProjectSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Project
+     */
+    omit?: ProjectOmit<ExtArgs> | null
+    /**
+     * The data used to update Projects.
+     */
+    data: XOR<ProjectUpdateManyMutationInput, ProjectUncheckedUpdateManyInput>
+    /**
+     * Filter which Projects to update
+     */
+    where?: ProjectWhereInput
+    /**
+     * Limit how many Projects to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Project upsert
+   */
+  export type ProjectUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Project
+     */
+    select?: ProjectSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Project
+     */
+    omit?: ProjectOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Project to update in case it exists.
+     */
+    where: ProjectWhereUniqueInput
+    /**
+     * In case the Project found by the `where` argument doesn't exist, create a new Project with this data.
+     */
+    create: XOR<ProjectCreateInput, ProjectUncheckedCreateInput>
+    /**
+     * In case the Project was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ProjectUpdateInput, ProjectUncheckedUpdateInput>
+  }
+
+  /**
+   * Project delete
+   */
+  export type ProjectDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Project
+     */
+    select?: ProjectSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Project
+     */
+    omit?: ProjectOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectInclude<ExtArgs> | null
+    /**
+     * Filter which Project to delete.
+     */
+    where: ProjectWhereUniqueInput
+  }
+
+  /**
+   * Project deleteMany
+   */
+  export type ProjectDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Projects to delete
+     */
+    where?: ProjectWhereInput
+    /**
+     * Limit how many Projects to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Project.createdBy
+   */
+  export type Project$createdByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdminUser
+     */
+    select?: AdminUserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AdminUser
+     */
+    omit?: AdminUserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AdminUserInclude<ExtArgs> | null
+    where?: AdminUserWhereInput
+  }
+
+  /**
+   * Project.updatedBy
+   */
+  export type Project$updatedByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdminUser
+     */
+    select?: AdminUserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AdminUser
+     */
+    omit?: AdminUserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AdminUserInclude<ExtArgs> | null
+    where?: AdminUserWhereInput
+  }
+
+  /**
+   * Project without action
+   */
+  export type ProjectDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Project
+     */
+    select?: ProjectSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Project
+     */
+    omit?: ProjectOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -7216,6 +9921,48 @@ export namespace Prisma {
   };
 
   export type DonationScalarFieldEnum = (typeof DonationScalarFieldEnum)[keyof typeof DonationScalarFieldEnum]
+
+
+  export const NewsArticleScalarFieldEnum: {
+    id: 'id',
+    title: 'title',
+    slug: 'slug',
+    excerpt: 'excerpt',
+    content: 'content',
+    category: 'category',
+    featuredImage: 'featuredImage',
+    isPublished: 'isPublished',
+    isFeatured: 'isFeatured',
+    viewCount: 'viewCount',
+    publishedAt: 'publishedAt',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type NewsArticleScalarFieldEnum = (typeof NewsArticleScalarFieldEnum)[keyof typeof NewsArticleScalarFieldEnum]
+
+
+  export const ProjectScalarFieldEnum: {
+    id: 'id',
+    title: 'title',
+    image: 'image',
+    year: 'year',
+    month: 'month',
+    description: 'description',
+    location: 'location',
+    currency: 'currency',
+    amount: 'amount',
+    status: 'status',
+    beneficiaries: 'beneficiaries',
+    isPublished: 'isPublished',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt',
+    categoryId: 'categoryId',
+    createdById: 'createdById',
+    updatedById: 'updatedById'
+  };
+
+  export type ProjectScalarFieldEnum = (typeof ProjectScalarFieldEnum)[keyof typeof ProjectScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -7364,6 +10111,34 @@ export namespace Prisma {
    */
   export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
     
+
+
+  /**
+   * Reference to a field of type 'ProjectStatus'
+   */
+  export type EnumProjectStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ProjectStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'ProjectStatus[]'
+   */
+  export type ListEnumProjectStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ProjectStatus[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'Float'
+   */
+  export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
+    
+
+
+  /**
+   * Reference to a field of type 'Float[]'
+   */
+  export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
+    
   /**
    * Deep Input Types
    */
@@ -7454,6 +10229,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"AdminUser"> | Date | string
     repliedSubmissions?: ContactSubmissionListRelationFilter
     assignedSubmissions?: ContactSubmissionListRelationFilter
+    createdProjects?: ProjectListRelationFilter
+    updatedProjects?: ProjectListRelationFilter
   }
 
   export type AdminUserOrderByWithRelationInput = {
@@ -7471,6 +10248,8 @@ export namespace Prisma {
     updatedAt?: SortOrder
     repliedSubmissions?: ContactSubmissionOrderByRelationAggregateInput
     assignedSubmissions?: ContactSubmissionOrderByRelationAggregateInput
+    createdProjects?: ProjectOrderByRelationAggregateInput
+    updatedProjects?: ProjectOrderByRelationAggregateInput
   }
 
   export type AdminUserWhereUniqueInput = Prisma.AtLeast<{
@@ -7491,6 +10270,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"AdminUser"> | Date | string
     repliedSubmissions?: ContactSubmissionListRelationFilter
     assignedSubmissions?: ContactSubmissionListRelationFilter
+    createdProjects?: ProjectListRelationFilter
+    updatedProjects?: ProjectListRelationFilter
   }, "id" | "email">
 
   export type AdminUserOrderByWithAggregationInput = {
@@ -7858,6 +10639,220 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"Donation"> | Date | string
   }
 
+  export type NewsArticleWhereInput = {
+    AND?: NewsArticleWhereInput | NewsArticleWhereInput[]
+    OR?: NewsArticleWhereInput[]
+    NOT?: NewsArticleWhereInput | NewsArticleWhereInput[]
+    id?: StringFilter<"NewsArticle"> | string
+    title?: StringFilter<"NewsArticle"> | string
+    slug?: StringFilter<"NewsArticle"> | string
+    excerpt?: StringNullableFilter<"NewsArticle"> | string | null
+    content?: StringFilter<"NewsArticle"> | string
+    category?: StringFilter<"NewsArticle"> | string
+    featuredImage?: StringNullableFilter<"NewsArticle"> | string | null
+    isPublished?: BoolFilter<"NewsArticle"> | boolean
+    isFeatured?: BoolFilter<"NewsArticle"> | boolean
+    viewCount?: IntFilter<"NewsArticle"> | number
+    publishedAt?: DateTimeNullableFilter<"NewsArticle"> | Date | string | null
+    createdAt?: DateTimeFilter<"NewsArticle"> | Date | string
+    updatedAt?: DateTimeFilter<"NewsArticle"> | Date | string
+  }
+
+  export type NewsArticleOrderByWithRelationInput = {
+    id?: SortOrder
+    title?: SortOrder
+    slug?: SortOrder
+    excerpt?: SortOrderInput | SortOrder
+    content?: SortOrder
+    category?: SortOrder
+    featuredImage?: SortOrderInput | SortOrder
+    isPublished?: SortOrder
+    isFeatured?: SortOrder
+    viewCount?: SortOrder
+    publishedAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type NewsArticleWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    slug?: string
+    AND?: NewsArticleWhereInput | NewsArticleWhereInput[]
+    OR?: NewsArticleWhereInput[]
+    NOT?: NewsArticleWhereInput | NewsArticleWhereInput[]
+    title?: StringFilter<"NewsArticle"> | string
+    excerpt?: StringNullableFilter<"NewsArticle"> | string | null
+    content?: StringFilter<"NewsArticle"> | string
+    category?: StringFilter<"NewsArticle"> | string
+    featuredImage?: StringNullableFilter<"NewsArticle"> | string | null
+    isPublished?: BoolFilter<"NewsArticle"> | boolean
+    isFeatured?: BoolFilter<"NewsArticle"> | boolean
+    viewCount?: IntFilter<"NewsArticle"> | number
+    publishedAt?: DateTimeNullableFilter<"NewsArticle"> | Date | string | null
+    createdAt?: DateTimeFilter<"NewsArticle"> | Date | string
+    updatedAt?: DateTimeFilter<"NewsArticle"> | Date | string
+  }, "id" | "slug">
+
+  export type NewsArticleOrderByWithAggregationInput = {
+    id?: SortOrder
+    title?: SortOrder
+    slug?: SortOrder
+    excerpt?: SortOrderInput | SortOrder
+    content?: SortOrder
+    category?: SortOrder
+    featuredImage?: SortOrderInput | SortOrder
+    isPublished?: SortOrder
+    isFeatured?: SortOrder
+    viewCount?: SortOrder
+    publishedAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: NewsArticleCountOrderByAggregateInput
+    _avg?: NewsArticleAvgOrderByAggregateInput
+    _max?: NewsArticleMaxOrderByAggregateInput
+    _min?: NewsArticleMinOrderByAggregateInput
+    _sum?: NewsArticleSumOrderByAggregateInput
+  }
+
+  export type NewsArticleScalarWhereWithAggregatesInput = {
+    AND?: NewsArticleScalarWhereWithAggregatesInput | NewsArticleScalarWhereWithAggregatesInput[]
+    OR?: NewsArticleScalarWhereWithAggregatesInput[]
+    NOT?: NewsArticleScalarWhereWithAggregatesInput | NewsArticleScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"NewsArticle"> | string
+    title?: StringWithAggregatesFilter<"NewsArticle"> | string
+    slug?: StringWithAggregatesFilter<"NewsArticle"> | string
+    excerpt?: StringNullableWithAggregatesFilter<"NewsArticle"> | string | null
+    content?: StringWithAggregatesFilter<"NewsArticle"> | string
+    category?: StringWithAggregatesFilter<"NewsArticle"> | string
+    featuredImage?: StringNullableWithAggregatesFilter<"NewsArticle"> | string | null
+    isPublished?: BoolWithAggregatesFilter<"NewsArticle"> | boolean
+    isFeatured?: BoolWithAggregatesFilter<"NewsArticle"> | boolean
+    viewCount?: IntWithAggregatesFilter<"NewsArticle"> | number
+    publishedAt?: DateTimeNullableWithAggregatesFilter<"NewsArticle"> | Date | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"NewsArticle"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"NewsArticle"> | Date | string
+  }
+
+  export type ProjectWhereInput = {
+    AND?: ProjectWhereInput | ProjectWhereInput[]
+    OR?: ProjectWhereInput[]
+    NOT?: ProjectWhereInput | ProjectWhereInput[]
+    id?: StringFilter<"Project"> | string
+    title?: StringNullableFilter<"Project"> | string | null
+    image?: StringNullableFilter<"Project"> | string | null
+    year?: IntFilter<"Project"> | number
+    month?: StringFilter<"Project"> | string
+    description?: StringFilter<"Project"> | string
+    location?: StringFilter<"Project"> | string
+    currency?: StringFilter<"Project"> | string
+    amount?: DecimalFilter<"Project"> | Decimal | DecimalJsLike | number | string
+    status?: EnumProjectStatusFilter<"Project"> | $Enums.ProjectStatus
+    beneficiaries?: IntNullableFilter<"Project"> | number | null
+    isPublished?: BoolFilter<"Project"> | boolean
+    createdAt?: DateTimeFilter<"Project"> | Date | string
+    updatedAt?: DateTimeFilter<"Project"> | Date | string
+    categoryId?: StringNullableFilter<"Project"> | string | null
+    createdById?: StringNullableFilter<"Project"> | string | null
+    updatedById?: StringNullableFilter<"Project"> | string | null
+    createdBy?: XOR<AdminUserNullableScalarRelationFilter, AdminUserWhereInput> | null
+    updatedBy?: XOR<AdminUserNullableScalarRelationFilter, AdminUserWhereInput> | null
+  }
+
+  export type ProjectOrderByWithRelationInput = {
+    id?: SortOrder
+    title?: SortOrderInput | SortOrder
+    image?: SortOrderInput | SortOrder
+    year?: SortOrder
+    month?: SortOrder
+    description?: SortOrder
+    location?: SortOrder
+    currency?: SortOrder
+    amount?: SortOrder
+    status?: SortOrder
+    beneficiaries?: SortOrderInput | SortOrder
+    isPublished?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    categoryId?: SortOrderInput | SortOrder
+    createdById?: SortOrderInput | SortOrder
+    updatedById?: SortOrderInput | SortOrder
+    createdBy?: AdminUserOrderByWithRelationInput
+    updatedBy?: AdminUserOrderByWithRelationInput
+  }
+
+  export type ProjectWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: ProjectWhereInput | ProjectWhereInput[]
+    OR?: ProjectWhereInput[]
+    NOT?: ProjectWhereInput | ProjectWhereInput[]
+    title?: StringNullableFilter<"Project"> | string | null
+    image?: StringNullableFilter<"Project"> | string | null
+    year?: IntFilter<"Project"> | number
+    month?: StringFilter<"Project"> | string
+    description?: StringFilter<"Project"> | string
+    location?: StringFilter<"Project"> | string
+    currency?: StringFilter<"Project"> | string
+    amount?: DecimalFilter<"Project"> | Decimal | DecimalJsLike | number | string
+    status?: EnumProjectStatusFilter<"Project"> | $Enums.ProjectStatus
+    beneficiaries?: IntNullableFilter<"Project"> | number | null
+    isPublished?: BoolFilter<"Project"> | boolean
+    createdAt?: DateTimeFilter<"Project"> | Date | string
+    updatedAt?: DateTimeFilter<"Project"> | Date | string
+    categoryId?: StringNullableFilter<"Project"> | string | null
+    createdById?: StringNullableFilter<"Project"> | string | null
+    updatedById?: StringNullableFilter<"Project"> | string | null
+    createdBy?: XOR<AdminUserNullableScalarRelationFilter, AdminUserWhereInput> | null
+    updatedBy?: XOR<AdminUserNullableScalarRelationFilter, AdminUserWhereInput> | null
+  }, "id">
+
+  export type ProjectOrderByWithAggregationInput = {
+    id?: SortOrder
+    title?: SortOrderInput | SortOrder
+    image?: SortOrderInput | SortOrder
+    year?: SortOrder
+    month?: SortOrder
+    description?: SortOrder
+    location?: SortOrder
+    currency?: SortOrder
+    amount?: SortOrder
+    status?: SortOrder
+    beneficiaries?: SortOrderInput | SortOrder
+    isPublished?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    categoryId?: SortOrderInput | SortOrder
+    createdById?: SortOrderInput | SortOrder
+    updatedById?: SortOrderInput | SortOrder
+    _count?: ProjectCountOrderByAggregateInput
+    _avg?: ProjectAvgOrderByAggregateInput
+    _max?: ProjectMaxOrderByAggregateInput
+    _min?: ProjectMinOrderByAggregateInput
+    _sum?: ProjectSumOrderByAggregateInput
+  }
+
+  export type ProjectScalarWhereWithAggregatesInput = {
+    AND?: ProjectScalarWhereWithAggregatesInput | ProjectScalarWhereWithAggregatesInput[]
+    OR?: ProjectScalarWhereWithAggregatesInput[]
+    NOT?: ProjectScalarWhereWithAggregatesInput | ProjectScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Project"> | string
+    title?: StringNullableWithAggregatesFilter<"Project"> | string | null
+    image?: StringNullableWithAggregatesFilter<"Project"> | string | null
+    year?: IntWithAggregatesFilter<"Project"> | number
+    month?: StringWithAggregatesFilter<"Project"> | string
+    description?: StringWithAggregatesFilter<"Project"> | string
+    location?: StringWithAggregatesFilter<"Project"> | string
+    currency?: StringWithAggregatesFilter<"Project"> | string
+    amount?: DecimalWithAggregatesFilter<"Project"> | Decimal | DecimalJsLike | number | string
+    status?: EnumProjectStatusWithAggregatesFilter<"Project"> | $Enums.ProjectStatus
+    beneficiaries?: IntNullableWithAggregatesFilter<"Project"> | number | null
+    isPublished?: BoolWithAggregatesFilter<"Project"> | boolean
+    createdAt?: DateTimeWithAggregatesFilter<"Project"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Project"> | Date | string
+    categoryId?: StringNullableWithAggregatesFilter<"Project"> | string | null
+    createdById?: StringNullableWithAggregatesFilter<"Project"> | string | null
+    updatedById?: StringNullableWithAggregatesFilter<"Project"> | string | null
+  }
+
   export type UserCreateInput = {
     id?: string
     name?: string | null
@@ -7950,6 +10945,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     repliedSubmissions?: ContactSubmissionCreateNestedManyWithoutRepliedByInput
     assignedSubmissions?: ContactSubmissionCreateNestedManyWithoutAdminUserInput
+    createdProjects?: ProjectCreateNestedManyWithoutCreatedByInput
+    updatedProjects?: ProjectCreateNestedManyWithoutUpdatedByInput
   }
 
   export type AdminUserUncheckedCreateInput = {
@@ -7967,6 +10964,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     repliedSubmissions?: ContactSubmissionUncheckedCreateNestedManyWithoutRepliedByInput
     assignedSubmissions?: ContactSubmissionUncheckedCreateNestedManyWithoutAdminUserInput
+    createdProjects?: ProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    updatedProjects?: ProjectUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type AdminUserUpdateInput = {
@@ -7984,6 +10983,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     repliedSubmissions?: ContactSubmissionUpdateManyWithoutRepliedByNestedInput
     assignedSubmissions?: ContactSubmissionUpdateManyWithoutAdminUserNestedInput
+    createdProjects?: ProjectUpdateManyWithoutCreatedByNestedInput
+    updatedProjects?: ProjectUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type AdminUserUncheckedUpdateInput = {
@@ -8001,6 +11002,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     repliedSubmissions?: ContactSubmissionUncheckedUpdateManyWithoutRepliedByNestedInput
     assignedSubmissions?: ContactSubmissionUncheckedUpdateManyWithoutAdminUserNestedInput
+    createdProjects?: ProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    updatedProjects?: ProjectUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type AdminUserCreateManyInput = {
@@ -8445,6 +11448,256 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type NewsArticleCreateInput = {
+    id?: string
+    title: string
+    slug: string
+    excerpt?: string | null
+    content: string
+    category: string
+    featuredImage?: string | null
+    isPublished?: boolean
+    isFeatured?: boolean
+    viewCount?: number
+    publishedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type NewsArticleUncheckedCreateInput = {
+    id?: string
+    title: string
+    slug: string
+    excerpt?: string | null
+    content: string
+    category: string
+    featuredImage?: string | null
+    isPublished?: boolean
+    isFeatured?: boolean
+    viewCount?: number
+    publishedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type NewsArticleUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    excerpt?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    featuredImage?: NullableStringFieldUpdateOperationsInput | string | null
+    isPublished?: BoolFieldUpdateOperationsInput | boolean
+    isFeatured?: BoolFieldUpdateOperationsInput | boolean
+    viewCount?: IntFieldUpdateOperationsInput | number
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NewsArticleUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    excerpt?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    featuredImage?: NullableStringFieldUpdateOperationsInput | string | null
+    isPublished?: BoolFieldUpdateOperationsInput | boolean
+    isFeatured?: BoolFieldUpdateOperationsInput | boolean
+    viewCount?: IntFieldUpdateOperationsInput | number
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NewsArticleCreateManyInput = {
+    id?: string
+    title: string
+    slug: string
+    excerpt?: string | null
+    content: string
+    category: string
+    featuredImage?: string | null
+    isPublished?: boolean
+    isFeatured?: boolean
+    viewCount?: number
+    publishedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type NewsArticleUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    excerpt?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    featuredImage?: NullableStringFieldUpdateOperationsInput | string | null
+    isPublished?: BoolFieldUpdateOperationsInput | boolean
+    isFeatured?: BoolFieldUpdateOperationsInput | boolean
+    viewCount?: IntFieldUpdateOperationsInput | number
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NewsArticleUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    excerpt?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    featuredImage?: NullableStringFieldUpdateOperationsInput | string | null
+    isPublished?: BoolFieldUpdateOperationsInput | boolean
+    isFeatured?: BoolFieldUpdateOperationsInput | boolean
+    viewCount?: IntFieldUpdateOperationsInput | number
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ProjectCreateInput = {
+    id?: string
+    title?: string | null
+    image?: string | null
+    year: number
+    month: string
+    description: string
+    location: string
+    currency: string
+    amount: Decimal | DecimalJsLike | number | string
+    status?: $Enums.ProjectStatus
+    beneficiaries?: number | null
+    isPublished?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    categoryId?: string | null
+    createdBy?: AdminUserCreateNestedOneWithoutCreatedProjectsInput
+    updatedBy?: AdminUserCreateNestedOneWithoutUpdatedProjectsInput
+  }
+
+  export type ProjectUncheckedCreateInput = {
+    id?: string
+    title?: string | null
+    image?: string | null
+    year: number
+    month: string
+    description: string
+    location: string
+    currency: string
+    amount: Decimal | DecimalJsLike | number | string
+    status?: $Enums.ProjectStatus
+    beneficiaries?: number | null
+    isPublished?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    categoryId?: string | null
+    createdById?: string | null
+    updatedById?: string | null
+  }
+
+  export type ProjectUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: IntFieldUpdateOperationsInput | number
+    month?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    location?: StringFieldUpdateOperationsInput | string
+    currency?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+    beneficiaries?: NullableIntFieldUpdateOperationsInput | number | null
+    isPublished?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    categoryId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: AdminUserUpdateOneWithoutCreatedProjectsNestedInput
+    updatedBy?: AdminUserUpdateOneWithoutUpdatedProjectsNestedInput
+  }
+
+  export type ProjectUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: IntFieldUpdateOperationsInput | number
+    month?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    location?: StringFieldUpdateOperationsInput | string
+    currency?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+    beneficiaries?: NullableIntFieldUpdateOperationsInput | number | null
+    isPublished?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    categoryId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type ProjectCreateManyInput = {
+    id?: string
+    title?: string | null
+    image?: string | null
+    year: number
+    month: string
+    description: string
+    location: string
+    currency: string
+    amount: Decimal | DecimalJsLike | number | string
+    status?: $Enums.ProjectStatus
+    beneficiaries?: number | null
+    isPublished?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    categoryId?: string | null
+    createdById?: string | null
+    updatedById?: string | null
+  }
+
+  export type ProjectUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: IntFieldUpdateOperationsInput | number
+    month?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    location?: StringFieldUpdateOperationsInput | string
+    currency?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+    beneficiaries?: NullableIntFieldUpdateOperationsInput | number | null
+    isPublished?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    categoryId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type ProjectUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: IntFieldUpdateOperationsInput | number
+    month?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    location?: StringFieldUpdateOperationsInput | string
+    currency?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+    beneficiaries?: NullableIntFieldUpdateOperationsInput | number | null
+    isPublished?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    categoryId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -8603,7 +11856,17 @@ export namespace Prisma {
     none?: ContactSubmissionWhereInput
   }
 
+  export type ProjectListRelationFilter = {
+    every?: ProjectWhereInput
+    some?: ProjectWhereInput
+    none?: ProjectWhereInput
+  }
+
   export type ContactSubmissionOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ProjectOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -8946,6 +12209,205 @@ export namespace Prisma {
     _max?: NestedEnumDonationStatusFilter<$PrismaModel>
   }
 
+  export type IntFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntFilter<$PrismaModel> | number
+  }
+
+  export type NewsArticleCountOrderByAggregateInput = {
+    id?: SortOrder
+    title?: SortOrder
+    slug?: SortOrder
+    excerpt?: SortOrder
+    content?: SortOrder
+    category?: SortOrder
+    featuredImage?: SortOrder
+    isPublished?: SortOrder
+    isFeatured?: SortOrder
+    viewCount?: SortOrder
+    publishedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type NewsArticleAvgOrderByAggregateInput = {
+    viewCount?: SortOrder
+  }
+
+  export type NewsArticleMaxOrderByAggregateInput = {
+    id?: SortOrder
+    title?: SortOrder
+    slug?: SortOrder
+    excerpt?: SortOrder
+    content?: SortOrder
+    category?: SortOrder
+    featuredImage?: SortOrder
+    isPublished?: SortOrder
+    isFeatured?: SortOrder
+    viewCount?: SortOrder
+    publishedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type NewsArticleMinOrderByAggregateInput = {
+    id?: SortOrder
+    title?: SortOrder
+    slug?: SortOrder
+    excerpt?: SortOrder
+    content?: SortOrder
+    category?: SortOrder
+    featuredImage?: SortOrder
+    isPublished?: SortOrder
+    isFeatured?: SortOrder
+    viewCount?: SortOrder
+    publishedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type NewsArticleSumOrderByAggregateInput = {
+    viewCount?: SortOrder
+  }
+
+  export type IntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
+  }
+
+  export type EnumProjectStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.ProjectStatus | EnumProjectStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ProjectStatus[] | ListEnumProjectStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ProjectStatus[] | ListEnumProjectStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumProjectStatusFilter<$PrismaModel> | $Enums.ProjectStatus
+  }
+
+  export type IntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type ProjectCountOrderByAggregateInput = {
+    id?: SortOrder
+    title?: SortOrder
+    image?: SortOrder
+    year?: SortOrder
+    month?: SortOrder
+    description?: SortOrder
+    location?: SortOrder
+    currency?: SortOrder
+    amount?: SortOrder
+    status?: SortOrder
+    beneficiaries?: SortOrder
+    isPublished?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    categoryId?: SortOrder
+    createdById?: SortOrder
+    updatedById?: SortOrder
+  }
+
+  export type ProjectAvgOrderByAggregateInput = {
+    year?: SortOrder
+    amount?: SortOrder
+    beneficiaries?: SortOrder
+  }
+
+  export type ProjectMaxOrderByAggregateInput = {
+    id?: SortOrder
+    title?: SortOrder
+    image?: SortOrder
+    year?: SortOrder
+    month?: SortOrder
+    description?: SortOrder
+    location?: SortOrder
+    currency?: SortOrder
+    amount?: SortOrder
+    status?: SortOrder
+    beneficiaries?: SortOrder
+    isPublished?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    categoryId?: SortOrder
+    createdById?: SortOrder
+    updatedById?: SortOrder
+  }
+
+  export type ProjectMinOrderByAggregateInput = {
+    id?: SortOrder
+    title?: SortOrder
+    image?: SortOrder
+    year?: SortOrder
+    month?: SortOrder
+    description?: SortOrder
+    location?: SortOrder
+    currency?: SortOrder
+    amount?: SortOrder
+    status?: SortOrder
+    beneficiaries?: SortOrder
+    isPublished?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    categoryId?: SortOrder
+    createdById?: SortOrder
+    updatedById?: SortOrder
+  }
+
+  export type ProjectSumOrderByAggregateInput = {
+    year?: SortOrder
+    amount?: SortOrder
+    beneficiaries?: SortOrder
+  }
+
+  export type EnumProjectStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ProjectStatus | EnumProjectStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ProjectStatus[] | ListEnumProjectStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ProjectStatus[] | ListEnumProjectStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumProjectStatusWithAggregatesFilter<$PrismaModel> | $Enums.ProjectStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumProjectStatusFilter<$PrismaModel>
+    _max?: NestedEnumProjectStatusFilter<$PrismaModel>
+  }
+
+  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
   export type StringFieldUpdateOperationsInput = {
     set?: string
   }
@@ -8972,6 +12434,20 @@ export namespace Prisma {
     connect?: ContactSubmissionWhereUniqueInput | ContactSubmissionWhereUniqueInput[]
   }
 
+  export type ProjectCreateNestedManyWithoutCreatedByInput = {
+    create?: XOR<ProjectCreateWithoutCreatedByInput, ProjectUncheckedCreateWithoutCreatedByInput> | ProjectCreateWithoutCreatedByInput[] | ProjectUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: ProjectCreateOrConnectWithoutCreatedByInput | ProjectCreateOrConnectWithoutCreatedByInput[]
+    createMany?: ProjectCreateManyCreatedByInputEnvelope
+    connect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+  }
+
+  export type ProjectCreateNestedManyWithoutUpdatedByInput = {
+    create?: XOR<ProjectCreateWithoutUpdatedByInput, ProjectUncheckedCreateWithoutUpdatedByInput> | ProjectCreateWithoutUpdatedByInput[] | ProjectUncheckedCreateWithoutUpdatedByInput[]
+    connectOrCreate?: ProjectCreateOrConnectWithoutUpdatedByInput | ProjectCreateOrConnectWithoutUpdatedByInput[]
+    createMany?: ProjectCreateManyUpdatedByInputEnvelope
+    connect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+  }
+
   export type ContactSubmissionUncheckedCreateNestedManyWithoutRepliedByInput = {
     create?: XOR<ContactSubmissionCreateWithoutRepliedByInput, ContactSubmissionUncheckedCreateWithoutRepliedByInput> | ContactSubmissionCreateWithoutRepliedByInput[] | ContactSubmissionUncheckedCreateWithoutRepliedByInput[]
     connectOrCreate?: ContactSubmissionCreateOrConnectWithoutRepliedByInput | ContactSubmissionCreateOrConnectWithoutRepliedByInput[]
@@ -8984,6 +12460,20 @@ export namespace Prisma {
     connectOrCreate?: ContactSubmissionCreateOrConnectWithoutAdminUserInput | ContactSubmissionCreateOrConnectWithoutAdminUserInput[]
     createMany?: ContactSubmissionCreateManyAdminUserInputEnvelope
     connect?: ContactSubmissionWhereUniqueInput | ContactSubmissionWhereUniqueInput[]
+  }
+
+  export type ProjectUncheckedCreateNestedManyWithoutCreatedByInput = {
+    create?: XOR<ProjectCreateWithoutCreatedByInput, ProjectUncheckedCreateWithoutCreatedByInput> | ProjectCreateWithoutCreatedByInput[] | ProjectUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: ProjectCreateOrConnectWithoutCreatedByInput | ProjectCreateOrConnectWithoutCreatedByInput[]
+    createMany?: ProjectCreateManyCreatedByInputEnvelope
+    connect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+  }
+
+  export type ProjectUncheckedCreateNestedManyWithoutUpdatedByInput = {
+    create?: XOR<ProjectCreateWithoutUpdatedByInput, ProjectUncheckedCreateWithoutUpdatedByInput> | ProjectCreateWithoutUpdatedByInput[] | ProjectUncheckedCreateWithoutUpdatedByInput[]
+    connectOrCreate?: ProjectCreateOrConnectWithoutUpdatedByInput | ProjectCreateOrConnectWithoutUpdatedByInput[]
+    createMany?: ProjectCreateManyUpdatedByInputEnvelope
+    connect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
   }
 
   export type EnumRoleFieldUpdateOperationsInput = {
@@ -9026,6 +12516,34 @@ export namespace Prisma {
     deleteMany?: ContactSubmissionScalarWhereInput | ContactSubmissionScalarWhereInput[]
   }
 
+  export type ProjectUpdateManyWithoutCreatedByNestedInput = {
+    create?: XOR<ProjectCreateWithoutCreatedByInput, ProjectUncheckedCreateWithoutCreatedByInput> | ProjectCreateWithoutCreatedByInput[] | ProjectUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: ProjectCreateOrConnectWithoutCreatedByInput | ProjectCreateOrConnectWithoutCreatedByInput[]
+    upsert?: ProjectUpsertWithWhereUniqueWithoutCreatedByInput | ProjectUpsertWithWhereUniqueWithoutCreatedByInput[]
+    createMany?: ProjectCreateManyCreatedByInputEnvelope
+    set?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+    disconnect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+    delete?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+    connect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+    update?: ProjectUpdateWithWhereUniqueWithoutCreatedByInput | ProjectUpdateWithWhereUniqueWithoutCreatedByInput[]
+    updateMany?: ProjectUpdateManyWithWhereWithoutCreatedByInput | ProjectUpdateManyWithWhereWithoutCreatedByInput[]
+    deleteMany?: ProjectScalarWhereInput | ProjectScalarWhereInput[]
+  }
+
+  export type ProjectUpdateManyWithoutUpdatedByNestedInput = {
+    create?: XOR<ProjectCreateWithoutUpdatedByInput, ProjectUncheckedCreateWithoutUpdatedByInput> | ProjectCreateWithoutUpdatedByInput[] | ProjectUncheckedCreateWithoutUpdatedByInput[]
+    connectOrCreate?: ProjectCreateOrConnectWithoutUpdatedByInput | ProjectCreateOrConnectWithoutUpdatedByInput[]
+    upsert?: ProjectUpsertWithWhereUniqueWithoutUpdatedByInput | ProjectUpsertWithWhereUniqueWithoutUpdatedByInput[]
+    createMany?: ProjectCreateManyUpdatedByInputEnvelope
+    set?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+    disconnect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+    delete?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+    connect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+    update?: ProjectUpdateWithWhereUniqueWithoutUpdatedByInput | ProjectUpdateWithWhereUniqueWithoutUpdatedByInput[]
+    updateMany?: ProjectUpdateManyWithWhereWithoutUpdatedByInput | ProjectUpdateManyWithWhereWithoutUpdatedByInput[]
+    deleteMany?: ProjectScalarWhereInput | ProjectScalarWhereInput[]
+  }
+
   export type ContactSubmissionUncheckedUpdateManyWithoutRepliedByNestedInput = {
     create?: XOR<ContactSubmissionCreateWithoutRepliedByInput, ContactSubmissionUncheckedCreateWithoutRepliedByInput> | ContactSubmissionCreateWithoutRepliedByInput[] | ContactSubmissionUncheckedCreateWithoutRepliedByInput[]
     connectOrCreate?: ContactSubmissionCreateOrConnectWithoutRepliedByInput | ContactSubmissionCreateOrConnectWithoutRepliedByInput[]
@@ -9052,6 +12570,34 @@ export namespace Prisma {
     update?: ContactSubmissionUpdateWithWhereUniqueWithoutAdminUserInput | ContactSubmissionUpdateWithWhereUniqueWithoutAdminUserInput[]
     updateMany?: ContactSubmissionUpdateManyWithWhereWithoutAdminUserInput | ContactSubmissionUpdateManyWithWhereWithoutAdminUserInput[]
     deleteMany?: ContactSubmissionScalarWhereInput | ContactSubmissionScalarWhereInput[]
+  }
+
+  export type ProjectUncheckedUpdateManyWithoutCreatedByNestedInput = {
+    create?: XOR<ProjectCreateWithoutCreatedByInput, ProjectUncheckedCreateWithoutCreatedByInput> | ProjectCreateWithoutCreatedByInput[] | ProjectUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: ProjectCreateOrConnectWithoutCreatedByInput | ProjectCreateOrConnectWithoutCreatedByInput[]
+    upsert?: ProjectUpsertWithWhereUniqueWithoutCreatedByInput | ProjectUpsertWithWhereUniqueWithoutCreatedByInput[]
+    createMany?: ProjectCreateManyCreatedByInputEnvelope
+    set?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+    disconnect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+    delete?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+    connect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+    update?: ProjectUpdateWithWhereUniqueWithoutCreatedByInput | ProjectUpdateWithWhereUniqueWithoutCreatedByInput[]
+    updateMany?: ProjectUpdateManyWithWhereWithoutCreatedByInput | ProjectUpdateManyWithWhereWithoutCreatedByInput[]
+    deleteMany?: ProjectScalarWhereInput | ProjectScalarWhereInput[]
+  }
+
+  export type ProjectUncheckedUpdateManyWithoutUpdatedByNestedInput = {
+    create?: XOR<ProjectCreateWithoutUpdatedByInput, ProjectUncheckedCreateWithoutUpdatedByInput> | ProjectCreateWithoutUpdatedByInput[] | ProjectUncheckedCreateWithoutUpdatedByInput[]
+    connectOrCreate?: ProjectCreateOrConnectWithoutUpdatedByInput | ProjectCreateOrConnectWithoutUpdatedByInput[]
+    upsert?: ProjectUpsertWithWhereUniqueWithoutUpdatedByInput | ProjectUpsertWithWhereUniqueWithoutUpdatedByInput[]
+    createMany?: ProjectCreateManyUpdatedByInputEnvelope
+    set?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+    disconnect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+    delete?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+    connect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+    update?: ProjectUpdateWithWhereUniqueWithoutUpdatedByInput | ProjectUpdateWithWhereUniqueWithoutUpdatedByInput[]
+    updateMany?: ProjectUpdateManyWithWhereWithoutUpdatedByInput | ProjectUpdateManyWithWhereWithoutUpdatedByInput[]
+    deleteMany?: ProjectScalarWhereInput | ProjectScalarWhereInput[]
   }
 
   export type AdminUserCreateNestedOneWithoutRepliedSubmissionsInput = {
@@ -9104,6 +12650,58 @@ export namespace Prisma {
 
   export type EnumDonationStatusFieldUpdateOperationsInput = {
     set?: $Enums.DonationStatus
+  }
+
+  export type IntFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type AdminUserCreateNestedOneWithoutCreatedProjectsInput = {
+    create?: XOR<AdminUserCreateWithoutCreatedProjectsInput, AdminUserUncheckedCreateWithoutCreatedProjectsInput>
+    connectOrCreate?: AdminUserCreateOrConnectWithoutCreatedProjectsInput
+    connect?: AdminUserWhereUniqueInput
+  }
+
+  export type AdminUserCreateNestedOneWithoutUpdatedProjectsInput = {
+    create?: XOR<AdminUserCreateWithoutUpdatedProjectsInput, AdminUserUncheckedCreateWithoutUpdatedProjectsInput>
+    connectOrCreate?: AdminUserCreateOrConnectWithoutUpdatedProjectsInput
+    connect?: AdminUserWhereUniqueInput
+  }
+
+  export type EnumProjectStatusFieldUpdateOperationsInput = {
+    set?: $Enums.ProjectStatus
+  }
+
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type AdminUserUpdateOneWithoutCreatedProjectsNestedInput = {
+    create?: XOR<AdminUserCreateWithoutCreatedProjectsInput, AdminUserUncheckedCreateWithoutCreatedProjectsInput>
+    connectOrCreate?: AdminUserCreateOrConnectWithoutCreatedProjectsInput
+    upsert?: AdminUserUpsertWithoutCreatedProjectsInput
+    disconnect?: AdminUserWhereInput | boolean
+    delete?: AdminUserWhereInput | boolean
+    connect?: AdminUserWhereUniqueInput
+    update?: XOR<XOR<AdminUserUpdateToOneWithWhereWithoutCreatedProjectsInput, AdminUserUpdateWithoutCreatedProjectsInput>, AdminUserUncheckedUpdateWithoutCreatedProjectsInput>
+  }
+
+  export type AdminUserUpdateOneWithoutUpdatedProjectsNestedInput = {
+    create?: XOR<AdminUserCreateWithoutUpdatedProjectsInput, AdminUserUncheckedCreateWithoutUpdatedProjectsInput>
+    connectOrCreate?: AdminUserCreateOrConnectWithoutUpdatedProjectsInput
+    upsert?: AdminUserUpsertWithoutUpdatedProjectsInput
+    disconnect?: AdminUserWhereInput | boolean
+    delete?: AdminUserWhereInput | boolean
+    connect?: AdminUserWhereUniqueInput
+    update?: XOR<XOR<AdminUserUpdateToOneWithWhereWithoutUpdatedProjectsInput, AdminUserUpdateWithoutUpdatedProjectsInput>, AdminUserUncheckedUpdateWithoutUpdatedProjectsInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -9348,6 +12946,77 @@ export namespace Prisma {
     _max?: NestedEnumDonationStatusFilter<$PrismaModel>
   }
 
+  export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
+  }
+
+  export type NestedFloatFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatFilter<$PrismaModel> | number
+  }
+
+  export type NestedEnumProjectStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.ProjectStatus | EnumProjectStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ProjectStatus[] | ListEnumProjectStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ProjectStatus[] | ListEnumProjectStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumProjectStatusFilter<$PrismaModel> | $Enums.ProjectStatus
+  }
+
+  export type NestedEnumProjectStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ProjectStatus | EnumProjectStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ProjectStatus[] | ListEnumProjectStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ProjectStatus[] | ListEnumProjectStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumProjectStatusWithAggregatesFilter<$PrismaModel> | $Enums.ProjectStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumProjectStatusFilter<$PrismaModel>
+    _max?: NestedEnumProjectStatusFilter<$PrismaModel>
+  }
+
+  export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type NestedFloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  }
+
   export type ContactSubmissionCreateWithoutRepliedByInput = {
     id?: string
     name: string
@@ -9436,6 +13105,102 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type ProjectCreateWithoutCreatedByInput = {
+    id?: string
+    title?: string | null
+    image?: string | null
+    year: number
+    month: string
+    description: string
+    location: string
+    currency: string
+    amount: Decimal | DecimalJsLike | number | string
+    status?: $Enums.ProjectStatus
+    beneficiaries?: number | null
+    isPublished?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    categoryId?: string | null
+    updatedBy?: AdminUserCreateNestedOneWithoutUpdatedProjectsInput
+  }
+
+  export type ProjectUncheckedCreateWithoutCreatedByInput = {
+    id?: string
+    title?: string | null
+    image?: string | null
+    year: number
+    month: string
+    description: string
+    location: string
+    currency: string
+    amount: Decimal | DecimalJsLike | number | string
+    status?: $Enums.ProjectStatus
+    beneficiaries?: number | null
+    isPublished?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    categoryId?: string | null
+    updatedById?: string | null
+  }
+
+  export type ProjectCreateOrConnectWithoutCreatedByInput = {
+    where: ProjectWhereUniqueInput
+    create: XOR<ProjectCreateWithoutCreatedByInput, ProjectUncheckedCreateWithoutCreatedByInput>
+  }
+
+  export type ProjectCreateManyCreatedByInputEnvelope = {
+    data: ProjectCreateManyCreatedByInput | ProjectCreateManyCreatedByInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ProjectCreateWithoutUpdatedByInput = {
+    id?: string
+    title?: string | null
+    image?: string | null
+    year: number
+    month: string
+    description: string
+    location: string
+    currency: string
+    amount: Decimal | DecimalJsLike | number | string
+    status?: $Enums.ProjectStatus
+    beneficiaries?: number | null
+    isPublished?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    categoryId?: string | null
+    createdBy?: AdminUserCreateNestedOneWithoutCreatedProjectsInput
+  }
+
+  export type ProjectUncheckedCreateWithoutUpdatedByInput = {
+    id?: string
+    title?: string | null
+    image?: string | null
+    year: number
+    month: string
+    description: string
+    location: string
+    currency: string
+    amount: Decimal | DecimalJsLike | number | string
+    status?: $Enums.ProjectStatus
+    beneficiaries?: number | null
+    isPublished?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    categoryId?: string | null
+    createdById?: string | null
+  }
+
+  export type ProjectCreateOrConnectWithoutUpdatedByInput = {
+    where: ProjectWhereUniqueInput
+    create: XOR<ProjectCreateWithoutUpdatedByInput, ProjectUncheckedCreateWithoutUpdatedByInput>
+  }
+
+  export type ProjectCreateManyUpdatedByInputEnvelope = {
+    data: ProjectCreateManyUpdatedByInput | ProjectCreateManyUpdatedByInput[]
+    skipDuplicates?: boolean
+  }
+
   export type ContactSubmissionUpsertWithWhereUniqueWithoutRepliedByInput = {
     where: ContactSubmissionWhereUniqueInput
     update: XOR<ContactSubmissionUpdateWithoutRepliedByInput, ContactSubmissionUncheckedUpdateWithoutRepliedByInput>
@@ -9489,6 +13254,61 @@ export namespace Prisma {
     data: XOR<ContactSubmissionUpdateManyMutationInput, ContactSubmissionUncheckedUpdateManyWithoutAdminUserInput>
   }
 
+  export type ProjectUpsertWithWhereUniqueWithoutCreatedByInput = {
+    where: ProjectWhereUniqueInput
+    update: XOR<ProjectUpdateWithoutCreatedByInput, ProjectUncheckedUpdateWithoutCreatedByInput>
+    create: XOR<ProjectCreateWithoutCreatedByInput, ProjectUncheckedCreateWithoutCreatedByInput>
+  }
+
+  export type ProjectUpdateWithWhereUniqueWithoutCreatedByInput = {
+    where: ProjectWhereUniqueInput
+    data: XOR<ProjectUpdateWithoutCreatedByInput, ProjectUncheckedUpdateWithoutCreatedByInput>
+  }
+
+  export type ProjectUpdateManyWithWhereWithoutCreatedByInput = {
+    where: ProjectScalarWhereInput
+    data: XOR<ProjectUpdateManyMutationInput, ProjectUncheckedUpdateManyWithoutCreatedByInput>
+  }
+
+  export type ProjectScalarWhereInput = {
+    AND?: ProjectScalarWhereInput | ProjectScalarWhereInput[]
+    OR?: ProjectScalarWhereInput[]
+    NOT?: ProjectScalarWhereInput | ProjectScalarWhereInput[]
+    id?: StringFilter<"Project"> | string
+    title?: StringNullableFilter<"Project"> | string | null
+    image?: StringNullableFilter<"Project"> | string | null
+    year?: IntFilter<"Project"> | number
+    month?: StringFilter<"Project"> | string
+    description?: StringFilter<"Project"> | string
+    location?: StringFilter<"Project"> | string
+    currency?: StringFilter<"Project"> | string
+    amount?: DecimalFilter<"Project"> | Decimal | DecimalJsLike | number | string
+    status?: EnumProjectStatusFilter<"Project"> | $Enums.ProjectStatus
+    beneficiaries?: IntNullableFilter<"Project"> | number | null
+    isPublished?: BoolFilter<"Project"> | boolean
+    createdAt?: DateTimeFilter<"Project"> | Date | string
+    updatedAt?: DateTimeFilter<"Project"> | Date | string
+    categoryId?: StringNullableFilter<"Project"> | string | null
+    createdById?: StringNullableFilter<"Project"> | string | null
+    updatedById?: StringNullableFilter<"Project"> | string | null
+  }
+
+  export type ProjectUpsertWithWhereUniqueWithoutUpdatedByInput = {
+    where: ProjectWhereUniqueInput
+    update: XOR<ProjectUpdateWithoutUpdatedByInput, ProjectUncheckedUpdateWithoutUpdatedByInput>
+    create: XOR<ProjectCreateWithoutUpdatedByInput, ProjectUncheckedCreateWithoutUpdatedByInput>
+  }
+
+  export type ProjectUpdateWithWhereUniqueWithoutUpdatedByInput = {
+    where: ProjectWhereUniqueInput
+    data: XOR<ProjectUpdateWithoutUpdatedByInput, ProjectUncheckedUpdateWithoutUpdatedByInput>
+  }
+
+  export type ProjectUpdateManyWithWhereWithoutUpdatedByInput = {
+    where: ProjectScalarWhereInput
+    data: XOR<ProjectUpdateManyMutationInput, ProjectUncheckedUpdateManyWithoutUpdatedByInput>
+  }
+
   export type AdminUserCreateWithoutRepliedSubmissionsInput = {
     id?: string
     email: string
@@ -9503,6 +13323,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     assignedSubmissions?: ContactSubmissionCreateNestedManyWithoutAdminUserInput
+    createdProjects?: ProjectCreateNestedManyWithoutCreatedByInput
+    updatedProjects?: ProjectCreateNestedManyWithoutUpdatedByInput
   }
 
   export type AdminUserUncheckedCreateWithoutRepliedSubmissionsInput = {
@@ -9519,6 +13341,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     assignedSubmissions?: ContactSubmissionUncheckedCreateNestedManyWithoutAdminUserInput
+    createdProjects?: ProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    updatedProjects?: ProjectUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type AdminUserCreateOrConnectWithoutRepliedSubmissionsInput = {
@@ -9540,6 +13364,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     repliedSubmissions?: ContactSubmissionCreateNestedManyWithoutRepliedByInput
+    createdProjects?: ProjectCreateNestedManyWithoutCreatedByInput
+    updatedProjects?: ProjectCreateNestedManyWithoutUpdatedByInput
   }
 
   export type AdminUserUncheckedCreateWithoutAssignedSubmissionsInput = {
@@ -9556,6 +13382,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     repliedSubmissions?: ContactSubmissionUncheckedCreateNestedManyWithoutRepliedByInput
+    createdProjects?: ProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    updatedProjects?: ProjectUncheckedCreateNestedManyWithoutUpdatedByInput
   }
 
   export type AdminUserCreateOrConnectWithoutAssignedSubmissionsInput = {
@@ -9588,6 +13416,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assignedSubmissions?: ContactSubmissionUpdateManyWithoutAdminUserNestedInput
+    createdProjects?: ProjectUpdateManyWithoutCreatedByNestedInput
+    updatedProjects?: ProjectUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type AdminUserUncheckedUpdateWithoutRepliedSubmissionsInput = {
@@ -9604,6 +13434,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assignedSubmissions?: ContactSubmissionUncheckedUpdateManyWithoutAdminUserNestedInput
+    createdProjects?: ProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    updatedProjects?: ProjectUncheckedUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type AdminUserUpsertWithoutAssignedSubmissionsInput = {
@@ -9631,6 +13463,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     repliedSubmissions?: ContactSubmissionUpdateManyWithoutRepliedByNestedInput
+    createdProjects?: ProjectUpdateManyWithoutCreatedByNestedInput
+    updatedProjects?: ProjectUpdateManyWithoutUpdatedByNestedInput
   }
 
   export type AdminUserUncheckedUpdateWithoutAssignedSubmissionsInput = {
@@ -9647,6 +13481,184 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     repliedSubmissions?: ContactSubmissionUncheckedUpdateManyWithoutRepliedByNestedInput
+    createdProjects?: ProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    updatedProjects?: ProjectUncheckedUpdateManyWithoutUpdatedByNestedInput
+  }
+
+  export type AdminUserCreateWithoutCreatedProjectsInput = {
+    id?: string
+    email: string
+    passwordHash: string
+    name?: string | null
+    avatar?: string | null
+    role?: $Enums.Role
+    isActive?: boolean
+    refreshToken?: string | null
+    lastLoginAt?: Date | string | null
+    lastLoginIp?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    repliedSubmissions?: ContactSubmissionCreateNestedManyWithoutRepliedByInput
+    assignedSubmissions?: ContactSubmissionCreateNestedManyWithoutAdminUserInput
+    updatedProjects?: ProjectCreateNestedManyWithoutUpdatedByInput
+  }
+
+  export type AdminUserUncheckedCreateWithoutCreatedProjectsInput = {
+    id?: string
+    email: string
+    passwordHash: string
+    name?: string | null
+    avatar?: string | null
+    role?: $Enums.Role
+    isActive?: boolean
+    refreshToken?: string | null
+    lastLoginAt?: Date | string | null
+    lastLoginIp?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    repliedSubmissions?: ContactSubmissionUncheckedCreateNestedManyWithoutRepliedByInput
+    assignedSubmissions?: ContactSubmissionUncheckedCreateNestedManyWithoutAdminUserInput
+    updatedProjects?: ProjectUncheckedCreateNestedManyWithoutUpdatedByInput
+  }
+
+  export type AdminUserCreateOrConnectWithoutCreatedProjectsInput = {
+    where: AdminUserWhereUniqueInput
+    create: XOR<AdminUserCreateWithoutCreatedProjectsInput, AdminUserUncheckedCreateWithoutCreatedProjectsInput>
+  }
+
+  export type AdminUserCreateWithoutUpdatedProjectsInput = {
+    id?: string
+    email: string
+    passwordHash: string
+    name?: string | null
+    avatar?: string | null
+    role?: $Enums.Role
+    isActive?: boolean
+    refreshToken?: string | null
+    lastLoginAt?: Date | string | null
+    lastLoginIp?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    repliedSubmissions?: ContactSubmissionCreateNestedManyWithoutRepliedByInput
+    assignedSubmissions?: ContactSubmissionCreateNestedManyWithoutAdminUserInput
+    createdProjects?: ProjectCreateNestedManyWithoutCreatedByInput
+  }
+
+  export type AdminUserUncheckedCreateWithoutUpdatedProjectsInput = {
+    id?: string
+    email: string
+    passwordHash: string
+    name?: string | null
+    avatar?: string | null
+    role?: $Enums.Role
+    isActive?: boolean
+    refreshToken?: string | null
+    lastLoginAt?: Date | string | null
+    lastLoginIp?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    repliedSubmissions?: ContactSubmissionUncheckedCreateNestedManyWithoutRepliedByInput
+    assignedSubmissions?: ContactSubmissionUncheckedCreateNestedManyWithoutAdminUserInput
+    createdProjects?: ProjectUncheckedCreateNestedManyWithoutCreatedByInput
+  }
+
+  export type AdminUserCreateOrConnectWithoutUpdatedProjectsInput = {
+    where: AdminUserWhereUniqueInput
+    create: XOR<AdminUserCreateWithoutUpdatedProjectsInput, AdminUserUncheckedCreateWithoutUpdatedProjectsInput>
+  }
+
+  export type AdminUserUpsertWithoutCreatedProjectsInput = {
+    update: XOR<AdminUserUpdateWithoutCreatedProjectsInput, AdminUserUncheckedUpdateWithoutCreatedProjectsInput>
+    create: XOR<AdminUserCreateWithoutCreatedProjectsInput, AdminUserUncheckedCreateWithoutCreatedProjectsInput>
+    where?: AdminUserWhereInput
+  }
+
+  export type AdminUserUpdateToOneWithWhereWithoutCreatedProjectsInput = {
+    where?: AdminUserWhereInput
+    data: XOR<AdminUserUpdateWithoutCreatedProjectsInput, AdminUserUncheckedUpdateWithoutCreatedProjectsInput>
+  }
+
+  export type AdminUserUpdateWithoutCreatedProjectsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastLoginIp?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    repliedSubmissions?: ContactSubmissionUpdateManyWithoutRepliedByNestedInput
+    assignedSubmissions?: ContactSubmissionUpdateManyWithoutAdminUserNestedInput
+    updatedProjects?: ProjectUpdateManyWithoutUpdatedByNestedInput
+  }
+
+  export type AdminUserUncheckedUpdateWithoutCreatedProjectsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastLoginIp?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    repliedSubmissions?: ContactSubmissionUncheckedUpdateManyWithoutRepliedByNestedInput
+    assignedSubmissions?: ContactSubmissionUncheckedUpdateManyWithoutAdminUserNestedInput
+    updatedProjects?: ProjectUncheckedUpdateManyWithoutUpdatedByNestedInput
+  }
+
+  export type AdminUserUpsertWithoutUpdatedProjectsInput = {
+    update: XOR<AdminUserUpdateWithoutUpdatedProjectsInput, AdminUserUncheckedUpdateWithoutUpdatedProjectsInput>
+    create: XOR<AdminUserCreateWithoutUpdatedProjectsInput, AdminUserUncheckedCreateWithoutUpdatedProjectsInput>
+    where?: AdminUserWhereInput
+  }
+
+  export type AdminUserUpdateToOneWithWhereWithoutUpdatedProjectsInput = {
+    where?: AdminUserWhereInput
+    data: XOR<AdminUserUpdateWithoutUpdatedProjectsInput, AdminUserUncheckedUpdateWithoutUpdatedProjectsInput>
+  }
+
+  export type AdminUserUpdateWithoutUpdatedProjectsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastLoginIp?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    repliedSubmissions?: ContactSubmissionUpdateManyWithoutRepliedByNestedInput
+    assignedSubmissions?: ContactSubmissionUpdateManyWithoutAdminUserNestedInput
+    createdProjects?: ProjectUpdateManyWithoutCreatedByNestedInput
+  }
+
+  export type AdminUserUncheckedUpdateWithoutUpdatedProjectsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
+    lastLoginAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastLoginIp?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    repliedSubmissions?: ContactSubmissionUncheckedUpdateManyWithoutRepliedByNestedInput
+    assignedSubmissions?: ContactSubmissionUncheckedUpdateManyWithoutAdminUserNestedInput
+    createdProjects?: ProjectUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type ContactSubmissionCreateManyRepliedByInput = {
@@ -9681,6 +13693,44 @@ export namespace Prisma {
     ipAddress?: string | null
     userAgent?: string | null
     createdAt?: Date | string
+  }
+
+  export type ProjectCreateManyCreatedByInput = {
+    id?: string
+    title?: string | null
+    image?: string | null
+    year: number
+    month: string
+    description: string
+    location: string
+    currency: string
+    amount: Decimal | DecimalJsLike | number | string
+    status?: $Enums.ProjectStatus
+    beneficiaries?: number | null
+    isPublished?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    categoryId?: string | null
+    updatedById?: string | null
+  }
+
+  export type ProjectCreateManyUpdatedByInput = {
+    id?: string
+    title?: string | null
+    image?: string | null
+    year: number
+    month: string
+    description: string
+    location: string
+    currency: string
+    amount: Decimal | DecimalJsLike | number | string
+    status?: $Enums.ProjectStatus
+    beneficiaries?: number | null
+    isPublished?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    categoryId?: string | null
+    createdById?: string | null
   }
 
   export type ContactSubmissionUpdateWithoutRepliedByInput = {
@@ -9783,6 +13833,120 @@ export namespace Prisma {
     ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
     userAgent?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ProjectUpdateWithoutCreatedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: IntFieldUpdateOperationsInput | number
+    month?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    location?: StringFieldUpdateOperationsInput | string
+    currency?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+    beneficiaries?: NullableIntFieldUpdateOperationsInput | number | null
+    isPublished?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    categoryId?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedBy?: AdminUserUpdateOneWithoutUpdatedProjectsNestedInput
+  }
+
+  export type ProjectUncheckedUpdateWithoutCreatedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: IntFieldUpdateOperationsInput | number
+    month?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    location?: StringFieldUpdateOperationsInput | string
+    currency?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+    beneficiaries?: NullableIntFieldUpdateOperationsInput | number | null
+    isPublished?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    categoryId?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type ProjectUncheckedUpdateManyWithoutCreatedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: IntFieldUpdateOperationsInput | number
+    month?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    location?: StringFieldUpdateOperationsInput | string
+    currency?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+    beneficiaries?: NullableIntFieldUpdateOperationsInput | number | null
+    isPublished?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    categoryId?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type ProjectUpdateWithoutUpdatedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: IntFieldUpdateOperationsInput | number
+    month?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    location?: StringFieldUpdateOperationsInput | string
+    currency?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+    beneficiaries?: NullableIntFieldUpdateOperationsInput | number | null
+    isPublished?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    categoryId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: AdminUserUpdateOneWithoutCreatedProjectsNestedInput
+  }
+
+  export type ProjectUncheckedUpdateWithoutUpdatedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: IntFieldUpdateOperationsInput | number
+    month?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    location?: StringFieldUpdateOperationsInput | string
+    currency?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+    beneficiaries?: NullableIntFieldUpdateOperationsInput | number | null
+    isPublished?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    categoryId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type ProjectUncheckedUpdateManyWithoutUpdatedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: IntFieldUpdateOperationsInput | number
+    month?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    location?: StringFieldUpdateOperationsInput | string
+    currency?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+    beneficiaries?: NullableIntFieldUpdateOperationsInput | number | null
+    isPublished?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    categoryId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
 

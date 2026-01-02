@@ -203,6 +203,42 @@ exports.Prisma.DonationScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.NewsArticleScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  slug: 'slug',
+  excerpt: 'excerpt',
+  content: 'content',
+  category: 'category',
+  featuredImage: 'featuredImage',
+  isPublished: 'isPublished',
+  isFeatured: 'isFeatured',
+  viewCount: 'viewCount',
+  publishedAt: 'publishedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ProjectScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  image: 'image',
+  year: 'year',
+  month: 'month',
+  description: 'description',
+  location: 'location',
+  currency: 'currency',
+  amount: 'amount',
+  status: 'status',
+  beneficiaries: 'beneficiaries',
+  isPublished: 'isPublished',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  categoryId: 'categoryId',
+  createdById: 'createdById',
+  updatedById: 'updatedById'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -245,12 +281,21 @@ exports.DonationStatus = exports.$Enums.DonationStatus = {
   REFUNDED: 'REFUNDED'
 };
 
+exports.ProjectStatus = exports.$Enums.ProjectStatus = {
+  PLANNED: 'PLANNED',
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED'
+};
+
 exports.Prisma.ModelName = {
   User: 'User',
   AdminUser: 'AdminUser',
   ContactSubmission: 'ContactSubmission',
   NewsletterSubscriber: 'NewsletterSubscriber',
-  Donation: 'Donation'
+  Donation: 'Donation',
+  NewsArticle: 'NewsArticle',
+  Project: 'Project'
 };
 
 /**
