@@ -392,7 +392,10 @@ export default function DonationsPage() {
                     <TableCell className="font-medium text-gray-900">
                       {getDonorName(donation)}
                     </TableCell>
-                    <TableCell className="font-semibold text-gray-900">
+                    <TableCell
+                      className="font-semibold text-gray-900"
+                      suppressHydrationWarning
+                    >
                       {formatAmount(Number(donation.amount), donation.currency)}
                     </TableCell>
                     <TableCell className="text-gray-600">
@@ -408,7 +411,10 @@ export default function DonationsPage() {
                         {donation.status}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-gray-600">
+                    <TableCell
+                      className="text-gray-600"
+                      suppressHydrationWarning
+                    >
                       {formatDate(donation.createdAt)}
                     </TableCell>
                   </TableRow>
@@ -425,9 +431,11 @@ export default function DonationsPage() {
           </span>
           <span>
             Total:{" "}
-            {formatAmount(
-              filteredData.reduce((sum, d) => sum + Number(d.amount), 0)
-            )}
+            <span suppressHydrationWarning>
+              {formatAmount(
+                filteredData.reduce((sum, d) => sum + Number(d.amount), 0)
+              )}
+            </span>
           </span>
         </div>
       </div>
