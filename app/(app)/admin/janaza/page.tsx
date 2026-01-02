@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import { useState, useMemo } from "react"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
+import { useState, useMemo } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -12,7 +12,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from "@/components/ui/table";
 import {
   Search,
   Plus,
@@ -23,8 +23,8 @@ import {
   Pencil,
   Eye,
   Cross,
-} from "lucide-react"
-import { cn } from "@/lib/utils"
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 
 // Sample Janaza data
 const janazaData = [
@@ -164,91 +164,99 @@ const janazaData = [
     createdAt: "2024-12-23T14:00:00",
     updatedAt: "2024-12-24T14:00:00",
   },
-]
+];
 
-const statuses = ["Scheduled", "Completed", "Pending", "Cancelled"]
+const statuses = ["Scheduled", "Completed", "Pending", "Cancelled"];
 
 const statusStyles: Record<string, string> = {
   Scheduled: "bg-blue-100 text-blue-700 hover:bg-blue-100",
   Completed: "bg-gray-100 text-gray-700 hover:bg-gray-100",
   Pending: "bg-yellow-100 text-yellow-700 hover:bg-yellow-100",
   Cancelled: "bg-red-100 text-red-700 hover:bg-red-100",
-}
+};
 
-const ITEMS_PER_PAGE = 6
+const ITEMS_PER_PAGE = 6;
 
 export default function JanazaPage() {
-  const router = useRouter()
-  const [searchQuery, setSearchQuery] = useState("")
-  const [statusFilter, setStatusFilter] = useState<string>("all")
-  const [showStatusDropdown, setShowStatusDropdown] = useState(false)
-  const [currentPage, setCurrentPage] = useState(1)
+  const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [showStatusDropdown, setShowStatusDropdown] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
 
   // Filter data
   const filteredJanaza = useMemo(() => {
-    let result = [...janazaData]
+    let result = [...janazaData];
 
     if (searchQuery) {
-      const query = searchQuery.toLowerCase()
-      result = result.filter((item) =>
-        item.deceasedName.toLowerCase().includes(query) ||
-        item.prayerLocation.toLowerCase().includes(query) ||
-        item.contactName.toLowerCase().includes(query)
-      )
+      const query = searchQuery.toLowerCase();
+      result = result.filter(
+        (item) =>
+          item.deceasedName.toLowerCase().includes(query) ||
+          item.prayerLocation.toLowerCase().includes(query) ||
+          item.contactName.toLowerCase().includes(query)
+      );
     }
 
     if (statusFilter !== "all") {
-      result = result.filter((item) => item.status === statusFilter)
+      result = result.filter((item) => item.status === statusFilter);
     }
 
     // Sort by prayer date (upcoming first)
-    result.sort((a, b) => new Date(b.prayerDate).getTime() - new Date(a.prayerDate).getTime())
+    result.sort(
+      (a, b) =>
+        new Date(b.prayerDate).getTime() - new Date(a.prayerDate).getTime()
+    );
 
-    return result
-  }, [searchQuery, statusFilter])
+    return result;
+  }, [searchQuery, statusFilter]);
 
   // Pagination
-  const totalPages = Math.ceil(filteredJanaza.length / ITEMS_PER_PAGE)
+  const totalPages = Math.ceil(filteredJanaza.length / ITEMS_PER_PAGE);
   const paginatedJanaza = useMemo(() => {
-    const start = (currentPage - 1) * ITEMS_PER_PAGE
-    return filteredJanaza.slice(start, start + ITEMS_PER_PAGE)
-  }, [filteredJanaza, currentPage])
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    return filteredJanaza.slice(start, start + ITEMS_PER_PAGE);
+  }, [filteredJanaza, currentPage]);
 
   const handleView = (id: number) => {
-    router.push(`/admin/janaza/${id}`)
-  }
+    router.push(`/admin/janaza/${id}`);
+  };
 
   const handleEdit = (id: number) => {
-    router.push(`/admin/janaza/new/${id}/edit`)
-  }
+    router.push(`/admin/janaza/new/${id}/edit`);
+  };
 
   const handleDelete = (id: number) => {
-    console.log("Deleting janaza:", id)
-  }
+    console.log("Deleting janaza:", id);
+  };
 
   const formatDate = (dateStr: string) => {
     return new Date(dateStr).toLocaleDateString("en-US", {
       year: "numeric",
       month: "short",
       day: "numeric",
-    })
-  }
+    });
+  };
 
   const formatTime = (timeStr: string) => {
-    const [hours, minutes] = timeStr.split(":")
-    const hour = parseInt(hours)
-    const ampm = hour >= 12 ? "PM" : "AM"
-    const hour12 = hour % 12 || 12
-    return `${hour12}:${minutes} ${ampm}`
-  }
+    const [hours, minutes] = timeStr.split(":");
+    const hour = parseInt(hours);
+    const ampm = hour >= 12 ? "PM" : "AM";
+    const hour12 = hour % 12 || 12;
+    return `${hour12}:${minutes} ${ampm}`;
+  };
 
   return (
     <div className="space-y-6">
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Janaza Announcements</h1>
-          <p className="text-sm text-gray-500 mt-1">Manage funeral prayer announcements</p>
+          <h1 className="text-2xl font-bold text-gray-900">
+            Janaza Announcements
+          </h1>
+          <p className="text-sm text-gray-500 mt-1">
+            Manage funeral prayer announcements
+          </p>
         </div>
         <Button
           onClick={() => router.push("/admin/janaza/new")}
@@ -269,8 +277,8 @@ export default function JanazaPage() {
               placeholder="Search by name, location, or contact..."
               value={searchQuery}
               onChange={(e) => {
-                setSearchQuery(e.target.value)
-                setCurrentPage(1)
+                setSearchQuery(e.target.value);
+                setCurrentPage(1);
               }}
               className="pl-10 bg-gray-50 border-gray-200 rounded-xl"
             />
@@ -283,7 +291,9 @@ export default function JanazaPage() {
               onClick={() => setShowStatusDropdown(!showStatusDropdown)}
               className="border-gray-200 rounded-xl min-w-[130px] justify-between"
             >
-              <span>{statusFilter === "all" ? "All Status" : statusFilter}</span>
+              <span>
+                {statusFilter === "all" ? "All Status" : statusFilter}
+              </span>
               <ChevronDown className="w-4 h-4 ml-2" />
             </Button>
 
@@ -291,9 +301,9 @@ export default function JanazaPage() {
               <div className="absolute left-0 top-full mt-2 w-36 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-20">
                 <button
                   onClick={() => {
-                    setStatusFilter("all")
-                    setShowStatusDropdown(false)
-                    setCurrentPage(1)
+                    setStatusFilter("all");
+                    setShowStatusDropdown(false);
+                    setCurrentPage(1);
                   }}
                   className={cn(
                     "w-full px-4 py-2 text-left text-sm hover:bg-gray-50 transition-colors",
@@ -306,9 +316,9 @@ export default function JanazaPage() {
                   <button
                     key={status}
                     onClick={() => {
-                      setStatusFilter(status)
-                      setShowStatusDropdown(false)
-                      setCurrentPage(1)
+                      setStatusFilter(status);
+                      setShowStatusDropdown(false);
+                      setCurrentPage(1);
                     }}
                     className={cn(
                       "w-full px-4 py-2 text-left text-sm hover:bg-gray-50 transition-colors",
@@ -345,7 +355,9 @@ export default function JanazaPage() {
                 <TableRow>
                   <TableCell colSpan={8} className="text-center py-12">
                     <Cross className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                    <p className="text-gray-500">No janaza announcements found</p>
+                    <p className="text-gray-500">
+                      No janaza announcements found
+                    </p>
                   </TableCell>
                 </TableRow>
               ) : (
@@ -359,13 +371,17 @@ export default function JanazaPage() {
                         {item.deceasedName}
                       </span>
                     </TableCell>
-                    <TableCell className="text-gray-600">
-                      {item.age}
-                    </TableCell>
-                    <TableCell className="text-gray-600">
+                    <TableCell className="text-gray-600">{item.age}</TableCell>
+                    <TableCell
+                      className="text-gray-600"
+                      suppressHydrationWarning
+                    >
                       {formatDate(item.prayerDate)}
                     </TableCell>
-                    <TableCell className="text-gray-600">
+                    <TableCell
+                      className="text-gray-600"
+                      suppressHydrationWarning
+                    >
                       {formatTime(item.prayerTime)}
                     </TableCell>
                     <TableCell className="text-gray-600 max-w-[200px] truncate">
@@ -375,7 +391,8 @@ export default function JanazaPage() {
                       <Badge
                         className={cn(
                           "font-medium",
-                          statusStyles[item.status] || "bg-gray-100 text-gray-700"
+                          statusStyles[item.status] ||
+                            "bg-gray-100 text-gray-700"
                         )}
                       >
                         {item.status}
@@ -395,7 +412,6 @@ export default function JanazaPage() {
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center justify-end gap-2">
-                       
                         <Button
                           variant="ghost"
                           size="sm"
@@ -443,25 +459,29 @@ export default function JanazaPage() {
                 <ChevronLeft className="w-4 h-4" />
               </Button>
 
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                <Button
-                  key={page}
-                  variant={currentPage === page ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setCurrentPage(page)}
-                  className={cn(
-                    "rounded-lg w-8",
-                    currentPage === page && "bg-blue-600 hover:bg-blue-700"
-                  )}
-                >
-                  {page}
-                </Button>
-              ))}
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                (page) => (
+                  <Button
+                    key={page}
+                    variant={currentPage === page ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setCurrentPage(page)}
+                    className={cn(
+                      "rounded-lg w-8",
+                      currentPage === page && "bg-blue-600 hover:bg-blue-700"
+                    )}
+                  >
+                    {page}
+                  </Button>
+                )
+              )}
 
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
                 disabled={currentPage === totalPages}
                 className="rounded-lg"
               >
@@ -472,5 +492,5 @@ export default function JanazaPage() {
         )}
       </div>
     </div>
-  )
+  );
 }

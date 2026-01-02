@@ -1,18 +1,18 @@
-"use client"
+"use client";
 
-import { useState, useMemo } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Badge } from "@/components/ui/badge"
-import { Checkbox } from "@/components/ui/checkbox"
+import { useState, useMemo } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -20,7 +20,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from "@/components/ui/table";
 import {
   Search,
   Plus,
@@ -34,172 +34,240 @@ import {
   ChevronRight,
   RefreshCw,
   Loader2,
-} from "lucide-react"
-import { cn } from "@/lib/utils"
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 
 // Sample subscriber data
 const initialSubscribers = [
-  { id: 1, email: "ahmed.cassim@email.com", status: "Verified", subscribedAt: "2024-12-15T10:30:00" },
-  { id: 2, email: "fatima.noor@gmail.com", status: "Verified", subscribedAt: "2024-12-14T08:15:00" },
-  { id: 3, email: "mohamed.ali@email.com", status: "Pending", subscribedAt: "2024-12-20T14:45:00" },
-  { id: 4, email: "aisha.khan@outlook.com", status: "Verified", subscribedAt: "2024-12-10T09:00:00" },
-  { id: 5, email: "yusuf.rahman@email.com", status: "Unsubscribed", subscribedAt: "2024-11-25T16:30:00" },
-  { id: 6, email: "zainab.saleh@gmail.com", status: "Verified", subscribedAt: "2024-12-18T11:20:00" },
-  { id: 7, email: "omar.faisal@email.com", status: "Pending", subscribedAt: "2024-12-22T13:00:00" },
-  { id: 8, email: "mariam.begum@outlook.com", status: "Verified", subscribedAt: "2024-12-05T07:45:00" },
-  { id: 9, email: "hassan.ibrahim@email.com", status: "Verified", subscribedAt: "2024-12-01T12:00:00" },
-  { id: 10, email: "khadija.hassan@gmail.com", status: "Unsubscribed", subscribedAt: "2024-11-15T10:10:00" },
-  { id: 11, email: "rashid.ahmed@email.com", status: "Pending", subscribedAt: "2024-12-23T15:30:00" },
-  { id: 12, email: "amina.khan@outlook.com", status: "Verified", subscribedAt: "2024-12-08T08:00:00" },
-]
+  {
+    id: 1,
+    email: "ahmed.cassim@email.com",
+    status: "Verified",
+    subscribedAt: "2024-12-15T10:30:00",
+  },
+  {
+    id: 2,
+    email: "fatima.noor@gmail.com",
+    status: "Verified",
+    subscribedAt: "2024-12-14T08:15:00",
+  },
+  {
+    id: 3,
+    email: "mohamed.ali@email.com",
+    status: "Pending",
+    subscribedAt: "2024-12-20T14:45:00",
+  },
+  {
+    id: 4,
+    email: "aisha.khan@outlook.com",
+    status: "Verified",
+    subscribedAt: "2024-12-10T09:00:00",
+  },
+  {
+    id: 5,
+    email: "yusuf.rahman@email.com",
+    status: "Unsubscribed",
+    subscribedAt: "2024-11-25T16:30:00",
+  },
+  {
+    id: 6,
+    email: "zainab.saleh@gmail.com",
+    status: "Verified",
+    subscribedAt: "2024-12-18T11:20:00",
+  },
+  {
+    id: 7,
+    email: "omar.faisal@email.com",
+    status: "Pending",
+    subscribedAt: "2024-12-22T13:00:00",
+  },
+  {
+    id: 8,
+    email: "mariam.begum@outlook.com",
+    status: "Verified",
+    subscribedAt: "2024-12-05T07:45:00",
+  },
+  {
+    id: 9,
+    email: "hassan.ibrahim@email.com",
+    status: "Verified",
+    subscribedAt: "2024-12-01T12:00:00",
+  },
+  {
+    id: 10,
+    email: "khadija.hassan@gmail.com",
+    status: "Unsubscribed",
+    subscribedAt: "2024-11-15T10:10:00",
+  },
+  {
+    id: 11,
+    email: "rashid.ahmed@email.com",
+    status: "Pending",
+    subscribedAt: "2024-12-23T15:30:00",
+  },
+  {
+    id: 12,
+    email: "amina.khan@outlook.com",
+    status: "Verified",
+    subscribedAt: "2024-12-08T08:00:00",
+  },
+];
 
-const statuses = ["Verified", "Pending", "Unsubscribed"]
+const statuses = ["Verified", "Pending", "Unsubscribed"];
 
 const statusStyles: Record<string, string> = {
   Verified: "bg-green-100 text-green-700",
   Pending: "bg-yellow-100 text-yellow-700",
   Unsubscribed: "bg-gray-100 text-gray-500",
-}
+};
 
 type Subscriber = {
-  id: number
-  email: string
-  status: string
-  subscribedAt: string
-}
+  id: number;
+  email: string;
+  status: string;
+  subscribedAt: string;
+};
 
-const ITEMS_PER_PAGE = 8
+const ITEMS_PER_PAGE = 8;
 
 export default function NewsletterPage() {
-  const [subscribers, setSubscribers] = useState<Subscriber[]>(initialSubscribers)
-  const [searchQuery, setSearchQuery] = useState("")
-  const [statusFilter, setStatusFilter] = useState<string>("all")
-  const [showStatusDropdown, setShowStatusDropdown] = useState(false)
-  const [selectedIds, setSelectedIds] = useState<number[]>([])
-  const [currentPage, setCurrentPage] = useState(1)
-  const [showAddModal, setShowAddModal] = useState(false)
-  const [showEditModal, setShowEditModal] = useState(false)
-  const [editingSubscriber, setEditingSubscriber] = useState<Subscriber | null>(null)
-  const [newEmail, setNewEmail] = useState("")
-  const [newStatus, setNewStatus] = useState("Pending")
-  const [isResending, setIsResending] = useState<number | null>(null)
+  const [subscribers, setSubscribers] =
+    useState<Subscriber[]>(initialSubscribers);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [showStatusDropdown, setShowStatusDropdown] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingSubscriber, setEditingSubscriber] = useState<Subscriber | null>(
+    null
+  );
+  const [newEmail, setNewEmail] = useState("");
+  const [newStatus, setNewStatus] = useState("Pending");
+  const [isResending, setIsResending] = useState<number | null>(null);
 
   // Filter subscribers
   const filteredSubscribers = useMemo(() => {
-    let result = [...subscribers]
+    let result = [...subscribers];
 
     if (searchQuery) {
       result = result.filter((s) =>
         s.email.toLowerCase().includes(searchQuery.toLowerCase())
-      )
+      );
     }
 
     if (statusFilter !== "all") {
-      result = result.filter((s) => s.status === statusFilter)
+      result = result.filter((s) => s.status === statusFilter);
     }
 
-    return result.sort((a, b) => new Date(b.subscribedAt).getTime() - new Date(a.subscribedAt).getTime())
-  }, [subscribers, searchQuery, statusFilter])
+    return result.sort(
+      (a, b) =>
+        new Date(b.subscribedAt).getTime() - new Date(a.subscribedAt).getTime()
+    );
+  }, [subscribers, searchQuery, statusFilter]);
 
   // Pagination
-  const totalPages = Math.ceil(filteredSubscribers.length / ITEMS_PER_PAGE)
+  const totalPages = Math.ceil(filteredSubscribers.length / ITEMS_PER_PAGE);
   const paginatedSubscribers = useMemo(() => {
-    const start = (currentPage - 1) * ITEMS_PER_PAGE
-    return filteredSubscribers.slice(start, start + ITEMS_PER_PAGE)
-  }, [filteredSubscribers, currentPage])
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    return filteredSubscribers.slice(start, start + ITEMS_PER_PAGE);
+  }, [filteredSubscribers, currentPage]);
 
   // Selection
   const toggleSelect = (id: number) => {
     setSelectedIds((prev) =>
       prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
-    )
-  }
+    );
+  };
 
   const toggleSelectAll = () => {
     if (selectedIds.length === paginatedSubscribers.length) {
-      setSelectedIds([])
+      setSelectedIds([]);
     } else {
-      setSelectedIds(paginatedSubscribers.map((s) => s.id))
+      setSelectedIds(paginatedSubscribers.map((s) => s.id));
     }
-  }
+  };
 
   // Add subscriber
   const handleAddSubscriber = () => {
-    if (!newEmail.trim()) return
+    if (!newEmail.trim()) return;
     const newSubscriber: Subscriber = {
       id: Date.now(),
       email: newEmail,
       status: newStatus,
       subscribedAt: new Date().toISOString(),
-    }
-    setSubscribers((prev) => [newSubscriber, ...prev])
-    setNewEmail("")
-    setNewStatus("Pending")
-    setShowAddModal(false)
-  }
+    };
+    setSubscribers((prev) => [newSubscriber, ...prev]);
+    setNewEmail("");
+    setNewStatus("Pending");
+    setShowAddModal(false);
+  };
 
   // Edit subscriber
   const handleSaveEdit = () => {
-    if (!editingSubscriber) return
+    if (!editingSubscriber) return;
     setSubscribers((prev) =>
       prev.map((s) => (s.id === editingSubscriber.id ? editingSubscriber : s))
-    )
-    setEditingSubscriber(null)
-    setShowEditModal(false)
-  }
+    );
+    setEditingSubscriber(null);
+    setShowEditModal(false);
+  };
 
   // Delete subscriber
   const handleDelete = (id: number) => {
-    setSubscribers((prev) => prev.filter((s) => s.id !== id))
-    setSelectedIds((prev) => prev.filter((i) => i !== id))
-  }
+    setSubscribers((prev) => prev.filter((s) => s.id !== id));
+    setSelectedIds((prev) => prev.filter((i) => i !== id));
+  };
 
   // Bulk delete
   const handleBulkDelete = () => {
-    setSubscribers((prev) => prev.filter((s) => !selectedIds.includes(s.id)))
-    setSelectedIds([])
-  }
+    setSubscribers((prev) => prev.filter((s) => !selectedIds.includes(s.id)));
+    setSelectedIds([]);
+  };
 
   // Resend verification
   const handleResendVerification = async (id: number) => {
-    setIsResending(id)
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-    setIsResending(null)
-    console.log("Verification email sent to subscriber:", id)
-  }
+    setIsResending(id);
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    setIsResending(null);
+    console.log("Verification email sent to subscriber:", id);
+  };
 
   // Export CSV
   const handleExportCSV = () => {
-    const headers = ["Email", "Status", "Subscribed Date"]
+    const headers = ["Email", "Status", "Subscribed Date"];
     const rows = filteredSubscribers.map((s) => [
       s.email,
       s.status,
       new Date(s.subscribedAt).toLocaleDateString(),
-    ])
-    const csv = [headers.join(","), ...rows.map((r) => r.join(","))].join("\n")
-    const blob = new Blob([csv], { type: "text/csv" })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement("a")
-    a.href = url
-    a.download = "newsletter-subscribers.csv"
-    a.click()
-    URL.revokeObjectURL(url)
-  }
+    ]);
+    const csv = [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "newsletter-subscribers.csv";
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   const formatDate = (dateStr: string) => {
     return new Date(dateStr).toLocaleDateString("en-US", {
       year: "numeric",
       month: "short",
       day: "numeric",
-    })
-  }
+    });
+  };
 
   return (
     <div className="space-y-6">
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Newsletter Subscribers</h1>
+          <h1 className="text-2xl font-bold text-gray-900">
+            Newsletter Subscribers
+          </h1>
           <p className="text-sm text-gray-500 mt-1">
             {filteredSubscribers.length} subscribers total
           </p>
@@ -232,7 +300,10 @@ export default function NewsletterPage() {
               <Input
                 placeholder="Search by email..."
                 value={searchQuery}
-                onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1) }}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setCurrentPage(1);
+                }}
                 className="pl-10 bg-gray-50 border-gray-200 rounded-xl"
               />
             </div>
@@ -243,22 +314,38 @@ export default function NewsletterPage() {
                 onClick={() => setShowStatusDropdown(!showStatusDropdown)}
                 className="border-gray-200 rounded-xl min-w-[130px] justify-between"
               >
-                <span>{statusFilter === "all" ? "All Status" : statusFilter}</span>
+                <span>
+                  {statusFilter === "all" ? "All Status" : statusFilter}
+                </span>
                 <ChevronDown className="w-4 h-4 ml-2" />
               </Button>
               {showStatusDropdown && (
                 <div className="absolute left-0 top-full mt-2 w-40 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-20">
                   <button
-                    onClick={() => { setStatusFilter("all"); setShowStatusDropdown(false); setCurrentPage(1) }}
-                    className={cn("w-full px-4 py-2 text-left text-sm hover:bg-gray-50", statusFilter === "all" && "bg-blue-50 text-blue-600")}
+                    onClick={() => {
+                      setStatusFilter("all");
+                      setShowStatusDropdown(false);
+                      setCurrentPage(1);
+                    }}
+                    className={cn(
+                      "w-full px-4 py-2 text-left text-sm hover:bg-gray-50",
+                      statusFilter === "all" && "bg-blue-50 text-blue-600"
+                    )}
                   >
                     All Status
                   </button>
                   {statuses.map((s) => (
                     <button
                       key={s}
-                      onClick={() => { setStatusFilter(s); setShowStatusDropdown(false); setCurrentPage(1) }}
-                      className={cn("w-full px-4 py-2 text-left text-sm hover:bg-gray-50", statusFilter === s && "bg-blue-50 text-blue-600")}
+                      onClick={() => {
+                        setStatusFilter(s);
+                        setShowStatusDropdown(false);
+                        setCurrentPage(1);
+                      }}
+                      className={cn(
+                        "w-full px-4 py-2 text-left text-sm hover:bg-gray-50",
+                        statusFilter === s && "bg-blue-50 text-blue-600"
+                      )}
                     >
                       {s}
                     </button>
@@ -288,7 +375,10 @@ export default function NewsletterPage() {
             <TableRow>
               <TableHead className="w-12">
                 <Checkbox
-                  checked={paginatedSubscribers.length > 0 && selectedIds.length === paginatedSubscribers.length}
+                  checked={
+                    paginatedSubscribers.length > 0 &&
+                    selectedIds.length === paginatedSubscribers.length
+                  }
                   onCheckedChange={toggleSelectAll}
                 />
               </TableHead>
@@ -315,20 +405,31 @@ export default function NewsletterPage() {
                       onCheckedChange={() => toggleSelect(subscriber.id)}
                     />
                   </TableCell>
-                  <TableCell className="font-medium text-gray-900">{subscriber.email}</TableCell>
+                  <TableCell className="font-medium text-gray-900">
+                    {subscriber.email}
+                  </TableCell>
                   <TableCell>
-                    <Badge className={cn("font-medium", statusStyles[subscriber.status])}>
+                    <Badge
+                      className={cn(
+                        "font-medium",
+                        statusStyles[subscriber.status]
+                      )}
+                    >
                       {subscriber.status}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-gray-600">{formatDate(subscriber.subscribedAt)}</TableCell>
+                  <TableCell className="text-gray-600" suppressHydrationWarning>
+                    {formatDate(subscriber.subscribedAt)}
+                  </TableCell>
                   <TableCell>
                     <div className="flex items-center justify-end gap-1">
                       {subscriber.status === "Pending" && (
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handleResendVerification(subscriber.id)}
+                          onClick={() =>
+                            handleResendVerification(subscriber.id)
+                          }
                           disabled={isResending === subscriber.id}
                           className="h-8 w-8 p-0 hover:bg-blue-50 hover:text-blue-600"
                           title="Resend verification"
@@ -343,7 +444,10 @@ export default function NewsletterPage() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => { setEditingSubscriber(subscriber); setShowEditModal(true) }}
+                        onClick={() => {
+                          setEditingSubscriber(subscriber);
+                          setShowEditModal(true);
+                        }}
                         className="h-8 w-8 p-0 hover:bg-blue-50 hover:text-blue-600"
                         title="Edit"
                       >
@@ -371,8 +475,11 @@ export default function NewsletterPage() {
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 py-4 border-t border-gray-100 bg-gray-50">
             <p className="text-sm text-gray-600">
               Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1} to{" "}
-              {Math.min(currentPage * ITEMS_PER_PAGE, filteredSubscribers.length)} of{" "}
-              {filteredSubscribers.length}
+              {Math.min(
+                currentPage * ITEMS_PER_PAGE,
+                filteredSubscribers.length
+              )}{" "}
+              of {filteredSubscribers.length}
             </p>
             <div className="flex items-center gap-2">
               <Button
@@ -384,21 +491,28 @@ export default function NewsletterPage() {
               >
                 <ChevronLeft className="w-4 h-4" />
               </Button>
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                <Button
-                  key={page}
-                  variant={currentPage === page ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setCurrentPage(page)}
-                  className={cn("rounded-lg w-8", currentPage === page && "bg-blue-600 hover:bg-blue-700")}
-                >
-                  {page}
-                </Button>
-              ))}
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                (page) => (
+                  <Button
+                    key={page}
+                    variant={currentPage === page ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setCurrentPage(page)}
+                    className={cn(
+                      "rounded-lg w-8",
+                      currentPage === page && "bg-blue-600 hover:bg-blue-700"
+                    )}
+                  >
+                    {page}
+                  </Button>
+                )
+              )}
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+                onClick={() =>
+                  setCurrentPage((p) => Math.min(p + 1, totalPages))
+                }
                 disabled={currentPage === totalPages}
                 className="rounded-lg"
               >
@@ -415,15 +529,22 @@ export default function NewsletterPage() {
           <div className="bg-white rounded-2xl w-full max-w-md overflow-hidden">
             <div className="p-4 border-b border-gray-100">
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-gray-900">Add Subscriber</h2>
-                <button onClick={() => setShowAddModal(false)} className="p-2 hover:bg-gray-100 rounded-lg">
+                <h2 className="text-lg font-semibold text-gray-900">
+                  Add Subscriber
+                </h2>
+                <button
+                  onClick={() => setShowAddModal(false)}
+                  className="p-2 hover:bg-gray-100 rounded-lg"
+                >
                   <X className="w-5 h-5 text-gray-500" />
                 </button>
               </div>
             </div>
             <div className="p-6 space-y-4">
               <div>
-                <Label className="text-sm font-medium text-gray-700">Email</Label>
+                <Label className="text-sm font-medium text-gray-700">
+                  Email
+                </Label>
                 <Input
                   type="email"
                   value={newEmail}
@@ -433,20 +554,36 @@ export default function NewsletterPage() {
                 />
               </div>
               <div>
-                <Label className="text-sm font-medium text-gray-700">Status</Label>
+                <Label className="text-sm font-medium text-gray-700">
+                  Status
+                </Label>
                 <Select value={newStatus} onValueChange={setNewStatus}>
                   <SelectTrigger className="mt-2 rounded-xl bg-gray-50 border-gray-200">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {statuses.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                    {statuses.map((s) => (
+                      <SelectItem key={s} value={s}>
+                        {s}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
             </div>
             <div className="p-4 border-t border-gray-100 flex justify-end gap-3">
-              <Button variant="outline" onClick={() => setShowAddModal(false)} className="rounded-xl">Cancel</Button>
-              <Button onClick={handleAddSubscriber} disabled={!newEmail.trim()} className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl">
+              <Button
+                variant="outline"
+                onClick={() => setShowAddModal(false)}
+                className="rounded-xl"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleAddSubscriber}
+                disabled={!newEmail.trim()}
+                className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl"
+              >
                 Add Subscriber
               </Button>
             </div>
@@ -460,41 +597,75 @@ export default function NewsletterPage() {
           <div className="bg-white rounded-2xl w-full max-w-md overflow-hidden">
             <div className="p-4 border-b border-gray-100">
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-gray-900">Edit Subscriber</h2>
-                <button onClick={() => setShowEditModal(false)} className="p-2 hover:bg-gray-100 rounded-lg">
+                <h2 className="text-lg font-semibold text-gray-900">
+                  Edit Subscriber
+                </h2>
+                <button
+                  onClick={() => setShowEditModal(false)}
+                  className="p-2 hover:bg-gray-100 rounded-lg"
+                >
                   <X className="w-5 h-5 text-gray-500" />
                 </button>
               </div>
             </div>
             <div className="p-6 space-y-4">
               <div>
-                <Label className="text-sm font-medium text-gray-700">Email</Label>
+                <Label className="text-sm font-medium text-gray-700">
+                  Email
+                </Label>
                 <Input
                   type="email"
                   value={editingSubscriber.email}
-                  onChange={(e) => setEditingSubscriber({ ...editingSubscriber, email: e.target.value })}
+                  onChange={(e) =>
+                    setEditingSubscriber({
+                      ...editingSubscriber,
+                      email: e.target.value,
+                    })
+                  }
                   className="mt-2 rounded-xl bg-gray-50 border-gray-200"
                 />
               </div>
               <div>
-                <Label className="text-sm font-medium text-gray-700">Status</Label>
-                <Select value={editingSubscriber.status} onValueChange={(v) => setEditingSubscriber({ ...editingSubscriber, status: v })}>
+                <Label className="text-sm font-medium text-gray-700">
+                  Status
+                </Label>
+                <Select
+                  value={editingSubscriber.status}
+                  onValueChange={(v) =>
+                    setEditingSubscriber({ ...editingSubscriber, status: v })
+                  }
+                >
                   <SelectTrigger className="mt-2 rounded-xl bg-gray-50 border-gray-200">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {statuses.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                    {statuses.map((s) => (
+                      <SelectItem key={s} value={s}>
+                        {s}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
             </div>
             <div className="p-4 border-t border-gray-100 flex justify-end gap-3">
-              <Button variant="outline" onClick={() => setShowEditModal(false)} className="rounded-xl">Cancel</Button>
-              <Button onClick={handleSaveEdit} className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl">Save Changes</Button>
+              <Button
+                variant="outline"
+                onClick={() => setShowEditModal(false)}
+                className="rounded-xl"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleSaveEdit}
+                className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl"
+              >
+                Save Changes
+              </Button>
             </div>
           </div>
         </div>
       )}
     </div>
-  )
+  );
 }
