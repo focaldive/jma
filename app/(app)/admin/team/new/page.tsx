@@ -1,70 +1,116 @@
-"use client"
+"use client";
 
-import { useState, useRef } from "react"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { ArrowLeft, Upload, Loader2, User } from "lucide-react"
+import { useState, useRef } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import { ArrowLeft, Upload, Loader2, User } from "lucide-react";
 
-export default function AddStaffPage() {
-  const router = useRouter()
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [formImage, setFormImage] = useState<string | null>(null)
-  const fileInputRef = useRef<HTMLInputElement>(null)
+export default function AddTeamMemberPage() {
+  const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formImage, setFormImage] = useState<string | null>(null);
+  const [uploadedImagePath, setUploadedImagePath] = useState<string | null>(
+    null
+  );
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [formData, setFormData] = useState({
     name: "",
+    role: "",
+    department: "",
+    bio: "",
     phone: "",
-    city: "",
-    country: "Sri Lanka",
-  })
+    email: "",
+    linkedin: "",
+    twitter: "",
+    order: 0,
+    isActive: true,
+    showOnSite: true,
+  });
 
-  const [errors, setErrors] = useState<Record<string, string>>({})
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (file && file.type.startsWith("image/")) {
-      const reader = new FileReader()
+      // Show preview
+      const reader = new FileReader();
       reader.onload = () => {
-        setFormImage(reader.result as string)
+        setFormImage(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+
+      // Upload to server
+      const formData = new FormData();
+      formData.append("file", file);
+
+      try {
+        const res = await fetch("/api/upload-image", {
+          method: "POST",
+          body: formData,
+        });
+
+        const result = await res.json();
+
+        if (result.success) {
+          setUploadedImagePath(result.filePath);
+        } else {
+          alert(result.message || "Failed to upload image");
+        }
+      } catch (err) {
+        console.error("Error uploading image:", err);
+        alert("Failed to upload image");
       }
-      reader.readAsDataURL(file)
     }
-  }
+  };
 
   const validate = () => {
-    const newErrors: Record<string, string> = {}
-    if (!formData.name.trim()) newErrors.name = "Name is required"
-    if (!formData.phone.trim()) newErrors.phone = "Phone is required"
-    if (!formData.city.trim()) newErrors.city = "City is required"
-    if (!formData.country.trim()) newErrors.country = "Country is required"
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
+    const newErrors: Record<string, string> = {};
+    if (!formData.name.trim()) newErrors.name = "Name is required";
+    if (!formData.role.trim()) newErrors.role = "Role is required";
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = async () => {
-    if (!validate()) return
-    setIsSubmitting(true)
-    
-    const newStaff = {
-      ...formData,
-      image: formImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(formData.name)}&background=3b82f6&color=fff`,
+    if (!validate()) return;
+    setIsSubmitting(true);
+
+    try {
+      const res = await fetch("/api/team", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...formData,
+          image: uploadedImagePath,
+        }),
+      });
+
+      const result = await res.json();
+
+      if (result.success) {
+        alert("Team member added successfully!");
+        router.push("/admin/team");
+      } else {
+        alert(result.message || "Failed to add team member");
+      }
+    } catch (err) {
+      console.error("Error adding team member:", err);
+      alert("Failed to add team member");
+    } finally {
+      setIsSubmitting(false);
     }
-    
-    console.log("Adding staff:", newStaff)
-    
-    setTimeout(() => {
-      setIsSubmitting(false)
-      router.push("/admin/team")
-    }, 1000)
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Top Bar */}
       <div className="sticky top-0 z-10 bg-white border-b border-gray-200 shadow-sm">
-        <div className="max-w-2xl mx-auto px-4 sm:px-6 py-4">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
               <Button
@@ -76,7 +122,9 @@ export default function AddStaffPage() {
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back
               </Button>
-              <h1 className="text-xl font-semibold text-gray-900">Add New Staff</h1>
+              <h1 className="text-xl font-semibold text-gray-900">
+                Add New Team Member
+              </h1>
             </div>
             <Button
               onClick={handleSubmit}
@@ -89,7 +137,7 @@ export default function AddStaffPage() {
                   Saving...
                 </>
               ) : (
-                "Save Staff"
+                "Save Team Member"
               )}
             </Button>
           </div>
@@ -97,7 +145,7 @@ export default function AddStaffPage() {
       </div>
 
       {/* Form Content */}
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
           {/* Image Upload */}
           <div className="flex flex-col items-center mb-6">
@@ -106,7 +154,11 @@ export default function AddStaffPage() {
               className="relative w-28 h-28 rounded-full bg-gray-100 flex items-center justify-center cursor-pointer hover:bg-gray-200 transition-colors overflow-hidden"
             >
               {formImage ? (
-                <img src={formImage} alt="" className="w-full h-full object-cover" />
+                <img
+                  src={formImage}
+                  alt=""
+                  className="w-full h-full object-cover"
+                />
               ) : (
                 <User className="w-10 h-10 text-gray-400" />
               )}
@@ -125,6 +177,7 @@ export default function AddStaffPage() {
           </div>
 
           <div className="space-y-4">
+            {/* Name */}
             <div>
               <Label className="text-sm font-medium text-gray-700">
                 Full Name <span className="text-red-500">*</span>
@@ -132,66 +185,193 @@ export default function AddStaffPage() {
               <Input
                 value={formData.name}
                 onChange={(e) => {
-                  setFormData({ ...formData, name: e.target.value })
-                  if (errors.name) setErrors({ ...errors, name: "" })
+                  setFormData({ ...formData, name: e.target.value });
+                  if (errors.name) setErrors({ ...errors, name: "" });
                 }}
                 placeholder="Enter full name"
-                className={`mt-2 rounded-xl bg-gray-50 border-gray-200 ${errors.name ? "border-red-500" : ""}`}
+                className={`mt-2 rounded-xl bg-gray-50 border-gray-200 ${
+                  errors.name ? "border-red-500" : ""
+                }`}
               />
-              {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
+              {errors.name && (
+                <p className="text-red-500 text-sm mt-1">{errors.name}</p>
+              )}
             </div>
 
+            {/* Role */}
             <div>
               <Label className="text-sm font-medium text-gray-700">
-                Phone Number <span className="text-red-500">*</span>
+                Role/Position <span className="text-red-500">*</span>
               </Label>
               <Input
-                value={formData.phone}
+                value={formData.role}
                 onChange={(e) => {
-                  setFormData({ ...formData, phone: e.target.value })
-                  if (errors.phone) setErrors({ ...errors, phone: "" })
+                  setFormData({ ...formData, role: e.target.value });
+                  if (errors.role) setErrors({ ...errors, role: "" });
                 }}
-                placeholder="+94 77 123 4567"
-                className={`mt-2 rounded-xl bg-gray-50 border-gray-200 ${errors.phone ? "border-red-500" : ""}`}
+                placeholder="e.g., Executive Director, Volunteer Coordinator"
+                className={`mt-2 rounded-xl bg-gray-50 border-gray-200 ${
+                  errors.role ? "border-red-500" : ""
+                }`}
               />
-              {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
+              {errors.role && (
+                <p className="text-red-500 text-sm mt-1">{errors.role}</p>
+              )}
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            {/* Department */}
+            <div>
+              <Label className="text-sm font-medium text-gray-700">
+                Department
+              </Label>
+              <Input
+                value={formData.department}
+                onChange={(e) =>
+                  setFormData({ ...formData, department: e.target.value })
+                }
+                placeholder="e.g., Administration, Programs, Fundraising"
+                className="mt-2 rounded-xl bg-gray-50 border-gray-200"
+              />
+            </div>
+
+            {/* Bio */}
+            <div>
+              <Label className="text-sm font-medium text-gray-700">
+                Biography
+              </Label>
+              <Textarea
+                value={formData.bio}
+                onChange={(e) =>
+                  setFormData({ ...formData, bio: e.target.value })
+                }
+                placeholder="Brief description about the team member..."
+                rows={4}
+                className="mt-2 rounded-xl bg-gray-50 border-gray-200 resize-none"
+              />
+            </div>
+
+            {/* Contact Info */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <Label className="text-sm font-medium text-gray-700">
-                  City <span className="text-red-500">*</span>
+                  Phone Number
                 </Label>
                 <Input
-                  value={formData.city}
-                  onChange={(e) => {
-                    setFormData({ ...formData, city: e.target.value })
-                    if (errors.city) setErrors({ ...errors, city: "" })
-                  }}
-                  placeholder="City"
-                  className={`mt-2 rounded-xl bg-gray-50 border-gray-200 ${errors.city ? "border-red-500" : ""}`}
+                  value={formData.phone}
+                  onChange={(e) =>
+                    setFormData({ ...formData, phone: e.target.value })
+                  }
+                  placeholder="+94 77 123 4567"
+                  className="mt-2 rounded-xl bg-gray-50 border-gray-200"
                 />
-                {errors.city && <p className="text-red-500 text-sm mt-1">{errors.city}</p>}
               </div>
               <div>
                 <Label className="text-sm font-medium text-gray-700">
-                  Country <span className="text-red-500">*</span>
+                  Email
                 </Label>
                 <Input
-                  value={formData.country}
-                  onChange={(e) => {
-                    setFormData({ ...formData, country: e.target.value })
-                    if (errors.country) setErrors({ ...errors, country: "" })
-                  }}
-                  placeholder="Country"
-                  className={`mt-2 rounded-xl bg-gray-50 border-gray-200 ${errors.country ? "border-red-500" : ""}`}
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
+                  placeholder="email@example.com"
+                  className="mt-2 rounded-xl bg-gray-50 border-gray-200"
                 />
-                {errors.country && <p className="text-red-500 text-sm mt-1">{errors.country}</p>}
+              </div>
+            </div>
+
+            {/* Social Media */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <Label className="text-sm font-medium text-gray-700">
+                  LinkedIn URL
+                </Label>
+                <Input
+                  value={formData.linkedin}
+                  onChange={(e) =>
+                    setFormData({ ...formData, linkedin: e.target.value })
+                  }
+                  placeholder="https://linkedin.com/in/username"
+                  className="mt-2 rounded-xl bg-gray-50 border-gray-200"
+                />
+              </div>
+              <div>
+                <Label className="text-sm font-medium text-gray-700">
+                  Twitter URL
+                </Label>
+                <Input
+                  value={formData.twitter}
+                  onChange={(e) =>
+                    setFormData({ ...formData, twitter: e.target.value })
+                  }
+                  placeholder="https://twitter.com/username"
+                  className="mt-2 rounded-xl bg-gray-50 border-gray-200"
+                />
+              </div>
+            </div>
+
+            {/* Order */}
+            <div>
+              <Label className="text-sm font-medium text-gray-700">
+                Display Order
+              </Label>
+              <Input
+                type="number"
+                value={formData.order}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    order: parseInt(e.target.value) || 0,
+                  })
+                }
+                placeholder="0"
+                className="mt-2 rounded-xl bg-gray-50 border-gray-200"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Lower numbers appear first
+              </p>
+            </div>
+
+            {/* Toggles */}
+            <div className="space-y-4 pt-4 border-t border-gray-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label className="text-sm font-medium text-gray-700">
+                    Active Status
+                  </Label>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Inactive members won't be shown anywhere
+                  </p>
+                </div>
+                <Switch
+                  checked={formData.isActive}
+                  onCheckedChange={(checked) =>
+                    setFormData({ ...formData, isActive: checked })
+                  }
+                />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label className="text-sm font-medium text-gray-700">
+                    Show on Public Site
+                  </Label>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Control visibility on the public website
+                  </p>
+                </div>
+                <Switch
+                  checked={formData.showOnSite}
+                  onCheckedChange={(checked) =>
+                    setFormData({ ...formData, showOnSite: checked })
+                  }
+                />
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
