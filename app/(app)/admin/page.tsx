@@ -1,5 +1,4 @@
-"use client";
-
+import Prisma from "@/lib/prisma";
 import { StatsCard } from "@/components/admin/StatsCard";
 import { ActivityItem } from "@/components/admin/ActivityItem";
 import { Button } from "@/components/ui/button";
@@ -8,69 +7,167 @@ import {
   Users,
   CalendarDays,
   Cross,
-  TrendingUp,
   ArrowUpRight,
   Bell,
   Megaphone,
+  Briefcase,
 } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
+import Link from "next/link"; // Added for navigation if needed
 
-const recentActivities = [
-  {
-    name: "Ahmed Mohamed",
-    action: "Made a donation of Rs. 5,000",
-    time: "2h ago",
-    type: "donation" as const,
-  },
-  {
-    name: "Fathima Begum",
-    action: "Registered for Community Event",
-    time: "3h ago",
-    type: "event" as const,
-  },
-  {
-    name: "Admin",
-    action: "Published new article: Annual Report",
-    time: "5h ago",
-    type: "news" as const,
-  },
-  {
-    name: "System",
-    action: "Janaza announcement posted",
-    time: "6h ago",
-    type: "janaza" as const,
-  },
-  {
-    name: "Ibrahim Khan",
-    action: "Joined as new member",
-    time: "1d ago",
-    type: "default" as const,
-  },
-];
+export default async function AdminDashboard() {
+  const today = new Date();
+  const startOfYear = new Date(today.getFullYear(), 0, 1);
 
-const notifications = [
-  {
-    title: "New Donation Received",
-    description: "Rs. 10,000 from Anonymous",
-    time: "1 hour ago",
-  },
-  {
-    title: "Event Registration Full",
-    description: "Community Iftar has reached capacity",
-    time: "3 hours ago",
-  },
-  {
-    title: "New Message",
-    description: "You have 5 unread messages",
-    time: "5 hours ago",
-  },
-  {
-    title: "Newsletter Scheduled",
-    description: "December newsletter ready",
-    time: "1 day ago",
-  },
-];
+  // Fetch all necessary data in parallel
+  const [
+    totalDonationResult,
+    userCount,
+    teamMemberCount,
+    upcomingEventCount,
+    pendingJanazaCount,
+    recentDonations,
+    recentEvents,
+    recentUsers,
+    recentJanaza,
+    recentArticles,
+    monthlyDonationsRaw,
+    unreadMessagesCount,
+    latestJanazaNotice,
+  ] = await Promise.all([
+    Prisma.donation.aggregate({ _sum: { amount: true } }),
+    Prisma.user.count(),
+    Prisma.teamMember.count({ where: { isActive: true } }),
+    Prisma.event.count({ where: { date: { gte: today } } }),
+    Prisma.janazaNotice.count({ where: { status: "UPCOMING" } }),
+    Prisma.donation.findMany({
+      take: 5,
+      orderBy: { createdAt: "desc" },
+    }),
+    Prisma.event.findMany({
+      take: 5,
+      orderBy: { createdAt: "desc" },
+    }),
+    Prisma.user.findMany({
+      take: 5,
+      orderBy: { createdAt: "desc" },
+    }),
+    Prisma.janazaNotice.findMany({
+      take: 5,
+      orderBy: { createdAt: "desc" },
+    }),
+    Prisma.newsArticle.findMany({
+      take: 5,
+      orderBy: { createdAt: "desc" },
+    }),
+    Prisma.donation.findMany({
+      where: { createdAt: { gte: startOfYear } },
+      select: { amount: true, createdAt: true },
+    }),
+    Prisma.contactSubmission.count({ where: { status: "NEW" } }),
+    Prisma.janazaNotice.findFirst({
+      orderBy: { createdAt: "desc" },
+      take: 1,
+    }),
+  ]);
 
-export default function AdminDashboard() {
+  // Process Stats
+  const totalDonations = totalDonationResult._sum.amount
+    ? Number(totalDonationResult._sum.amount)
+    : 0;
+
+  // Combine and sort recent activities
+  const activities = [
+    ...recentDonations.map((d) => ({
+      name: d.isAnonymous
+        ? "Anonymous"
+        : `${d.firstName || ""} ${d.lastName || ""}`.trim() || "Donor",
+      action: `Donated ${d.currency} ${d.amount}`,
+      time: d.createdAt,
+      type: "donation" as const,
+      avatar: undefined,
+    })),
+    ...recentEvents.map((e) => ({
+      name: "Event System",
+      action: `New Event: ${e.title}`,
+      time: e.createdAt,
+      type: "event" as const,
+      avatar: undefined,
+    })),
+    ...recentUsers.map((u) => ({
+      name: u.name || "New User",
+      action: "Joined the platform",
+      time: u.createdAt,
+      type: "default" as const,
+      avatar: u.image || undefined,
+    })),
+    ...recentJanaza.map((j) => ({
+      name: "Janaza System",
+      action: `Notice: ${j.deceasedName}`,
+      time: j.createdAt,
+      type: "janaza" as const,
+      avatar: undefined,
+    })),
+    ...recentArticles.map((a) => ({
+      name: "Content System",
+      action: `Published: ${a.title}`,
+      time: a.createdAt,
+      type: "news" as const,
+      avatar: undefined,
+    })),
+  ]
+    .sort((a, b) => b.time.getTime() - a.time.getTime())
+    .slice(0, 5);
+
+  // Process Monthly Chart Data
+  const monthlyData = Array(12).fill(0);
+  monthlyDonationsRaw.forEach((d) => {
+    monthlyData[d.createdAt.getMonth()] += Number(d.amount);
+  });
+
+  const maxMonthlyValue = Math.max(...monthlyData, 1);
+  const chartData = monthlyData.map((val, idx) => {
+    const month = new Date(0, idx).toLocaleString("default", {
+      month: "short",
+    });
+    return {
+      month,
+      value: Math.min(Math.round((val / maxMonthlyValue) * 100), 100), // Height percentage
+      rawAmount: val,
+    };
+  });
+
+  // Construct Notifications
+  const notifications = [];
+  if (unreadMessagesCount > 0) {
+    notifications.push({
+      title: "New Messages",
+      description: `You have ${unreadMessagesCount} unread message(s)`,
+      time: "Just now",
+    });
+  }
+  if (pendingJanazaCount > 0) {
+    notifications.push({
+      title: "Pending Janaza Notices",
+      description: `${pendingJanazaCount} notice(s) require attention`,
+      time: "Just now",
+    });
+  }
+  if (upcomingEventCount > 0) {
+    notifications.push({
+      title: "Upcoming Events",
+      description: `${upcomingEventCount} event(s) coming up`,
+      time: "Check calendar",
+    });
+  }
+  if (notifications.length === 0) {
+    notifications.push({
+      title: "All caught up!",
+      description: "No new notifications",
+      time: "",
+    });
+  }
+
   return (
     <div className="space-y-6">
       {/* Welcome Banner */}
@@ -83,9 +180,11 @@ export default function AdminDashboard() {
             Manage your organization efficiently. Track donations, events, and
             stay connected with your community.
           </p>
-          <Button className="mt-6 bg-white text-blue-600 hover:bg-blue-50 font-semibold shadow-lg">
-            Explore Now
-          </Button>
+          <Link href="/admin/projects">
+            <Button className="mt-6 bg-white text-blue-600 hover:bg-blue-50 font-semibold shadow-lg">
+              Manage Projects
+            </Button>
+          </Link>
         </div>
         {/* Decorative elements - hidden on mobile */}
         <div className="absolute right-8 top-1/2 -translate-y-1/2 opacity-20 hidden md:block">
@@ -100,35 +199,42 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         <StatsCard
           title="Total Donations"
-          value="Rs. 1.25M"
-          change="+12.5% from last month"
-          changeType="increase"
+          value={`Rs. ${totalDonations.toLocaleString()}`}
+          //   change="+12.5% from last month"
+          //   changeType="increase"
           icon={Heart}
           iconBgColor="bg-green-100"
           iconColor="text-green-600"
         />
+        
         <StatsCard
-          title="Active Members"
-          value="2,847"
-          change="+8.2% from last month"
-          changeType="increase"
-          icon={Users}
-          iconBgColor="bg-blue-100"
-          iconColor="text-blue-600"
+          title="Team Members"
+          value={teamMemberCount.toLocaleString()}
+          change="Active members"
+          changeType="neutral"
+          icon={Briefcase}
+          iconBgColor="bg-orange-100"
+          iconColor="text-orange-600"
         />
         <StatsCard
           title="Upcoming Events"
-          value="12"
-          change="3 this week"
+          value={upcomingEventCount.toString()}
+          change={`${upcomingEventCount} scheduled`}
           changeType="neutral"
           icon={CalendarDays}
           iconBgColor="bg-purple-100"
           iconColor="text-purple-600"
         />
         <StatsCard
-          title="Pending Janaza"
-          value="2"
-          change="Updated today"
+          title="Upcoming Janaza"
+          value={pendingJanazaCount.toString()}
+          change={
+            latestJanazaNotice
+              ? formatDistanceToNow(latestJanazaNotice.updatedAt, {
+                  addSuffix: true,
+                })
+              : "No active notices"
+          }
           changeType="neutral"
           icon={Cross}
           iconBgColor="bg-gray-100"
@@ -149,35 +255,23 @@ export default function AdminDashboard() {
                 Overview of donations this year
               </p>
             </div>
-            <Button
+            {/* <Button
               variant="outline"
               size="sm"
               className="text-blue-600 border-blue-200 hover:bg-blue-50"
             >
               View Report
               <ArrowUpRight className="w-4 h-4 ml-1" />
-            </Button>
+            </Button> */}
           </div>
 
           {/* Simple Bar Chart Visualization */}
           <div className="flex items-end justify-between h-36 sm:h-48 gap-1 sm:gap-2 px-2 sm:px-4">
-            {[
-              { month: "Jan", value: 65 },
-              { month: "Feb", value: 45 },
-              { month: "Mar", value: 80 },
-              { month: "Apr", value: 70 },
-              { month: "May", value: 90 },
-              { month: "Jun", value: 55 },
-              { month: "Jul", value: 75 },
-              { month: "Aug", value: 85 },
-              { month: "Sep", value: 60 },
-              { month: "Oct", value: 95 },
-              { month: "Nov", value: 88 },
-              { month: "Dec", value: 72 },
-            ].map((item, i) => (
+            {chartData.map((item, i) => (
               <div
                 key={item.month}
                 className="flex flex-col items-center flex-1"
+                title={`Rs. ${item.rawAmount.toLocaleString()}`}
               >
                 <div
                   className="w-full bg-gradient-to-t from-blue-500 to-blue-400 rounded-t-lg transition-all hover:from-blue-600 hover:to-blue-500 cursor-pointer"
@@ -220,12 +314,12 @@ export default function AdminDashboard() {
               </div>
             ))}
           </div>
-          <Button
+          {/* <Button
             variant="outline"
             className="w-full mt-4 text-blue-600 border-blue-200 hover:bg-blue-50"
           >
             View More
-          </Button>
+          </Button> */}
         </div>
       </div>
 
@@ -237,24 +331,31 @@ export default function AdminDashboard() {
             <h2 className="text-lg font-semibold text-gray-900">
               Recent Activities
             </h2>
-            <Button
+            {/* <Button
               variant="ghost"
               size="sm"
               className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
             >
               View All
-            </Button>
+            </Button> */}
           </div>
           <div className="space-y-1">
-            {recentActivities.map((activity, i) => (
-              <ActivityItem
-                key={i}
-                name={activity.name}
-                action={activity.action}
-                time={activity.time}
-                type={activity.type}
-              />
-            ))}
+            {activities.length > 0 ? (
+              activities.map((activity, i) => (
+                <ActivityItem
+                  key={i}
+                  name={activity.name}
+                  action={activity.action}
+                  time={formatDistanceToNow(activity.time, { addSuffix: true })}
+                  type={activity.type}
+                  avatar={activity.avatar}
+                />
+              ))
+            ) : (
+              <p className="text-sm text-gray-500 text-center py-4">
+                No recent activity.
+              </p>
+            )}
           </div>
         </div>
 
@@ -273,18 +374,17 @@ export default function AdminDashboard() {
               Featured
             </span>
             <h3 className="font-semibold text-lg mb-2">
-              Annual General Meeting 2024
+              Annual General Meeting 2026
             </h3>
             <p className="text-purple-100 text-sm mb-4">
-              Join us for the AGM on December 28th. All members are invited to
-              participate.
+              Join us for the AGM. All members are invited to participate.
             </p>
             <Button className="bg-white text-purple-600 hover:bg-purple-50 text-sm">
               Learn More
             </Button>
           </div>
 
-          {/* Other Announcements */}
+          {/* Other Announcements - Hardcoded or fetched if we have an announcement model */}
           <div className="space-y-3">
             <div className="flex items-center gap-3 p-3 bg-orange-50 rounded-xl">
               <div className="w-2 h-2 rounded-full bg-orange-500"></div>
@@ -292,10 +392,10 @@ export default function AdminDashboard() {
                 <p className="text-sm font-medium text-gray-900">
                   Community Iftar Event
                 </p>
-                <p className="text-xs text-gray-500">Starting Ramadan 2025</p>
+                <p className="text-xs text-gray-500">Starting Ramadan 2026</p>
               </div>
             </div>
-            <div className="flex items-center gap-3 p-3 bg-green-50 rounded-xl">
+            {/* <div className="flex items-center gap-3 p-3 bg-green-50 rounded-xl">
               <div className="w-2 h-2 rounded-full bg-green-500"></div>
               <div className="flex-1">
                 <p className="text-sm font-medium text-gray-900">
@@ -303,7 +403,7 @@ export default function AdminDashboard() {
                 </p>
                 <p className="text-xs text-gray-500">Goal: Rs. 500,000</p>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
