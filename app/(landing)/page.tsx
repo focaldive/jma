@@ -4,6 +4,7 @@ import { Projects } from "@/components/home/projects";
 import { GetInvolved } from "@/components/home/get-involved";
 import { NewsEvents } from "@/components/home/news-events";
 import AboutSection from "@/components/home/about-section";
+import Newsletter from "@/components/newsletter/page";
 
 export default function Home() {
   return (
@@ -13,6 +14,7 @@ export default function Home() {
       <NewsEvents />
       <GetInvolved />
       <Projects />
+      <Newsletter/>
       <Support />
     </main>
   );
