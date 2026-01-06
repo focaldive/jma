@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -27,6 +28,14 @@ import {
   ImageIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface Article {
   id: string;
@@ -59,6 +68,7 @@ export default function ArticlesPage() {
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
   const [currentPage, setCurrentPage] = useState(1);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [articleToDelete, setArticleToDelete] = useState<string | null>(null);
 
   // Fetch articles from API
   useEffect(() => {
@@ -129,22 +139,30 @@ export default function ArticlesPage() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this article?")) return;
+  const handleDelete = (id: string) => {
+    setArticleToDelete(id);
+  };
 
-    setDeleting(id);
+  const confirmDelete = async () => {
+    if (!articleToDelete) return;
+
+    setDeleting(articleToDelete);
     try {
-      const res = await fetch(`/api/articles/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/articles/${articleToDelete}`, {
+        method: "DELETE",
+      });
       const data = await res.json();
 
       if (data.success) {
-        setArticles(articles.filter((a) => a.id !== id));
+        setArticles(articles.filter((a) => a.id !== articleToDelete));
+        toast.success("Article deleted successfully");
+        setArticleToDelete(null);
       } else {
-        alert(data.message || "Failed to delete article");
+        toast.error(data.message || "Failed to delete article");
       }
     } catch (err) {
       console.error("Failed to delete article:", err);
-      alert("Failed to delete article");
+      toast.error("Failed to delete article");
     } finally {
       setDeleting(null);
     }
@@ -395,6 +413,46 @@ export default function ArticlesPage() {
           </div>
         )}
       </div>
+
+      <Dialog
+        open={!!articleToDelete}
+        onOpenChange={(open) => !open && setArticleToDelete(null)}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Article</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this article? This action cannot
+              be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button
+              variant="outline"
+              onClick={() => setArticleToDelete(null)}
+              className="mt-2 sm:mt-0"
+              disabled={!!deleting}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={confirmDelete}
+              className="bg-red-600 hover:bg-red-700 text-white"
+              disabled={!!deleting}
+            >
+              {deleting ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                "Delete Article"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

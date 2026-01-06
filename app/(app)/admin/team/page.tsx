@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -33,6 +34,14 @@ import {
   EyeOff,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import Image from "next/image";
 
 type TeamMember = {
@@ -61,6 +70,8 @@ export default function TeamPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [departmentFilter, setDepartmentFilter] = useState("all");
   const [error, setError] = useState<string | null>(null);
+  const [memberToDelete, setMemberToDelete] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState<string | null>(null);
 
   useEffect(() => {
     const savedView = localStorage.getItem("teamViewMode");
@@ -89,21 +100,31 @@ export default function TeamPage() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this team member?")) return;
+  const handleDelete = (id: string) => {
+    setMemberToDelete(id);
+  };
 
+  const confirmDelete = async () => {
+    if (!memberToDelete) return;
+
+    setDeleting(memberToDelete);
     try {
-      const res = await fetch(`/api/team/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/team/${memberToDelete}`, {
+        method: "DELETE",
+      });
       const result = await res.json();
 
       if (result.success) {
         fetchTeamMembers();
-        alert("Team member deleted successfully!");
+        toast.success("Team member deleted successfully!");
+        setMemberToDelete(null);
       } else {
-        alert(result.message || "Failed to delete team member");
+        toast.error(result.message || "Failed to delete team member");
       }
     } catch (err) {
-      alert("Failed to delete team member");
+      toast.error("Failed to delete team member");
+    } finally {
+      setDeleting(null);
     }
   };
 
@@ -119,11 +140,14 @@ export default function TeamPage() {
 
       if (result.success) {
         fetchTeamMembers();
+        toast.success(
+          `Team member ${!member.showOnSite ? "visible" : "hidden"} on site`
+        );
       } else {
-        alert(result.message || "Failed to update team member");
+        toast.error(result.message || "Failed to update team member");
       }
     } catch (err) {
-      alert("Failed to update team member");
+      toast.error("Failed to update team member");
     }
   };
 
@@ -443,6 +467,46 @@ export default function TeamPage() {
           </p>
         </div>
       )}
+
+      <Dialog
+        open={!!memberToDelete}
+        onOpenChange={(open) => !open && setMemberToDelete(null)}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Team Member</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this team member? This action
+              cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button
+              variant="outline"
+              onClick={() => setMemberToDelete(null)}
+              className="mt-2 sm:mt-0"
+              disabled={!!deleting}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={confirmDelete}
+              className="bg-red-600 hover:bg-red-700 text-white"
+              disabled={!!deleting}
+            >
+              {deleting ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                "Delete Member"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

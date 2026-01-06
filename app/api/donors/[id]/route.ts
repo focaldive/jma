@@ -22,9 +22,6 @@ export async function GET(
     }
 
     // Get all donations from this donor by email or name
-    const donorKey =
-      donation.email || `${donation.firstName}-${donation.lastName}`;
-
     let allDonations;
     if (donation.email) {
       allDonations = await prisma.donation.findMany({
@@ -69,6 +66,54 @@ export async function GET(
     console.error("Error fetching donor:", error);
     return NextResponse.json(
       { success: false, message: error.message },
+      { status: 500 }
+    );
+  }
+}
+
+// DELETE a donor (deletes all their donations)
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+
+    // First find the reference donation to know who we are deleting
+    const donation = await prisma.donation.findUnique({
+      where: { id },
+    });
+
+    if (!donation) {
+      return NextResponse.json(
+        { success: false, message: "Donor record not found" },
+        { status: 404 }
+      );
+    }
+
+    // Delete all donations belonging to this person
+    let deleteResult;
+    if (donation.email) {
+      deleteResult = await prisma.donation.deleteMany({
+        where: { email: donation.email },
+      });
+    } else {
+      deleteResult = await prisma.donation.deleteMany({
+        where: {
+          firstName: donation.firstName,
+          lastName: donation.lastName,
+        },
+      });
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: `Donor and ${deleteResult.count} associated donations deleted successfully`,
+    });
+  } catch (error: any) {
+    console.error("Error deleting donor:", error);
+    return NextResponse.json(
+      { success: false, message: "Failed to delete donor" },
       { status: 500 }
     );
   }

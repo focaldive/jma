@@ -12,6 +12,14 @@ import {
   Calendar,
   Menu,
 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { NotificationItem } from "./AdminClientLayout";
 import { AdminUser } from "@prisma/client";
 
@@ -24,6 +32,7 @@ interface HeaderProps {
 export function Header({ onMenuClick, user, notifications }: HeaderProps) {
   const router = useRouter();
   const [showNotifications, setShowNotifications] = useState(false);
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const notificationRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -43,6 +52,10 @@ export function Header({ onMenuClick, user, notifications }: HeaderProps) {
   }, []);
 
   const handleLogout = () => {
+    setShowLogoutDialog(true);
+  };
+
+  const confirmLogout = () => {
     localStorage.removeItem("loggedIn");
     router.push("/login");
   };
@@ -163,7 +176,6 @@ export function Header({ onMenuClick, user, notifications }: HeaderProps) {
               src={user?.avatar || "/assets/avatar.png"}
               alt={user?.name || "Admin"}
             />
-          
           </Avatar>
           <div className="hidden md:block">
             <p className="text-sm font-semibold text-gray-900">
@@ -191,6 +203,33 @@ export function Header({ onMenuClick, user, notifications }: HeaderProps) {
           <LogOut className="w-5 h-5" />
         </button>
       </div>
+
+      <Dialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirm Logout</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to log out of the admin panel?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button
+              variant="outline"
+              onClick={() => setShowLogoutDialog(false)}
+              className="mt-2 sm:mt-0"
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={confirmLogout}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              Logout
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </header>
   );
 }

@@ -24,6 +24,14 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 // Type matching Prisma model (partial)
 type Subscriber = {
@@ -46,8 +54,14 @@ export default function NewsletterPage() {
   const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+ 
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [deleteConfirmation, setDeleteConfirmation] = useState<{
+    type: "single" | "bulk";
+    id?: string;
+  } | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   // Fetch subscribers from API
   const fetchSubscribers = async () => {
@@ -117,29 +131,44 @@ export default function NewsletterPage() {
   };
 
   // Bulk delete
-  const handleBulkDelete = async () => {
-    if (
-      !confirm(
-        `Are you sure you want to delete ${selectedIds.length} subscriber(s)?`
-      )
-    )
-      return;
+  const handleBulkDelete = () => {
+    setDeleteConfirmation({ type: "bulk" });
+  };
 
+  const handleDelete = (id: string) => {
+    setDeleteConfirmation({ type: "single", id });
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteConfirmation) return;
+
+    setDeleting(true);
     try {
-      setLoading(true);
+      const idsToDelete =
+        deleteConfirmation.type === "bulk"
+          ? selectedIds
+          : [deleteConfirmation.id!];
+
       const res = await fetch("/api/newsletter", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ids: selectedIds }),
+        body: JSON.stringify({ ids: idsToDelete }),
       });
       const result = await res.json();
 
       if (result.success) {
         toast.success(result.message);
         setSubscribers((prev) =>
-          prev.filter((s) => !selectedIds.includes(s.id))
+          prev.filter((s) => !idsToDelete.includes(s.id))
         );
-        setSelectedIds([]);
+        if (deleteConfirmation.type === "bulk") {
+          setSelectedIds([]);
+        } else if (selectedIds.includes(deleteConfirmation.id!)) {
+          setSelectedIds((prev) =>
+            prev.filter((i) => i !== deleteConfirmation.id)
+          );
+        }
+        setDeleteConfirmation(null);
       } else {
         toast.error(result.message || "Failed to delete subscribers");
       }
@@ -147,36 +176,7 @@ export default function NewsletterPage() {
       console.error("Delete error:", error);
       toast.error("Failed to delete subscribers");
     } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this subscriber?")) return;
-
-    try {
-      setLoading(true);
-      const res = await fetch("/api/newsletter", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ids: [id] }),
-      });
-      const result = await res.json();
-
-      if (result.success) {
-        toast.success(result.message);
-        setSubscribers((prev) => prev.filter((s) => s.id !== id));
-        if (selectedIds.includes(id)) {
-          setSelectedIds((prev) => prev.filter((i) => i !== id));
-        }
-      } else {
-        toast.error(result.message || "Failed to delete subscriber");
-      }
-    } catch (error) {
-      console.error("Delete error:", error);
-      toast.error("Failed to delete subscriber");
-    } finally {
-      setLoading(false);
+      setDeleting(false);
     }
   };
 
@@ -412,6 +412,51 @@ export default function NewsletterPage() {
           </div>
         )}
       </div>
+
+      <Dialog
+        open={!!deleteConfirmation}
+        onOpenChange={(open) => !open && setDeleteConfirmation(null)}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {deleteConfirmation?.type === "bulk"
+                ? "Delete Subscribers"
+                : "Delete Subscriber"}
+            </DialogTitle>
+            <DialogDescription>
+              {deleteConfirmation?.type === "bulk"
+                ? `Are you sure you want to delete ${selectedIds.length} subscriber(s)? This action cannot be undone.`
+                : "Are you sure you want to delete this subscriber? This action cannot be undone."}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button
+              variant="outline"
+              onClick={() => setDeleteConfirmation(null)}
+              className="mt-2 sm:mt-0"
+              disabled={deleting}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={confirmDelete}
+              className="bg-red-600 hover:bg-red-700 text-white"
+              disabled={deleting}
+            >
+              {deleting ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                "Delete"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

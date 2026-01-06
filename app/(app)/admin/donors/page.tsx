@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -23,6 +24,14 @@ import {
   Loader2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface Donor {
   id: string;
@@ -51,7 +60,10 @@ export default function DonorsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortField, setSortField] = useState<SortField>("name");
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
+
   const [currentPage, setCurrentPage] = useState(1);
+  const [deleting, setDeleting] = useState<string | null>(null);
+  const [donorToDelete, setDonorToDelete] = useState<string | null>(null);
 
   // Fetch donors from API
   useEffect(() => {
@@ -130,9 +142,33 @@ export default function DonorsPage() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this donor?")) return;
-    console.log("Deleting donor:", id);
+  const handleDelete = (id: string) => {
+    setDonorToDelete(id);
+  };
+
+  const confirmDelete = async () => {
+    if (!donorToDelete) return;
+
+    setDeleting(donorToDelete);
+    try {
+      const res = await fetch(`/api/donors/${donorToDelete}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        setDonors(donors.filter((d) => d.id !== donorToDelete));
+        toast.success("Donor deleted successfully");
+        setDonorToDelete(null);
+      } else {
+        toast.error(data.message || "Failed to delete donor");
+      }
+    } catch (err) {
+      console.error("Failed to delete donor:", err);
+      toast.error("Failed to delete donor");
+    } finally {
+      setDeleting(null);
+    }
   };
 
   const formatAmount = (amount: number, currency: string = "USD") => {
@@ -387,6 +423,46 @@ export default function DonorsPage() {
           </div>
         )}
       </div>
+
+      <Dialog
+        open={!!donorToDelete}
+        onOpenChange={(open) => !open && setDonorToDelete(null)}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Donor</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this donor? This action cannot be
+              undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button
+              variant="outline"
+              onClick={() => setDonorToDelete(null)}
+              className="mt-2 sm:mt-0"
+              disabled={!!deleting}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={confirmDelete}
+              className="bg-red-600 hover:bg-red-700 text-white"
+              disabled={!!deleting}
+            >
+              {deleting ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                "Delete Donor"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

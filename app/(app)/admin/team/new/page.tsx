@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -59,11 +60,11 @@ export default function AddTeamMemberPage() {
         if (result.success) {
           setUploadedImagePath(result.filePath);
         } else {
-          alert(result.message || "Failed to upload image");
+          toast.error(result.message || "Failed to upload image");
         }
       } catch (err) {
         console.error("Error uploading image:", err);
-        alert("Failed to upload image");
+        toast.error("Failed to upload image");
       }
     }
   };
@@ -93,14 +94,14 @@ export default function AddTeamMemberPage() {
       const result = await res.json();
 
       if (result.success) {
-        alert("Team member added successfully!");
+        toast.success("Team member added successfully!");
         router.push("/admin/team");
       } else {
-        alert(result.message || "Failed to add team member");
+        toast.error(result.message || "Failed to add team member");
       }
     } catch (err) {
       console.error("Error adding team member:", err);
-      alert("Failed to add team member");
+      toast.error("Failed to add team member");
     } finally {
       setIsSubmitting(false);
     }

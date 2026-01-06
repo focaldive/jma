@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -122,11 +123,11 @@ export default function EditTeamMemberPage() {
         if (result.success) {
           setUploadedImagePath(result.filePath);
         } else {
-          alert(result.message || "Failed to upload image");
+          toast.error(result.message || "Failed to upload image");
         }
       } catch (err) {
         console.error("Error uploading image:", err);
-        alert("Failed to upload image");
+        toast.error("Failed to upload image");
       }
     }
   };
@@ -156,14 +157,14 @@ export default function EditTeamMemberPage() {
       const result = await res.json();
 
       if (result.success) {
-        alert("Team member updated successfully!");
+        toast.success("Team member updated successfully!");
         router.push("/admin/team");
       } else {
-        alert(result.message || "Failed to update team member");
+        toast.error(result.message || "Failed to update team member");
       }
     } catch (err) {
       console.error("Error updating team member:", err);
-      alert("Failed to update team member");
+      toast.error("Failed to update team member");
     } finally {
       setIsSubmitting(false);
     }
@@ -177,13 +178,13 @@ export default function EditTeamMemberPage() {
       const result = await res.json();
 
       if (result.success) {
-        alert("Team member deleted successfully!");
+        toast.success("Team member deleted successfully!");
         router.push("/admin/team");
       } else {
-        alert(result.message || "Failed to delete team member");
+        toast.error(result.message || "Failed to delete team member");
       }
     } catch (err) {
-      alert("Failed to delete team member");
+      toast.error("Failed to delete team member");
     }
   };
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useRef, useEffect } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,6 +19,14 @@ import {
   Loader2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 type GalleryItem = {
   id: string;
@@ -35,6 +44,9 @@ export default function GalleryPage() {
   const [editingItem, setEditingItem] = useState<GalleryItem | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [draggedItem, setDraggedItem] = useState<string | null>(null);
+  const [itemToDelete, setItemToDelete] = useState<string | null>(null);
+  const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [showUploadModal, setShowUploadModal] = useState(false);
@@ -179,9 +191,10 @@ export default function GalleryPage() {
       fetchGallery();
       setPendingUploads([]);
       setShowUploadModal(false);
+      toast.success("Images uploaded successfully");
     } catch (err: any) {
       console.error("Upload error:", err);
-      alert(err.message || "Failed to upload images");
+      toast.error(err.message || "Failed to upload images");
     } finally {
       setIsUploading(false);
       setUploadProgress(0);
@@ -205,35 +218,51 @@ export default function GalleryPage() {
   };
 
   // Delete selected
-  const deleteSelected = async () => {
+  const deleteSelected = () => {
     if (selectedItems.length === 0) return;
-    if (
-      !confirm(`Are you sure you want to delete ${selectedItems.length} items?`)
-    )
-      return;
+    setShowBulkDeleteConfirm(true);
+  };
 
+  const confirmBulkDelete = async () => {
+    setIsDeleting(true);
     try {
       for (const id of selectedItems) {
         await fetch(`/api/gallery/${id}`, { method: "DELETE" });
       }
       fetchGallery();
       setSelectedItems([]);
+      toast.success("Items deleted successfully");
     } catch (err) {
-      alert("Failed to delete some items");
+      toast.error("Failed to delete some items");
+    } finally {
+      setIsDeleting(false);
+      setShowBulkDeleteConfirm(false);
     }
   };
 
   // Delete single item
-  const deleteItem = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this image?")) return;
+  const deleteItem = (id: string) => {
+    setItemToDelete(id);
+  };
 
+  const confirmDelete = async () => {
+    if (!itemToDelete) return;
+    setIsDeleting(true);
     try {
-      const res = await fetch(`/api/gallery/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/gallery/${itemToDelete}`, {
+        method: "DELETE",
+      });
       if (res.ok) {
         fetchGallery();
+        toast.success("Image deleted successfully");
+      } else {
+        throw new Error("Failed to delete");
       }
     } catch (err) {
-      alert("Failed to delete image");
+      toast.error("Failed to delete image");
+    } finally {
+      setIsDeleting(false);
+      setItemToDelete(null);
     }
   };
 
@@ -255,9 +284,10 @@ export default function GalleryPage() {
           prev.map((item) => (item.id === editingItem.id ? editingItem : item))
         );
         setEditingItem(null);
+        toast.success("Changes saved successfully");
       }
     } catch (err) {
-      alert("Failed to save changes");
+      toast.error("Failed to save changes");
     }
   };
 
@@ -577,9 +607,9 @@ export default function GalleryPage() {
 
       {/* Edit Modal */}
       {editingItem && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-40 p-  ">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-40 p-4">
           <div className="bg-white rounded-2xl w-full max-w-md overflow-hidden">
-            <div className="p- border-b border-gray-100">
+            <div className="p-4 border-b border-gray-100">
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-semibold text-gray-900">
                   Edit Image Details
@@ -593,9 +623,9 @@ export default function GalleryPage() {
               </div>
             </div>
 
-            <div className="p-6 space-y-2">
+            <div className="p-6 space-y-4">
               {/* Preview */}
-              <div className="aspect-video rounded-xl overflow-hidden">
+              <div className="aspect-video rounded-xl overflow-hidden bg-gray-100">
                 <img
                   src={editingItem.src}
                   alt={editingItem.title ?? undefined}
@@ -663,6 +693,88 @@ export default function GalleryPage() {
           </div>
         </div>
       )}
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={!!itemToDelete}
+        onOpenChange={(open) => !open && setItemToDelete(null)}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Image</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this image? This action cannot be
+              undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button
+              variant="outline"
+              onClick={() => setItemToDelete(null)}
+              className="mt-2 sm:mt-0"
+              disabled={isDeleting}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={confirmDelete}
+              className="bg-red-600 hover:bg-red-700 text-white"
+              disabled={isDeleting}
+            >
+              {isDeleting ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                "Delete Image"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Bulk Delete Confirmation Dialog */}
+      <Dialog
+        open={showBulkDeleteConfirm}
+        onOpenChange={(open) => !open && setShowBulkDeleteConfirm(false)}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Multiple Images</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete {selectedItems.length} images?
+              This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button
+              variant="outline"
+              onClick={() => setShowBulkDeleteConfirm(false)}
+              className="mt-2 sm:mt-0"
+              disabled={isDeleting}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={confirmBulkDelete}
+              className="bg-red-600 hover:bg-red-700 text-white"
+              disabled={isDeleting}
+            >
+              {isDeleting ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                `Delete ${selectedItems.length} Images`
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

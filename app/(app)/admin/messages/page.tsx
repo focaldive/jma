@@ -29,6 +29,14 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 // Enum matching Prisma schema
 enum MessageStatus {
@@ -78,6 +86,8 @@ export default function MessagesPage() {
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [messageToDelete, setMessageToDelete] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState<string | null>(null);
 
   // Fetch messages from API
   const fetchMessages = async () => {
@@ -159,18 +169,76 @@ export default function MessagesPage() {
     router.push(`/admin/messages/${id}`);
   };
 
-  // Toggle read status (Placeholder logic until API endpoint exists)
+  // Toggle read status
   const toggleReadStatus = async (id: string, currentStatus: MessageStatus) => {
-    // TODO: Implement PATCH API call
-    // For now, optimistic update or just alert
-    toast.info("Status update not yet implemented on backend");
+    const newStatus =
+      currentStatus === MessageStatus.NEW
+        ? MessageStatus.READ
+        : MessageStatus.NEW;
+
+    // Optimistic update
+    setMessages((msgs) =>
+      msgs.map((m) => (m.id === id ? { ...m, status: newStatus } : m))
+    );
+
+    try {
+      const res = await fetch(`/api/contact/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      const result = await res.json();
+
+      if (result.success) {
+        toast.success(
+          `Message marked as ${
+            newStatus === MessageStatus.NEW ? "unread" : "read"
+          }`
+        );
+      } else {
+        // Revert
+        setMessages((msgs) =>
+          msgs.map((m) => (m.id === id ? { ...m, status: currentStatus } : m))
+        );
+        toast.error(result.message || "Failed to update status");
+      }
+    } catch (err) {
+      // Revert
+      setMessages((msgs) =>
+        msgs.map((m) => (m.id === id ? { ...m, status: currentStatus } : m))
+      );
+      toast.error("Failed to update status");
+    }
   };
 
-  // Delete message (Placeholder logic until API endpoint exists)
-  const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure?")) return;
-    // TODO: Implement DELETE API call
-    toast.info("Delete not yet implemented on backend");
+  // Delete message
+  const handleDelete = (id: string) => {
+    setMessageToDelete(id);
+  };
+
+  const confirmDelete = async () => {
+    if (!messageToDelete) return;
+
+    setDeleting(messageToDelete);
+    try {
+      const res = await fetch(`/api/contact/${messageToDelete}`, {
+        method: "DELETE",
+      });
+      const result = await res.json();
+
+      if (result.success) {
+        setMessages((msgs) => msgs.filter((m) => m.id !== messageToDelete));
+        toast.success("Message deleted successfully");
+        setMessageToDelete(null);
+      } else {
+        toast.error(result.message || "Failed to delete message");
+      }
+    } catch (err) {
+      console.error("Delete error:", err);
+      toast.error("Failed to delete message");
+    } finally {
+      setDeleting(null);
+    }
   };
 
   // Bulk actions (Placeholders)
@@ -479,6 +547,46 @@ export default function MessagesPage() {
           </div>
         )}
       </div>
+
+      <Dialog
+        open={!!messageToDelete}
+        onOpenChange={(open) => !open && setMessageToDelete(null)}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Message</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this message? This action cannot
+              be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button
+              variant="outline"
+              onClick={() => setMessageToDelete(null)}
+              className="mt-2 sm:mt-0"
+              disabled={!!deleting}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={confirmDelete}
+              className="bg-red-600 hover:bg-red-700 text-white"
+              disabled={!!deleting}
+            >
+              {deleting ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                "Delete Message"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

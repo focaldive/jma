@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -34,6 +35,14 @@ import {
   List,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 type Video = {
   id: string;
@@ -72,6 +81,8 @@ export default function VideosPage() {
   const [previewVideo, setPreviewVideo] = useState<Video | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState<string | null>(null);
+  const [videoToDelete, setVideoToDelete] = useState<string | null>(null);
 
   // Form state
   const [sourceType, setSourceType] = useState<"YOUTUBE" | "LOCAL">("YOUTUBE");
@@ -107,17 +118,17 @@ export default function VideosPage() {
   const handleAddVideo = async () => {
     // Validation
     if (!title.trim()) {
-      alert("Please enter a title");
+      toast.error("Please enter a title");
       return;
     }
 
     if (sourceType === "YOUTUBE" && !youtubeUrl.trim()) {
-      alert("Please enter a YouTube URL");
+      toast.error("Please enter a YouTube URL");
       return;
     }
 
     if (sourceType === "LOCAL" && !selectedFile) {
-      alert("Please select a video file");
+      toast.error("Please select a video file");
       return;
     }
 
@@ -172,10 +183,10 @@ export default function VideosPage() {
       resetForm();
       setShowAddModal(false);
       fetchVideos();
-      alert("Video added successfully!");
+      toast.success("Video added successfully!");
     } catch (err: any) {
       console.error("Add video error:", err);
-      alert(err.message || "Failed to add video");
+      toast.error(err.message || "Failed to add video");
     } finally {
       setIsUploading(false);
     }
@@ -204,31 +215,42 @@ export default function VideosPage() {
         fetchVideos();
         setEditingVideo(null);
         setShowEditModal(false);
-        alert("Video updated successfully!");
+        toast.success("Video updated successfully!");
       } else {
-        alert(result.message || "Failed to update video");
+        toast.error(result.message || "Failed to update video");
       }
     } catch (err) {
-      alert("Failed to update video");
+      toast.error("Failed to update video");
     }
   };
 
   // Handle delete
-  const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this video?")) return;
+  const handleDelete = (id: string) => {
+    setVideoToDelete(id);
+  };
 
+  const confirmDelete = async () => {
+    if (!videoToDelete) return;
+
+    setDeleting(videoToDelete);
     try {
-      const res = await fetch(`/api/videos/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/videos/${videoToDelete}`, {
+        method: "DELETE",
+      });
       const result = await res.json();
 
       if (result.success) {
         fetchVideos();
-        alert("Video deleted successfully!");
+        toast.success("Video deleted successfully!");
+        setVideoToDelete(null);
       } else {
-        alert(result.message || "Failed to delete video");
+        toast.error(result.message || "Failed to delete video");
       }
     } catch (err) {
-      alert("Failed to delete video");
+      console.error("Delete error:", err);
+      toast.error("Failed to delete video");
+    } finally {
+      setDeleting(null);
     }
   };
 
@@ -792,12 +814,7 @@ export default function VideosPage() {
                 <Label className="text-sm font-medium text-gray-700">
                   Category
                 </Label>
-                <Select
-                  value={editingVideo.category || ""}
-                  onValueChange={(v) =>
-                    setEditingVideo({ ...editingVideo, category: v })
-                  }
-                >
+                <Select value={editingVideo.category || ""}>
                   <SelectTrigger className="mt-2 rounded-xl bg-gray-50 border-gray-200">
                     <SelectValue placeholder="Select category" />
                   </SelectTrigger>
@@ -829,6 +846,46 @@ export default function VideosPage() {
           </div>
         </div>
       )}
+
+      <Dialog
+        open={!!videoToDelete}
+        onOpenChange={(open) => !open && setVideoToDelete(null)}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Video</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this video? This action cannot be
+              undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button
+              variant="outline"
+              onClick={() => setVideoToDelete(null)}
+              className="mt-2 sm:mt-0"
+              disabled={!!deleting}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={confirmDelete}
+              className="bg-red-600 hover:bg-red-700 text-white"
+              disabled={!!deleting}
+            >
+              {deleting ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                "Delete Video"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Preview Modal */}
       {showPreviewModal && previewVideo && (

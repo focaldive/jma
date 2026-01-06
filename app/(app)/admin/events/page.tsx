@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,8 +29,17 @@ import {
   LayoutGrid,
   LayoutList,
   Clock,
+  AlertTriangle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 type ViewMode = "list" | "grid";
 
@@ -94,6 +104,7 @@ export default function EventsPage() {
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [viewMode, setViewMode] = useState<ViewMode>("list");
+  const [eventToDelete, setEventToDelete] = useState<string | null>(null);
 
   // Fetch events
   const fetchEvents = async () => {
@@ -165,20 +176,29 @@ export default function EventsPage() {
     router.push(`/admin/events/${id}/edit`);
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this event?")) return;
+  const handleDelete = (id: string) => {
+    setEventToDelete(id);
+  };
+
+  const confirmDelete = async () => {
+    if (!eventToDelete) return;
 
     try {
-      const response = await fetch(`/api/events/${id}`, { method: "DELETE" });
+      const response = await fetch(`/api/events/${eventToDelete}`, {
+        method: "DELETE",
+      });
       const result = await response.json();
       if (result.success) {
+        toast.success("Event deleted successfully");
         fetchEvents(); // Refresh list
       } else {
-        alert(result.message || "Failed to delete event");
+        toast.error(result.message || "Failed to delete event");
       }
     } catch (err) {
       console.error("Delete error:", err);
-      alert("An error occurred while deleting the event");
+      toast.error("An error occurred while deleting the event");
+    } finally {
+      setEventToDelete(null);
     }
   };
 
@@ -715,6 +735,37 @@ export default function EventsPage() {
           )}
         </>
       )}
+
+      <Dialog
+        open={!!eventToDelete}
+        onOpenChange={(open) => !open && setEventToDelete(null)}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Event</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this event? This action cannot be
+              undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button
+              variant="outline"
+              onClick={() => setEventToDelete(null)}
+              className="mt-2 sm:mt-0"
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={confirmDelete}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              Delete Event
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
