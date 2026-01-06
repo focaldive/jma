@@ -33,6 +33,7 @@ import {
   Loader2,
   LayoutGrid,
   List,
+  Image as ImageIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -88,6 +89,7 @@ export default function VideosPage() {
   const [sourceType, setSourceType] = useState<"YOUTUBE" | "LOCAL">("YOUTUBE");
   const [youtubeUrl, setYoutubeUrl] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedThumbnail, setSelectedThumbnail] = useState<File | null>(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
@@ -159,6 +161,28 @@ export default function VideosPage() {
         videoFilePath = uploadResult.filePath;
       }
 
+      // Upload thumbnail if selected
+      let thumbnailPath = null;
+      if (selectedThumbnail) {
+        const formData = new FormData();
+        formData.append("file", selectedThumbnail);
+
+        const thumbRes = await fetch("/api/upload-thumbnail", {
+          method: "POST",
+          body: formData,
+        });
+
+        const thumbResult = await thumbRes.json();
+
+        if (!thumbResult.success) {
+          throw new Error(
+            thumbResult.message || "Failed to upload thumbnail image"
+          );
+        }
+
+        thumbnailPath = thumbResult.filePath;
+      }
+
       // Create video record
       const response = await fetch("/api/videos", {
         method: "POST",
@@ -166,6 +190,7 @@ export default function VideosPage() {
         body: JSON.stringify({
           title,
           description,
+          thumbnail: thumbnailPath,
           sourceType,
           youtubeUrl: sourceType === "YOUTUBE" ? youtubeUrl : null,
           videoFile: videoFilePath,
@@ -197,6 +222,29 @@ export default function VideosPage() {
     if (!editingVideo) return;
 
     try {
+      let thumbnailPath = undefined;
+
+      // Upload thumbnail if selected
+      if (selectedThumbnail) {
+        const formData = new FormData();
+        formData.append("file", selectedThumbnail);
+
+        const thumbRes = await fetch("/api/upload-thumbnail", {
+          method: "POST",
+          body: formData,
+        });
+
+        const thumbResult = await thumbRes.json();
+
+        if (!thumbResult.success) {
+          throw new Error(
+            thumbResult.message || "Failed to upload thumbnail image"
+          );
+        }
+
+        thumbnailPath = thumbResult.filePath;
+      }
+
       const res = await fetch(`/api/videos/${editingVideo.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -206,6 +254,7 @@ export default function VideosPage() {
           category: editingVideo.category,
           isActive: editingVideo.isActive,
           isFeatured: editingVideo.isFeatured,
+          thumbnail: thumbnailPath,
         }),
       });
 
@@ -259,6 +308,7 @@ export default function VideosPage() {
     setSourceType("YOUTUBE");
     setYoutubeUrl("");
     setSelectedFile(null);
+    setSelectedThumbnail(null);
     setTitle("");
     setDescription("");
     setCategory("");
@@ -685,6 +735,29 @@ export default function VideosPage() {
                 </div>
               )}
 
+              {/* Thumbnail Upload */}
+              <div>
+                <Label className="text-sm font-medium text-gray-700">
+                  Custom Thumbnail (Optional)
+                </Label>
+                <div className="mt-2">
+                  <div className="relative w-full">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) =>
+                        setSelectedThumbnail(e.target.files?.[0] || null)
+                      }
+                      className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100"
+                    />
+                  </div>
+                  <p className="text-xs text-gray-500 mt-2">
+                    <ImageIcon className="w-3 h-3 inline mr-1" />
+                    Overrides YouTube default thumbnail. Max 5MB (JPG, PNG).
+                  </p>
+                </div>
+              </div>
+
               {/* Title */}
               <div>
                 <Label className="text-sm font-medium text-gray-700">
@@ -794,6 +867,28 @@ export default function VideosPage() {
                   className="mt-2 rounded-xl bg-gray-50 border-gray-200"
                 />
               </div>
+
+              {/* Thumbnail Upload (Edit) */}
+              <div>
+                <Label className="text-sm font-medium text-gray-700">
+                  Update Thumbnail (Optional)
+                </Label>
+                <div className="mt-2">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) =>
+                      setSelectedThumbnail(e.target.files?.[0] || null)
+                    }
+                    className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100"
+                  />
+                  <p className="text-xs text-gray-500 mt-2">
+                    <ImageIcon className="w-3 h-3 inline mr-1" />
+                    Leave empty to keep current thumbnail.
+                  </p>
+                </div>
+              </div>
+
               <div>
                 <Label className="text-sm font-medium text-gray-700">
                   Description
