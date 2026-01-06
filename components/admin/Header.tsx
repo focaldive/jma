@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
+import { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import {
   Search,
   Bell,
@@ -11,32 +11,53 @@ import {
   ChevronDown,
   Calendar,
   Menu,
-} from "lucide-react"
+} from "lucide-react";
+import { NotificationItem } from "./AdminClientLayout";
+import { AdminUser } from "@prisma/client";
 
 interface HeaderProps {
-  onMenuClick?: () => void
+  onMenuClick?: () => void;
+  user: Partial<AdminUser> | null;
+  notifications: NotificationItem[];
 }
 
-export function Header({ onMenuClick }: HeaderProps) {
-  const router = useRouter()
-  const [showNotifications, setShowNotifications] = useState(false)
+export function Header({ onMenuClick, user, notifications }: HeaderProps) {
+  const router = useRouter();
+  const [showNotifications, setShowNotifications] = useState(false);
+  const notificationRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        notificationRef.current &&
+        !notificationRef.current.contains(event.target as Node)
+      ) {
+        setShowNotifications(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("loggedIn")
-    router.push("/login")
-  }
+    localStorage.removeItem("loggedIn");
+    router.push("/login");
+  };
 
   const currentDate = new Date().toLocaleDateString("en-US", {
     weekday: "long",
     day: "numeric",
     month: "long",
     year: "numeric",
-  })
+  });
 
   const currentTime = new Date().toLocaleTimeString("en-US", {
     hour: "2-digit",
     minute: "2-digit",
-  })
+  });
 
   return (
     <header className="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-4 sm:px-6 sticky top-0 z-30">
@@ -51,13 +72,13 @@ export function Header({ onMenuClick }: HeaderProps) {
         </button>
 
         {/* Search Bar */}
-        <div className="hidden sm:block flex-1 max-w-md">
+        <div className="flex hidden gap-2 sm:block flex-1 max-w-md ">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
             <input
               type="text"
               placeholder="Search anything..."
-              className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+              className="w-full pl-8 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
             />
           </div>
         </div>
@@ -79,13 +100,15 @@ export function Header({ onMenuClick }: HeaderProps) {
         </div>
 
         {/* Notifications */}
-        <div className="relative">
+        <div className="relative" ref={notificationRef}>
           <button
             onClick={() => setShowNotifications(!showNotifications)}
             className="relative p-2.5 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors"
           >
             <Bell className="w-5 h-5 text-gray-600" />
-            <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+            {notifications.length > 0 && (
+              <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+            )}
           </button>
 
           {/* Notifications Dropdown */}
@@ -95,22 +118,37 @@ export function Header({ onMenuClick }: HeaderProps) {
                 <h3 className="font-semibold text-gray-900">Notifications</h3>
               </div>
               <div className="max-h-64 overflow-y-auto">
-                {[1, 2, 3].map((i) => (
-                  <div key={i} className="px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors">
-                    <div className="flex items-start gap-3">
-                      <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
-                        <Bell className="w-4 h-4 text-blue-600" />
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-sm text-gray-900">New donation received</p>
-                        <p className="text-xs text-gray-500 mt-0.5">2 hours ago</p>
+                {notifications.length > 0 ? (
+                  notifications.map((n) => (
+                    <div
+                      key={n.id}
+                      className="px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors"
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+                          <Bell className="w-4 h-4 text-blue-600" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm text-gray-900">{n.title}</p>
+                          <p className="text-xs text-gray-500 mt-0.5">
+                            {n.description}
+                          </p>
+                          <p className="text-xs text-gray-400 mt-1">{n.time}</p>
+                        </div>
                       </div>
                     </div>
+                  ))
+                ) : (
+                  <div className="px-4 py-6 text-center text-gray-500 text-sm">
+                    No new notifications
                   </div>
-                ))}
+                )}
               </div>
               <div className="px-4 pt-3 border-t border-gray-100">
-                <button className="w-full py-2 text-sm text-blue-600 font-medium hover:text-blue-700 transition-colors">
+                <button
+                  onClick={() => router.push("/admin/messages")}
+                  className="w-full py-2 text-sm text-blue-600 font-medium hover:text-blue-700 transition-colors"
+                >
                   View All Notifications
                 </button>
               </div>
@@ -120,13 +158,18 @@ export function Header({ onMenuClick }: HeaderProps) {
 
         {/* User Profile */}
         <div className="flex items-center gap-2 sm:gap-3 pl-2 sm:pl-4 border-l border-gray-200">
-          <Avatar className="w-9 h-9 sm:w-10 sm:h-10 ring-2 ring-gray-100">
-            <AvatarImage src="/assets/avatar.png" alt="Admin" />
-            <AvatarFallback className="bg-blue-100 text-blue-600 font-semibold text-sm">AD</AvatarFallback>
+          <Avatar className="w-10 h-10 sm:w-10 sm:h-10 ring-2 ring-gray-100 ">
+            <AvatarImage
+              src={user?.avatar || "/assets/avatar.png"}
+              alt={user?.name || "Admin"}
+            />
+          
           </Avatar>
           <div className="hidden md:block">
-            <p className="text-sm font-semibold text-gray-900">Admin User</p>
-            <p className="text-xs text-gray-500">Administrator</p>
+            <p className="text-sm font-semibold text-gray-900">
+              {user?.name || "Admin User"}
+            </p>
+            <p className="text-xs text-gray-500">{user?.role || "Admin"}</p>
           </div>
           <ChevronDown className="w-4 h-4 text-gray-400 hidden md:block" />
         </div>
@@ -149,5 +192,5 @@ export function Header({ onMenuClick }: HeaderProps) {
         </button>
       </div>
     </header>
-  )
+  );
 }
