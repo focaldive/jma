@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Sidebar } from "@/components/admin/Sidebar";
 import { Header } from "@/components/admin/Header";
 import { AdminUser } from "@prisma/client";
+import { Loader2 } from "lucide-react";
 
 export interface NotificationItem {
   id: string;
@@ -26,6 +28,31 @@ export function AdminClientLayout({
   notifications,
 }: AdminClientLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
+
+  useEffect(() => {
+    const checkAuth = () => {
+      const isLoggedIn = localStorage.getItem("loggedIn");
+      if (!isLoggedIn) {
+        router.push("/login");
+      } else {
+        setIsLoading(false);
+      }
+    };
+    checkAuth();
+  }, [router]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="flex items-center gap-3 text-gray-600">
+          <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
+          <span className="font-medium">Verifying access...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
