@@ -15,7 +15,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { ArrowLeft, Upload, Loader2, User } from "lucide-react";
 
-const roles = ["Admin", "Editor", "User"];
+const roles = ["ADMIN", "EDITOR", "VIEWER"];
 
 export default function AddUserPage() {
   const router = useRouter();
@@ -29,43 +29,44 @@ export default function AddUserPage() {
     phone: "",
     password: "",
     confirmPassword: "",
-    role: "",
+    role: "EDITOR", // Default
     isActive: true,
   });
   const handleSubmit = async () => {
-  if (!validate()) return;
-  setIsSubmitting(true);
+    if (!validate()) return;
+    setIsSubmitting(true);
 
-  const newUser = {
-    ...formData,
-    status: formData.isActive ? "Active" : "Disabled",
-    image:
-      formImage ||
-      `https://ui-avatars.com/api/?name=${encodeURIComponent(formData.name)}&background=3b82f6&color=fff`,
-  };
+    const newUser = {
+      ...formData,
+      // API expects strictly mapped fields, sending raw formData plus image
+      image:
+        formImage ||
+        `https://ui-avatars.com/api/?name=${encodeURIComponent(
+          formData.name
+        )}&background=3b82f6&color=fff`,
+    };
 
-  try {
-    const res = await fetch("/api/users", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newUser),
-    });
+    try {
+      const res = await fetch("/api/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newUser),
+      });
 
-    const result = await res.json();
+      const result = await res.json();
 
-    if (!result.success) {
-      throw new Error(result.message || "Failed to create user");
+      if (!result.success) {
+        throw new Error(result.message || "Failed to create user");
+      }
+
+      router.push("/admin/settings/users"); // redirect on success
+    } catch (err: any) {
+      console.error(err);
+      alert("Error creating user: " + err.message);
+    } finally {
+      setIsSubmitting(false);
     }
-
-    router.push("/admin/settings/users"); // redirect on success
-  } catch (err: any) {
-    console.error(err);
-    alert("Error creating user: " + err.message);
-  } finally {
-    setIsSubmitting(false);
-  }
-};
-
+  };
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -92,7 +93,6 @@ export default function AddUserPage() {
     return Object.keys(errs).length === 0;
   };
 
-  
   return (
     <div className="space-y-6">
       {/* Page Header */}
@@ -277,7 +277,7 @@ export default function AddUserPage() {
               <SelectContent>
                 {roles.map((r) => (
                   <SelectItem key={r} value={r}>
-                    {r}
+                    {r.charAt(0) + r.slice(1).toLowerCase()}
                   </SelectItem>
                 ))}
               </SelectContent>
