@@ -1,18 +1,19 @@
-"use client"
+"use client";
 
-import { useState, useCallback, useEffect } from "react"
-import { useRouter, useParams } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
+import { useState, useCallback, useEffect } from "react";
+import { useRouter, useParams } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
 import {
   ArrowLeft,
   Upload,
@@ -21,9 +22,12 @@ import {
   CalendarDays,
   MapPin,
   Image as ImageIcon,
-} from "lucide-react"
-import { cn } from "@/lib/utils"
-import { Badge } from "@/components/ui/badge"
+  Clock,
+  Link as LinkIcon,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
 
 const categories = [
   "Fundraiser",
@@ -34,9 +38,7 @@ const categories = [
   "Community",
   "Workshop",
   "Charity",
-]
-
-const statuses = ["Upcoming", "Completed", "Cancelled"]
+];
 
 const categoryStyles: Record<string, string> = {
   Fundraiser: "bg-purple-100 text-purple-700",
@@ -47,186 +49,200 @@ const categoryStyles: Record<string, string> = {
   Community: "bg-orange-100 text-orange-700",
   Workshop: "bg-indigo-100 text-indigo-700",
   Charity: "bg-teal-100 text-teal-700",
-}
-
-const statusStyles: Record<string, string> = {
-  Upcoming: "bg-emerald-100 text-emerald-700",
-  Completed: "bg-gray-100 text-gray-700",
-  Cancelled: "bg-red-100 text-red-700",
-}
-
-// Sample events data
-const eventsData: Record<string, {
-  name: string
-  date: string
-  location: string
-  category: string
-  status: string
-  description: string
-  featuredImage: string | null
-}> = {
-  "1": { name: "Annual Charity Gala 2024", date: "2024-12-28", location: "Colombo Grand Hotel", category: "Fundraiser", status: "Upcoming", description: "Join us for our annual charity gala event featuring dinner, entertainment, and fundraising activities.", featuredImage: null },
-  "2": { name: "Community Health Camp", date: "2024-12-15", location: "Kandy Community Center", category: "Health", status: "Completed", description: "Free health checkups and medical consultations for the community.", featuredImage: null },
-  "3": { name: "Ramadan Iftar Gathering", date: "2025-03-15", location: "JMA Main Hall", category: "Religious", status: "Upcoming", description: "Community iftar gathering during the holy month of Ramadan.", featuredImage: null },
-  "4": { name: "Youth Leadership Workshop", date: "2024-11-20", location: "Galle Youth Center", category: "Education", status: "Completed", description: "A workshop focused on developing leadership skills among young community members.", featuredImage: null },
-  "5": { name: "Orphan Support Day", date: "2024-12-01", location: "Batticaloa Orphanage", category: "Welfare", status: "Completed", description: "A day dedicated to supporting orphans with gifts, activities, and love.", featuredImage: null },
-  "6": { name: "New Year Celebration", date: "2025-01-01", location: "Colombo Convention Center", category: "Community", status: "Upcoming", description: "Welcome the new year with the JMA community.", featuredImage: null },
-  "7": { name: "Blood Donation Drive", date: "2024-10-25", location: "Jaffna Hospital", category: "Health", status: "Completed", description: "Blood donation drive in collaboration with local hospitals.", featuredImage: null },
-  "8": { name: "Scholarship Award Ceremony", date: "2025-02-10", location: "Colombo University Hall", category: "Education", status: "Upcoming", description: "Award ceremony for scholarship recipients.", featuredImage: null },
-  "9": { name: "Emergency Relief Meeting", date: "2024-09-15", location: "JMA Office", category: "Welfare", status: "Cancelled", description: "Meeting to discuss emergency relief operations.", featuredImage: null },
-  "10": { name: "Eid Festival Celebration", date: "2025-04-01", location: "JMA Main Hall", category: "Religious", status: "Upcoming", description: "Celebrate Eid with the JMA community.", featuredImage: null },
-  "11": { name: "Winter Clothes Distribution", date: "2024-11-30", location: "Nuwara Eliya", category: "Welfare", status: "Completed", description: "Distributing warm clothes to those in need.", featuredImage: null },
-  "12": { name: "Career Guidance Seminar", date: "2025-01-20", location: "Colombo Skills Center", category: "Education", status: "Upcoming", description: "Career guidance and counseling seminar for youth.", featuredImage: null },
-  "13": { name: "Mosque Inauguration", date: "2024-08-10", location: "Puttalam", category: "Religious", status: "Completed", description: "Inauguration of the newly built mosque.", featuredImage: null },
-  "14": { name: "Sports Day Event", date: "2024-07-15", location: "Colombo Sports Complex", category: "Community", status: "Cancelled", description: "Annual sports day for the community.", featuredImage: null },
-  "15": { name: "Fundraiser Dinner", date: "2025-02-28", location: "Hilton Colombo", category: "Fundraiser", status: "Upcoming", description: "Exclusive fundraiser dinner with special guests.", featuredImage: null },
-}
+};
 
 export default function EditEventPage() {
-  const router = useRouter()
-  const params = useParams()
-  const eventId = params.id as string
+  const router = useRouter();
+  const params = useParams();
+  const eventId = params.id as string;
 
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
-  const [eventNotFound, setEventNotFound] = useState(false)
-  const [isDragging, setIsDragging] = useState(false)
-  const [featuredImage, setFeaturedImage] = useState<string | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [eventNotFound, setEventNotFound] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [featuredImage, setFeaturedImage] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
-    name: "",
-    date: "",
-    location: "",
-    category: "",
-    status: "",
+    title: "",
+    slug: "",
     description: "",
-  })
+    category: "",
+    date: "",
+    endDate: "",
+    time: "",
+    location: "",
+    address: "",
+    isPublished: false,
+    isFeatured: false,
+  });
 
-  const [errors, setErrors] = useState<Record<string, string>>({})
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // Load existing event data
+  // Fetch event data
   useEffect(() => {
-    const loadEvent = async () => {
-      setIsLoading(true)
-      await new Promise((resolve) => setTimeout(resolve, 500))
+    const fetchEvent = async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetch(`/api/events/${eventId}`);
+        const result = await response.json();
 
-      const event = eventsData[eventId]
-      if (event) {
-        setFormData({
-          name: event.name,
-          date: event.date,
-          location: event.location,
-          category: event.category,
-          status: event.status,
-          description: event.description,
-        })
-        setFeaturedImage(event.featuredImage)
-        setEventNotFound(false)
-      } else {
-        setEventNotFound(true)
+        if (result.success) {
+          const event = result.data;
+          setFormData({
+            title: event.title || "",
+            slug: event.slug || "",
+            description: event.description || "",
+            category: event.category || "",
+            date: event.date
+              ? new Date(event.date).toISOString().split("T")[0]
+              : "",
+            endDate: event.endDate
+              ? new Date(event.endDate).toISOString().split("T")[0]
+              : "",
+            time: event.time || "",
+            location: event.location || "",
+            address: event.address || "",
+            isPublished: event.isPublished || false,
+            isFeatured: event.isFeatured || false,
+          });
+          setFeaturedImage(event.image);
+          setEventNotFound(false);
+        } else {
+          setEventNotFound(true);
+          toast.error(result.message || "Failed to fetch event details.");
+        }
+      } catch (error) {
+        console.error("Fetch error:", error);
+        setEventNotFound(true);
+        toast.error("An error occurred while fetching the event.");
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(false)
-    }
+    };
 
     if (eventId) {
-      loadEvent()
+      fetchEvent();
     }
-  }, [eventId])
+  }, [eventId]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
     if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: "" }))
+      setErrors((prev) => ({ ...prev, [name]: "" }));
     }
-  }
+  };
+
+  const handleSwitchChange = (name: string, checked: boolean) => {
+    setFormData((prev) => ({ ...prev, [name]: checked }));
+  };
 
   const handleSelectChange = (name: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [name]: value }))
+    setFormData((prev) => ({ ...prev, [name]: value }));
     if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: "" }))
+      setErrors((prev) => ({ ...prev, [name]: "" }));
     }
-  }
+  };
 
   // Drag and drop handlers
   const handleDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault()
-    setIsDragging(true)
-  }, [])
+    e.preventDefault();
+    setIsDragging(true);
+  }, []);
 
   const handleDragLeave = useCallback((e: React.DragEvent) => {
-    e.preventDefault()
-    setIsDragging(false)
-  }, [])
+    e.preventDefault();
+    setIsDragging(false);
+  }, []);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault()
-    setIsDragging(false)
-    const file = e.dataTransfer.files[0]
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files[0];
     if (file && file.type.startsWith("image/")) {
-      const reader = new FileReader()
+      const reader = new FileReader();
       reader.onload = () => {
-        setFeaturedImage(reader.result as string)
-      }
-      reader.readAsDataURL(file)
+        setFeaturedImage(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
-  }, [])
+  }, []);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
+    const file = e.target.files?.[0];
     if (file && file.type.startsWith("image/")) {
-      const reader = new FileReader()
+      const reader = new FileReader();
       reader.onload = () => {
-        setFeaturedImage(reader.result as string)
-      }
-      reader.readAsDataURL(file)
+        setFeaturedImage(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
-  }
+  };
 
   const removeImage = () => {
-    setFeaturedImage(null)
-  }
+    setFeaturedImage(null);
+  };
 
   const validate = () => {
-    const newErrors: Record<string, string> = {}
-    if (!formData.name.trim()) newErrors.name = "Event name is required"
-    if (!formData.date) newErrors.date = "Date is required"
-    if (!formData.location.trim()) newErrors.location = "Location is required"
-    if (!formData.category) newErrors.category = "Category is required"
-    if (!formData.status) newErrors.status = "Status is required"
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
+    const newErrors: Record<string, string> = {};
+    if (!formData.title.trim()) newErrors.title = "Event title is required";
+    if (!formData.slug.trim()) newErrors.slug = "Slug is required";
+    if (!formData.category) newErrors.category = "Category is required";
+    if (!formData.date) newErrors.date = "Start date is required";
 
-  const handleSaveDraft = async () => {
-    setIsSubmitting(true)
-    console.log("Saving draft:", { id: eventId, ...formData, featuredImage, isDraft: true })
-    setTimeout(() => {
-      setIsSubmitting(false)
-      router.push("/admin/events")
-    }, 1000)
-  }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
-  const handlePublish = async () => {
-    if (!validate()) return
-    setIsSubmitting(true)
-    console.log("Publishing event:", { id: eventId, ...formData, featuredImage, isDraft: false })
-    setTimeout(() => {
-      setIsSubmitting(false)
-      router.push("/admin/events")
-    }, 1000)
-  }
+  const handleSubmit = async (publish: boolean = formData.isPublished) => {
+    if (!validate()) {
+      toast.error("Please fill in all required fields.");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    const submitData = {
+      ...formData,
+      image: featuredImage,
+      isPublished: publish,
+    };
+
+    try {
+      const response = await fetch(`/api/events/${eventId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(submitData),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        toast.success("Event updated successfully!");
+        router.push("/admin/events");
+      } else {
+        toast.error(result.message || "Something went wrong.");
+      }
+    } catch (error) {
+      console.error("Submission error:", error);
+      toast.error("An error occurred while updating the event.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const formatPreviewDate = (dateStr: string) => {
-    if (!dateStr) return "Date not set"
+    if (!dateStr) return "Date not set";
     return new Date(dateStr).toLocaleDateString("en-US", {
       year: "numeric",
       month: "long",
       day: "numeric",
-    })
-  }
+    });
+  };
 
   if (isLoading) {
     return (
@@ -236,25 +252,32 @@ export default function EditEventPage() {
           <span>Loading event...</span>
         </div>
       </div>
-    )
+    );
   }
 
   if (eventNotFound) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Event Not Found</h2>
-          <p className="text-gray-600 mb-4">The event with ID &quot;{eventId}&quot; does not exist.</p>
-          <Button onClick={() => router.push("/admin/events")} className="bg-blue-600 hover:bg-blue-700 text-white">
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">
+            Event Not Found
+          </h2>
+          <p className="text-gray-600 mb-4">
+            The event with ID &quot;{eventId}&quot; does not exist.
+          </p>
+          <Button
+            onClick={() => router.push("/admin/events")}
+            className="bg-blue-600 hover:bg-blue-700 text-white"
+          >
             Back to Events
           </Button>
         </div>
       </div>
-    )
+    );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 pb-20">
       {/* Top Bar */}
       <div className="sticky top-0 z-10 bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4">
@@ -276,14 +299,14 @@ export default function EditEventPage() {
             <div className="flex items-center gap-3">
               <Button
                 variant="outline"
-                onClick={handleSaveDraft}
+                onClick={() => handleSubmit(false)}
                 disabled={isSubmitting}
                 className="rounded-xl border-gray-200"
               >
-                Save Draft
+                {formData.isPublished ? "Set to Draft" : "Save as Draft"}
               </Button>
               <Button
-                onClick={handlePublish}
+                onClick={() => handleSubmit(true)}
                 disabled={isSubmitting}
                 className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl"
               >
@@ -308,32 +331,66 @@ export default function EditEventPage() {
           <div className="lg:col-span-2 space-y-6">
             {/* Event Details */}
             <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Event Details</h2>
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                Event Details
+              </h2>
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="name" className="text-sm font-medium text-gray-700">
-                    Event Name <span className="text-red-500">*</span>
+                  <Label
+                    htmlFor="title"
+                    className="text-sm font-medium text-gray-700"
+                  >
+                    Event Title <span className="text-red-500">*</span>
                   </Label>
                   <Input
-                    id="name"
-                    name="name"
-                    value={formData.name}
+                    id="title"
+                    name="title"
+                    value={formData.title}
                     onChange={handleInputChange}
-                    placeholder="Enter event name..."
+                    placeholder="Enter event title..."
                     className={cn(
                       "mt-2 rounded-xl bg-gray-50 border-gray-200",
-                      errors.name && "border-red-500"
+                      errors.title && "border-red-500"
                     )}
                   />
-                  {errors.name && (
-                    <p className="text-red-500 text-sm mt-1">{errors.name}</p>
+                  {errors.title && (
+                    <p className="text-red-500 text-sm mt-1">{errors.title}</p>
+                  )}
+                </div>
+
+                <div>
+                  <Label
+                    htmlFor="slug"
+                    className="text-sm font-medium text-gray-700"
+                  >
+                    URL Slug <span className="text-red-500">*</span>
+                  </Label>
+                  <div className="relative mt-2">
+                    <Input
+                      id="slug"
+                      name="slug"
+                      value={formData.slug}
+                      onChange={handleInputChange}
+                      placeholder="event-url-slug"
+                      className={cn(
+                        "pl-9 rounded-xl bg-gray-50 border-gray-200",
+                        errors.slug && "border-red-500"
+                      )}
+                    />
+                    <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  </div>
+                  {errors.slug && (
+                    <p className="text-red-500 text-sm mt-1">{errors.slug}</p>
                   )}
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="date" className="text-sm font-medium text-gray-700">
-                      Date <span className="text-red-500">*</span>
+                    <Label
+                      htmlFor="date"
+                      className="text-sm font-medium text-gray-700"
+                    >
+                      Start Date <span className="text-red-500">*</span>
                     </Label>
                     <Input
                       id="date"
@@ -352,84 +409,114 @@ export default function EditEventPage() {
                   </div>
 
                   <div>
-                    <Label htmlFor="location" className="text-sm font-medium text-gray-700">
-                      Location <span className="text-red-500">*</span>
+                    <Label
+                      htmlFor="endDate"
+                      className="text-sm font-medium text-gray-700"
+                    >
+                      End Date (Optional)
                     </Label>
                     <Input
-                      id="location"
-                      name="location"
-                      value={formData.location}
+                      id="endDate"
+                      name="endDate"
+                      type="date"
+                      value={formData.endDate}
                       onChange={handleInputChange}
-                      placeholder="Enter location..."
-                      className={cn(
-                        "mt-2 rounded-xl bg-gray-50 border-gray-200",
-                        errors.location && "border-red-500"
-                      )}
+                      className="mt-2 rounded-xl bg-gray-50 border-gray-200"
                     />
-                    {errors.location && (
-                      <p className="text-red-500 text-sm mt-1">{errors.location}</p>
-                    )}
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <Label className="text-sm font-medium text-gray-700">
-                      Category <span className="text-red-500">*</span>
-                    </Label>
-                    <Select
-                      value={formData.category}
-                      onValueChange={(value) => handleSelectChange("category", value)}
+                    <Label
+                      htmlFor="time"
+                      className="text-sm font-medium text-gray-700"
                     >
-                      <SelectTrigger
-                        className={cn(
-                          "mt-2 rounded-xl bg-gray-50 border-gray-200",
-                          errors.category && "border-red-500"
-                        )}
-                      >
-                        <SelectValue placeholder="Select category" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {categories.map((category) => (
-                          <SelectItem key={category} value={category}>
-                            {category}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    {errors.category && (
-                      <p className="text-red-500 text-sm mt-1">{errors.category}</p>
-                    )}
+                      Display Time (e.g., 10:00 AM)
+                    </Label>
+                    <div className="relative mt-2">
+                      <Input
+                        id="time"
+                        name="time"
+                        value={formData.time}
+                        onChange={handleInputChange}
+                        placeholder="e.g. 10:00 AM - 2:00 PM"
+                        className="pl-9 rounded-xl bg-gray-50 border-gray-200"
+                      />
+                      <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    </div>
                   </div>
 
                   <div>
-                    <Label className="text-sm font-medium text-gray-700">
-                      Status <span className="text-red-500">*</span>
-                    </Label>
-                    <Select
-                      value={formData.status}
-                      onValueChange={(value) => handleSelectChange("status", value)}
+                    <Label
+                      htmlFor="location"
+                      className="text-sm font-medium text-gray-700"
                     >
-                      <SelectTrigger
-                        className={cn(
-                          "mt-2 rounded-xl bg-gray-50 border-gray-200",
-                          errors.status && "border-red-500"
-                        )}
-                      >
-                        <SelectValue placeholder="Select status" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {statuses.map((status) => (
-                          <SelectItem key={status} value={status}>
-                            {status}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    {errors.status && (
-                      <p className="text-red-500 text-sm mt-1">{errors.status}</p>
-                    )}
+                      Location Name
+                    </Label>
+                    <div className="relative mt-2">
+                      <Input
+                        id="location"
+                        name="location"
+                        value={formData.location}
+                        onChange={handleInputChange}
+                        placeholder="e.g. Community Hall"
+                        className="pl-9 rounded-xl bg-gray-50 border-gray-200"
+                      />
+                      <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    </div>
                   </div>
+                </div>
+
+                <div>
+                  <Label className="text-sm font-medium text-gray-700">
+                    Category <span className="text-red-500">*</span>
+                  </Label>
+                  <Select
+                    value={formData.category}
+                    onValueChange={(value) =>
+                      handleSelectChange("category", value)
+                    }
+                  >
+                    <SelectTrigger
+                      className={cn(
+                        "mt-2 rounded-xl bg-gray-50 border-gray-200",
+                        errors.category && "border-red-500"
+                      )}
+                    >
+                      <SelectValue placeholder="Select category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categories.map((category) => (
+                        <SelectItem key={category} value={category}>
+                          {category}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {errors.category && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.category}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <Label
+                    htmlFor="address"
+                    className="text-sm font-medium text-gray-700"
+                  >
+                    Full Address (Optional)
+                  </Label>
+                  <Textarea
+                    id="address"
+                    name="address"
+                    value={formData.address}
+                    onChange={handleInputChange}
+                    placeholder="Enter full physical address..."
+                    rows={2}
+                    className="mt-2 rounded-xl bg-gray-50 border-gray-200 resize-none"
+                  />
                 </div>
               </div>
             </div>
@@ -437,7 +524,7 @@ export default function EditEventPage() {
             {/* Featured Image */}
             <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
               <Label className="text-sm font-medium text-gray-700">
-                Featured Image (Optional)
+                Event Banner Image (Optional)
               </Label>
               <div className="mt-3">
                 {featuredImage ? (
@@ -484,7 +571,7 @@ export default function EditEventPage() {
                             <span className="text-blue-600">browse</span>
                           </p>
                           <p className="text-xs text-gray-500 mt-1">
-                            PNG, JPG, GIF up to 10MB
+                            PNG, JPG, GIF up to 5MB
                           </p>
                         </div>
                       </div>
@@ -496,25 +583,68 @@ export default function EditEventPage() {
 
             {/* Description */}
             <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-              <Label htmlFor="description" className="text-sm font-medium text-gray-700">
-                Description (Optional)
+              <Label
+                htmlFor="description"
+                className="text-sm font-medium text-gray-700"
+              >
+                Detailed Description (Optional)
               </Label>
               <Textarea
                 id="description"
                 name="description"
                 value={formData.description}
                 onChange={handleInputChange}
-                placeholder="Enter event description..."
-                rows={5}
+                placeholder="Enter detailed event description..."
+                rows={8}
                 className="mt-2 rounded-xl bg-gray-50 border-gray-200 resize-none"
               />
             </div>
           </div>
 
-          {/* Sidebar - Preview */}
+          {/* Sidebar - Controls & Preview */}
           <div className="space-y-6">
             <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-              <h3 className="text-sm font-medium text-gray-700 mb-4">Event Preview</h3>
+              <h3 className="text-sm font-medium text-gray-700 mb-4">
+                Settings
+              </h3>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label className="text-sm font-medium text-gray-700">
+                      Published
+                    </Label>
+                    <p className="text-xs text-gray-500">
+                      Make this event public
+                    </p>
+                  </div>
+                  <Switch
+                    checked={formData.isPublished}
+                    onCheckedChange={(checked) =>
+                      handleSwitchChange("isPublished", checked)
+                    }
+                  />
+                </div>
+                <div className="flex items-center justify-between border-t pt-4">
+                  <div className="space-y-0.5">
+                    <Label className="text-sm font-medium text-gray-700">
+                      Featured
+                    </Label>
+                    <p className="text-xs text-gray-500">Show on homepage</p>
+                  </div>
+                  <Switch
+                    checked={formData.isFeatured}
+                    onCheckedChange={(checked) =>
+                      handleSwitchChange("isFeatured", checked)
+                    }
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+              <h3 className="text-sm font-medium text-gray-700 mb-4">
+                Event Preview
+              </h3>
               <div className="rounded-xl border border-gray-100 overflow-hidden">
                 <div className="h-36 bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center">
                   {featuredImage ? (
@@ -529,28 +659,42 @@ export default function EditEventPage() {
                 </div>
                 <div className="p-4 space-y-3">
                   <p className="font-semibold text-gray-900 line-clamp-2">
-                    {formData.name || "Event Name"}
+                    {formData.title || "Event Title"}
                   </p>
-                  
+
                   <div className="flex items-center gap-2 text-sm text-gray-600">
                     <CalendarDays className="w-4 h-4 text-gray-400" />
                     {formatPreviewDate(formData.date)}
                   </div>
-                  
+
                   <div className="flex items-center gap-2 text-sm text-gray-600">
                     <MapPin className="w-4 h-4 text-gray-400" />
                     {formData.location || "Location not set"}
                   </div>
-                  
+
                   <div className="flex flex-wrap gap-2 pt-2">
+                    {formData.isPublished ? (
+                      <Badge className="bg-emerald-100 text-emerald-700 border-none">
+                        Published
+                      </Badge>
+                    ) : (
+                      <Badge className="bg-gray-100 text-gray-700 border-none">
+                        Draft
+                      </Badge>
+                    )}
                     {formData.category && (
-                      <Badge className={cn("text-xs", categoryStyles[formData.category])}>
+                      <Badge
+                        className={cn(
+                          "text-xs border-none",
+                          categoryStyles[formData.category]
+                        )}
+                      >
                         {formData.category}
                       </Badge>
                     )}
-                    {formData.status && (
-                      <Badge className={cn("text-xs", statusStyles[formData.status])}>
-                        {formData.status}
+                    {formData.isFeatured && (
+                      <Badge className="bg-amber-100 text-amber-700 border-none">
+                        Featured
                       </Badge>
                     )}
                   </div>
@@ -561,5 +705,5 @@ export default function EditEventPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

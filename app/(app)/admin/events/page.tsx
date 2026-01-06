@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -32,130 +33,6 @@ import { cn } from "@/lib/utils";
 
 type ViewMode = "list" | "grid";
 
-// Sample events data
-const eventsData = [
-  {
-    id: 1,
-    name: "Annual Charity Gala 2024",
-    date: "2024-12-28",
-    location: "Colombo Grand Hotel",
-    category: "Fundraiser",
-    status: "Upcoming",
-  },
-  {
-    id: 2,
-    name: "Community Health Camp",
-    date: "2024-12-15",
-    location: "Kandy Community Center",
-    category: "Health",
-    status: "Completed",
-  },
-  {
-    id: 3,
-    name: "Ramadan Iftar Gathering",
-    date: "2025-03-15",
-    location: "JMA Main Hall",
-    category: "Religious",
-    status: "Upcoming",
-  },
-  {
-    id: 4,
-    name: "Youth Leadership Workshop",
-    date: "2024-11-20",
-    location: "Galle Youth Center",
-    category: "Education",
-    status: "Completed",
-  },
-  {
-    id: 5,
-    name: "Orphan Support Day",
-    date: "2024-12-01",
-    location: "Batticaloa Orphanage",
-    category: "Welfare",
-    status: "Completed",
-  },
-  {
-    id: 6,
-    name: "New Year Celebration",
-    date: "2025-01-01",
-    location: "Colombo Convention Center",
-    category: "Community",
-    status: "Upcoming",
-  },
-  {
-    id: 7,
-    name: "Blood Donation Drive",
-    date: "2024-10-25",
-    location: "Jaffna Hospital",
-    category: "Health",
-    status: "Completed",
-  },
-  {
-    id: 8,
-    name: "Scholarship Award Ceremony",
-    date: "2025-02-10",
-    location: "Colombo University Hall",
-    category: "Education",
-    status: "Upcoming",
-  },
-  {
-    id: 9,
-    name: "Emergency Relief Meeting",
-    date: "2024-09-15",
-    location: "JMA Office",
-    category: "Welfare",
-    status: "Cancelled",
-  },
-  {
-    id: 10,
-    name: "Eid Festival Celebration",
-    date: "2025-04-01",
-    location: "JMA Main Hall",
-    category: "Religious",
-    status: "Upcoming",
-  },
-  {
-    id: 11,
-    name: "Winter Clothes Distribution",
-    date: "2024-11-30",
-    location: "Nuwara Eliya",
-    category: "Welfare",
-    status: "Completed",
-  },
-  {
-    id: 12,
-    name: "Career Guidance Seminar",
-    date: "2025-01-20",
-    location: "Colombo Skills Center",
-    category: "Education",
-    status: "Upcoming",
-  },
-  {
-    id: 13,
-    name: "Mosque Inauguration",
-    date: "2024-08-10",
-    location: "Puttalam",
-    category: "Religious",
-    status: "Completed",
-  },
-  {
-    id: 14,
-    name: "Sports Day Event",
-    date: "2024-07-15",
-    location: "Colombo Sports Complex",
-    category: "Community",
-    status: "Cancelled",
-  },
-  {
-    id: 15,
-    name: "Fundraiser Dinner",
-    date: "2025-02-28",
-    location: "Hilton Colombo",
-    category: "Fundraiser",
-    status: "Upcoming",
-  },
-];
-
 const categories = [
   "Fundraiser",
   "Health",
@@ -163,6 +40,8 @@ const categories = [
   "Education",
   "Welfare",
   "Community",
+  "Workshop",
+  "Charity",
 ];
 const statuses = ["Upcoming", "Completed", "Cancelled"];
 
@@ -173,6 +52,8 @@ const categoryStyles: Record<string, string> = {
   Education: "bg-yellow-100 text-yellow-700 hover:bg-yellow-100",
   Welfare: "bg-pink-100 text-pink-700 hover:bg-pink-100",
   Community: "bg-orange-100 text-orange-700 hover:bg-orange-100",
+  Workshop: "bg-indigo-100 text-indigo-700 hover:bg-indigo-100",
+  Charity: "bg-teal-100 text-teal-700 hover:bg-teal-100",
 };
 
 const statusStyles: Record<string, string> = {
@@ -183,8 +64,29 @@ const statusStyles: Record<string, string> = {
 
 const ITEMS_PER_PAGE = 8;
 
+interface Event {
+  id: string;
+  title: string;
+  slug: string;
+  category: string | null;
+  description: string | null;
+  date: string;
+  endDate: string | null;
+  time: string | null;
+  location: string | null;
+  address: string | null;
+  image: string | null;
+  isPublished: boolean;
+  isFeatured: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export default function EventsPage() {
   const router = useRouter();
+  const [events, setEvents] = useState<Event[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -193,16 +95,39 @@ export default function EventsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [viewMode, setViewMode] = useState<ViewMode>("list");
 
+  // Fetch events
+  const fetchEvents = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch("/api/events");
+      const result = await response.json();
+      if (result.success) {
+        setEvents(result.data);
+      } else {
+        setError(result.message || "Failed to fetch events");
+      }
+    } catch (err) {
+      setError("An error occurred while fetching events");
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchEvents();
+  }, []);
+
   // Filter data
   const filteredEvents = useMemo(() => {
-    let result = [...eventsData];
+    let result = [...events];
 
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       result = result.filter(
         (event) =>
-          event.name.toLowerCase().includes(query) ||
-          event.location.toLowerCase().includes(query)
+          event.title.toLowerCase().includes(query) ||
+          (event.location && event.location.toLowerCase().includes(query))
       );
     }
 
@@ -211,33 +136,54 @@ export default function EventsPage() {
     }
 
     if (statusFilter !== "all") {
-      result = result.filter((event) => event.status === statusFilter);
+      result = result.filter((event) => {
+        const isUpcoming = new Date(event.date) > new Date();
+        if (statusFilter === "Upcoming") return isUpcoming && event.isPublished;
+        if (statusFilter === "Completed")
+          return !isUpcoming && event.isPublished;
+        if (statusFilter === "Cancelled") return !event.isPublished; // Mapping unpublished to cancelled for now as placeholder
+        return true;
+      });
     }
 
-    // Sort by date (upcoming first)
+    // Sort by date (newest first)
     result.sort(
       (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
     );
 
     return result;
-  }, [searchQuery, categoryFilter, statusFilter]);
+  }, [events, searchQuery, categoryFilter, statusFilter]);
 
   // Pagination
-  const totalPages = Math.ceil(filteredEvents.length / ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(filteredEvents.length / ITEMS_PER_PAGE) || 1;
   const paginatedEvents = useMemo(() => {
     const start = (currentPage - 1) * ITEMS_PER_PAGE;
     return filteredEvents.slice(start, start + ITEMS_PER_PAGE);
   }, [filteredEvents, currentPage]);
 
-  const handleEdit = (id: number) => {
+  const handleEdit = (id: string) => {
     router.push(`/admin/events/${id}/edit`);
   };
 
-  const handleDelete = (id: number) => {
-    console.log("Deleting event:", id);
+  const handleDelete = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this event?")) return;
+
+    try {
+      const response = await fetch(`/api/events/${id}`, { method: "DELETE" });
+      const result = await response.json();
+      if (result.success) {
+        fetchEvents(); // Refresh list
+      } else {
+        alert(result.message || "Failed to delete event");
+      }
+    } catch (err) {
+      console.error("Delete error:", err);
+      alert("An error occurred while deleting the event");
+    }
   };
 
   const formatDate = (dateStr: string) => {
+    if (!dateStr) return "N/A";
     return new Date(dateStr).toLocaleDateString("en-US", {
       year: "numeric",
       month: "short",
@@ -271,7 +217,7 @@ export default function EventsPage() {
           <div className="relative w-full lg:w-80">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <Input
-              placeholder="Search by event name or location..."
+              placeholder="Search by event title or location..."
               value={searchQuery}
               onChange={(e) => {
                 setSearchQuery(e.target.value);
@@ -414,284 +360,360 @@ export default function EventsPage() {
         </div>
       </div>
 
-      {/* List View */}
-      {viewMode === "list" && (
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader className="bg-gray-50">
-                <TableRow>
-                  <TableHead>Event Name</TableHead>
-                  <TableHead className="w-30">Date</TableHead>
-                  <TableHead>Location</TableHead>
-                  <TableHead className="w-28">Category</TableHead>
-                  <TableHead className="w-28">Status</TableHead>
-                  <TableHead className="w-28 text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {paginatedEvents.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={6} className="text-center py-12">
-                      <CalendarDays className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                      <p className="text-gray-500">No events found</p>
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  paginatedEvents.map((event) => (
-                    <TableRow
-                      key={event.id}
-                      className="hover:bg-gray-50 transition-colors"
+      {isLoading ? (
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center">
+          <Clock className="w-12 h-12 text-blue-200 mx-auto mb-3 animate-spin" />
+          <p className="text-gray-500">Loading events...</p>
+        </div>
+      ) : error ? (
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center">
+          <div className="bg-red-50 text-red-600 p-4 rounded-xl mb-4 inline-block">
+            {error}
+          </div>
+          <Button onClick={fetchEvents} variant="outline">
+            Try Again
+          </Button>
+        </div>
+      ) : (
+        <>
+          {/* List View */}
+          {viewMode === "list" && (
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader className="bg-gray-50">
+                    <TableRow>
+                      <TableHead className="w-16">Image</TableHead>
+                      <TableHead>Event Name</TableHead>
+                      <TableHead className="w-28 text-center">
+                        Category
+                      </TableHead>
+                      <TableHead className="w-30">Date</TableHead>
+                      <TableHead>Location</TableHead>
+                      <TableHead className="w-28 text-center">Status</TableHead>
+                      <TableHead className="w-28 text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {paginatedEvents.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={6} className="text-center py-12">
+                          <CalendarDays className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                          <p className="text-gray-500">No events found</p>
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      paginatedEvents.map((event) => (
+                        <TableRow
+                          key={event.id}
+                          className="hover:bg-gray-50 transition-colors"
+                        >
+                          <TableCell>
+                            <div className="relative w-10 h-10 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0 border border-gray-100">
+                              {event.image ? (
+                                <Image
+                                  src={event.image}
+                                  alt={event.title}
+                                  fill
+                                  className="object-cover"
+                                />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center">
+                                  <CalendarDays className="w-5 h-5 text-gray-400" />
+                                </div>
+                              )}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <span className="font-medium text-gray-900 line-clamp-1">
+                              {event.title}
+                            </span>
+                          </TableCell>
+                          <TableCell className="text-center">
+                            {event.category ? (
+                              <Badge
+                                className={cn(
+                                  "text-[10px] font-medium border-none whitespace-nowrap",
+                                  categoryStyles[event.category]
+                                )}
+                              >
+                                {event.category}
+                              </Badge>
+                            ) : (
+                              <span className="text-gray-400 text-xs">-</span>
+                            )}
+                          </TableCell>
+                          <TableCell className="text-gray-600">
+                            <div className="flex items-center gap-2">
+                              <CalendarDays className="w-4 h-4 text-gray-400" />
+                              <span suppressHydrationWarning>
+                                {formatDate(event.date)}
+                              </span>
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-gray-600">
+                            <div className="flex items-center gap-2">
+                              <MapPin className="w-4 h-4 text-gray-400" />
+                              <span className="truncate max-w-[200px]">
+                                {event.location || "Online / Not set"}
+                              </span>
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-center">
+                            <Badge
+                              className={cn(
+                                "font-medium",
+                                event.isPublished
+                                  ? new Date(event.date) > new Date()
+                                    ? statusStyles.Upcoming
+                                    : statusStyles.Completed
+                                  : statusStyles.Cancelled
+                              )}
+                            >
+                              {event.isPublished
+                                ? new Date(event.date) > new Date()
+                                  ? "Upcoming"
+                                  : "Completed"
+                                : "Draft"}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center justify-end gap-2">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleEdit(event.id)}
+                                className="h-8 w-8 p-0 hover:bg-blue-50 hover:text-blue-600"
+                                title="Edit"
+                              >
+                                <Pencil className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleDelete(event.id)}
+                                className="h-8 w-8 p-0 hover:bg-red-50 hover:text-red-600"
+                                title="Delete"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+
+              {/* Pagination */}
+              {filteredEvents.length > 0 && (
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 py-4 border-t border-gray-100 bg-gray-50">
+                  <p className="text-sm text-gray-600">
+                    Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1} to{" "}
+                    {Math.min(
+                      currentPage * ITEMS_PER_PAGE,
+                      filteredEvents.length
+                    )}{" "}
+                    of {filteredEvents.length} events
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.max(prev - 1, 1))
+                      }
+                      disabled={currentPage === 1}
+                      className="rounded-lg"
                     >
-                      <TableCell>
-                        <span className="font-medium text-gray-900">
-                          {event.name}
-                        </span>
-                      </TableCell>
-                      <TableCell className="text-gray-600">
-                        <div className="flex items-center gap-2">
-                          <CalendarDays className="w-4 h-4 text-gray-400" />
-                          <span suppressHydrationWarning>
-                            {formatDate(event.date)}
-                          </span>
+                      <ChevronLeft className="w-4 h-4" />
+                    </Button>
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                      (page) => (
+                        <Button
+                          key={page}
+                          variant={currentPage === page ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => setCurrentPage(page)}
+                          className={cn(
+                            "rounded-lg w-8",
+                            currentPage === page &&
+                              "bg-blue-600 hover:bg-blue-700"
+                          )}
+                        >
+                          {page}
+                        </Button>
+                      )
+                    )}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                      }
+                      disabled={currentPage === totalPages}
+                      className="rounded-lg"
+                    >
+                      <ChevronRight className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Grid View */}
+          {viewMode === "grid" && (
+            <div>
+              {paginatedEvents.length === 0 ? (
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center">
+                  <CalendarDays className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                  <p className="text-gray-500">No events found</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                  {paginatedEvents.map((event) => (
+                    <div
+                      key={event.id}
+                      className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 transition-all hover:shadow-md hover:border-gray-200 relative group"
+                    >
+                      {/* Image */}
+                      <div className="relative w-full h-40 rounded-xl overflow-hidden bg-gray-100 mb-4 border border-gray-50">
+                        {event.image ? (
+                          <Image
+                            src={event.image}
+                            alt={event.title}
+                            fill
+                            className="object-cover group-hover:scale-105 transition-transform duration-300"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <CalendarDays className="w-8 h-8 text-gray-300" />
+                          </div>
+                        )}
+
+                        {/* Status Badge Over Image */}
+                        <div className="absolute top-3 left-3">
+                          <Badge
+                            className={cn(
+                              "text-[10px] font-semibold border-none shadow-sm",
+                              event.isPublished
+                                ? new Date(event.date) > new Date()
+                                  ? statusStyles.Upcoming
+                                  : statusStyles.Completed
+                                : statusStyles.Cancelled
+                            )}
+                          >
+                            {event.isPublished
+                              ? new Date(event.date) > new Date()
+                                ? "Upcoming"
+                                : "Completed"
+                              : "Draft"}
+                          </Badge>
                         </div>
-                      </TableCell>
-                      <TableCell className="text-gray-600">
-                        <div className="flex items-center gap-2">
-                          <MapPin className="w-4 h-4 text-gray-400" />
-                          <span className="truncate max-w-[200px]">
-                            {event.location}
-                          </span>
-                        </div>
-                      </TableCell>
-                      <TableCell>
+                      </div>
+
+                      {/* Actions */}
+
+                      {event.category && (
                         <Badge
                           className={cn(
-                            "font-medium",
-                            categoryStyles[event.category] ||
-                              "bg-gray-100 text-gray-700"
+                            "text-[10px] ml-2",
+                            categoryStyles[event.category]
                           )}
                         >
                           {event.category}
                         </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Badge
+                      )}
+
+                      {/* Content */}
+                      <h3 className="font-semibold text-gray-900 line-clamp-2 mb-3">
+                        {event.title}
+                      </h3>
+
+                      <div className="space-y-2 text-sm text-gray-500">
+                        <div className="flex items-center gap-2">
+                          <CalendarDays className="w-4 h-4" />
+                          <span suppressHydrationWarning>
+                            {formatDate(event.date)}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <MapPin className="w-4 h-4" />
+                          <span className="truncate">
+                            {event.location || "Location not set"}
+                          </span>
+                        </div>
+                      </div>
+
+                      {event.isFeatured && (
+                        <div className="mt-4 pt-4 border-t border-gray-100">
+                          <Badge className="text-xs bg-amber-100 text-amber-700">
+                            Featured
+                          </Badge>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Pagination */}
+              {filteredEvents.length > 0 && (
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 py-4 mt-4 bg-white rounded-2xl shadow-sm border border-gray-100">
+                  <p className="text-sm text-gray-600">
+                    Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1} to{" "}
+                    {Math.min(
+                      currentPage * ITEMS_PER_PAGE,
+                      filteredEvents.length
+                    )}{" "}
+                    of {filteredEvents.length} events
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+                      disabled={currentPage === 1}
+                      className="rounded-lg"
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                    </Button>
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                      (page) => (
+                        <Button
+                          key={page}
+                          variant={currentPage === page ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => setCurrentPage(page)}
                           className={cn(
-                            "font-medium",
-                            statusStyles[event.status] ||
-                              "bg-gray-100 text-gray-700"
+                            "rounded-lg w-8",
+                            currentPage === page &&
+                              "bg-blue-600 hover:bg-blue-700"
                           )}
                         >
-                          {event.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center justify-end gap-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleEdit(event.id)}
-                            className="h-8 w-8 p-0 hover:bg-blue-50 hover:text-blue-600"
-                            title="Edit"
-                          >
-                            <Pencil className="w-4 h-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleDelete(event.id)}
-                            className="h-8 w-8 p-0 hover:bg-red-50 hover:text-red-600"
-                            title="Delete"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </div>
-
-          {/* Pagination */}
-          {filteredEvents.length > 0 && (
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 py-4 border-t border-gray-100 bg-gray-50">
-              <p className="text-sm text-gray-600">
-                Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1} to{" "}
-                {Math.min(currentPage * ITEMS_PER_PAGE, filteredEvents.length)}{" "}
-                of {filteredEvents.length} events
-              </p>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() =>
-                    setCurrentPage((prev) => Math.max(prev - 1, 1))
-                  }
-                  disabled={currentPage === 1}
-                  className="rounded-lg"
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                </Button>
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                  (page) => (
-                    <Button
-                      key={page}
-                      variant={currentPage === page ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setCurrentPage(page)}
-                      className={cn(
-                        "rounded-lg w-8",
-                        currentPage === page && "bg-blue-600 hover:bg-blue-700"
-                      )}
-                    >
-                      {page}
-                    </Button>
-                  )
-                )}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() =>
-                    setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                  }
-                  disabled={currentPage === totalPages}
-                  className="rounded-lg"
-                >
-                  <ChevronRight className="w-4 h-4" />
-                </Button>
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Grid View */}
-      {viewMode === "grid" && (
-        <div>
-          {paginatedEvents.length === 0 ? (
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center">
-              <CalendarDays className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-              <p className="text-gray-500">No events found</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {paginatedEvents.map((event) => (
-                <div
-                  key={event.id}
-                  className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 transition-all hover:shadow-md hover:border-gray-200 relative group"
-                >
-                  {/* Actions */}
-                  <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
-                    <button
-                      onClick={() => handleEdit(event.id)}
-                      className="p-1.5 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100"
-                    >
-                      <Pencil className="w-3.5 h-3.5" />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(event.id)}
-                      className="p-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-
-                  {/* Status Badge */}
-                  <Badge
-                    className={cn(
-                      "text-xs mb-3",
-                      statusStyles[event.status] || "bg-gray-100 text-gray-700"
+                          {page}
+                        </Button>
+                      )
                     )}
-                  >
-                    {event.status}
-                  </Badge>
-
-                  {/* Content */}
-                  <h3 className="font-semibold text-gray-900 line-clamp-2 mb-3">
-                    {event.name}
-                  </h3>
-
-                  <div className="space-y-2 text-sm text-gray-500">
-                    <div className="flex items-center gap-2">
-                      <CalendarDays className="w-4 h-4" />
-                      <span suppressHydrationWarning>
-                        {formatDate(event.date)}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <MapPin className="w-4 h-4" />
-                      <span className="truncate">{event.location}</span>
-                    </div>
-                  </div>
-
-                  <div className="mt-4 pt-4 border-t border-gray-100">
-                    <Badge
-                      className={cn(
-                        "text-xs",
-                        categoryStyles[event.category] ||
-                          "bg-gray-100 text-gray-700"
-                      )}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() =>
+                        setCurrentPage((p) => Math.min(p + 1, totalPages))
+                      }
+                      disabled={currentPage === totalPages}
+                      className="rounded-lg"
                     >
-                      {event.category}
-                    </Badge>
+                      <ChevronRight className="w-4 h-4" />
+                    </Button>
                   </div>
                 </div>
-              ))}
+              )}
             </div>
           )}
-
-          {/* Pagination */}
-          {filteredEvents.length > 0 && (
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 py-4 mt-4 bg-white rounded-2xl shadow-sm border border-gray-100">
-              <p className="text-sm text-gray-600">
-                Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1} to{" "}
-                {Math.min(currentPage * ITEMS_PER_PAGE, filteredEvents.length)}{" "}
-                of {filteredEvents.length} events
-              </p>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-                  disabled={currentPage === 1}
-                  className="rounded-lg"
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                </Button>
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                  (page) => (
-                    <Button
-                      key={page}
-                      variant={currentPage === page ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setCurrentPage(page)}
-                      className={cn(
-                        "rounded-lg w-8",
-                        currentPage === page && "bg-blue-600 hover:bg-blue-700"
-                      )}
-                    >
-                      {page}
-                    </Button>
-                  )
-                )}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() =>
-                    setCurrentPage((p) => Math.min(p + 1, totalPages))
-                  }
-                  disabled={currentPage === totalPages}
-                  className="rounded-lg"
-                >
-                  <ChevronRight className="w-4 h-4" />
-                </Button>
-              </div>
-            </div>
-          )}
-        </div>
+        </>
       )}
     </div>
   );
