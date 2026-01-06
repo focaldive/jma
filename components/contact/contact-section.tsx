@@ -20,6 +20,7 @@ interface FormData {
   name: string;
   phone: string;
   email: string;
+  subject: string;
   message: string;
 }
 
@@ -105,6 +106,7 @@ export default function ContactPage() {
     name: "",
     phone: "",
     email: "",
+    subject: "",
     message: "",
   });
 
@@ -142,7 +144,13 @@ export default function ContactPage() {
           message: data.message || "Message sent successfully!",
         });
         // Reset form after successful submission
-        setFormData({ name: "", phone: "", email: "", message: "" });
+        setFormData({
+          name: "",
+          phone: "",
+          email: "",
+          subject: "",
+          message: "",
+        });
       } else {
         setStatus({
           type: "error",
