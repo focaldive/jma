@@ -8,18 +8,16 @@ export const metadata: Metadata = {
   description: "Together, we turn water into action",
 };
 
-export default function RootLayout({
+export default function LandingLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body>
-        <NavBar />
-        {children}
-        <Footer />
-      </body>
-    </html>
+    <>
+      <NavBar />
+      {children}
+      <Footer />
+    </>
   );
 }
