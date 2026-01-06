@@ -40,6 +40,7 @@ export default function NewProjectPage() {
     beneficiaries: "",
     image: "",
     isPublished: true,
+    isFeatured: false,
   });
 
   const handleInputChange = (
@@ -203,7 +204,7 @@ export default function NewProjectPage() {
               )}
 
               <div className="space-y-2">
-                <Label htmlFor="title">Title (Optional)</Label>
+                <Label htmlFor="title">Title</Label>
                 <Input
                   id="title"
                   name="title"
@@ -274,7 +275,7 @@ export default function NewProjectPage() {
 
               {/* Project Image */}
               <div className="space-y-2">
-                <Label>Project Image</Label>
+                <Label>Featured Image</Label>
                 {imagePreview ? (
                   <div className="relative w-full h-48 rounded-xl overflow-hidden border border-gray-200">
                     <img
@@ -399,6 +400,20 @@ export default function NewProjectPage() {
                   className="w-4 h-4 rounded text-blue-600 border-gray-300 focus:ring-blue-500"
                 />
                 <Label htmlFor="isPublished">Publish on Website</Label>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="isFeatured"
+                  name="isFeatured"
+                  checked={formData.isFeatured}
+                  onChange={handleInputChange}
+                  className="w-4 h-4 rounded text-blue-600 border-gray-300 focus:ring-blue-500"
+                />
+                <Label htmlFor="isFeatured">
+                  Mark as Featured (Show on Homepage)
+                </Label>
               </div>
             </CardContent>
           </Card>
