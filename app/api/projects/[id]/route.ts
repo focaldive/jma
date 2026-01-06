@@ -61,6 +61,7 @@ export async function PATCH(
             : undefined,
         isPublished:
           data.isPublished !== undefined ? data.isPublished : undefined,
+        isFeatured: data.isFeatured !== undefined ? data.isFeatured : undefined,
         updatedById: admin?.id,
       },
     });

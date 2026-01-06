@@ -1,9 +1,55 @@
 import prisma from "@/lib/prisma";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { MessageStatus } from "@/app/generated/prisma";
 
-export async function POST(request: Request) {
+// GET /api/contact - Fetch all contact submissions
+export async function GET(request: NextRequest) {
   try {
-    const { name, email, phone, message } = await request.json();
+    const { searchParams } = new URL(request.url);
+    const statusParam = searchParams.get("status");
+
+    // Validate if the status is a valid MessageStatus
+    const status =
+      statusParam &&
+      Object.values(MessageStatus).includes(statusParam as MessageStatus)
+        ? (statusParam as MessageStatus)
+        : undefined;
+
+    const where = status ? { status } : {};
+
+    const submissions = await prisma.contactSubmission.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      include: {
+        repliedBy: {
+          select: {
+            name: true,
+            email: true,
+          },
+        },
+      },
+    });
+
+    return NextResponse.json({
+      success: true,
+      data: submissions,
+    });
+  } catch (error: any) {
+    console.error("Error fetching contact submissions:", error);
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Failed to fetch contact submissions",
+        error: error.message,
+      },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const { name, email, phone, message, subject } = await request.json();
 
     const errors: string[] = [];
 
@@ -14,23 +60,36 @@ export async function POST(request: Request) {
     if (errors.length > 0) {
       return NextResponse.json({ success: false, errors }, { status: 400 });
     }
-    console.log("Form data:", { name, email, phone, message });
 
-    console.log("Testing", name, email, phone, message);
+    // Get IP address from headers
+    const ipAddress =
+      request.headers.get("x-forwarded-for")?.split(",")[0] ||
+      request.headers.get("x-real-ip") ||
+      "unknown";
+
+    // Get user agent
+    const userAgent = request.headers.get("user-agent") || "unknown";
+
+    console.log("Form data:", { name, email, phone, message, subject });
 
     const saved = await prisma.contactSubmission.create({
       data: {
         name,
         email,
-        phone,
+        phone: phone || null,
         message,
+        subject: subject || null,
+        ipAddress,
+        userAgent,
+        status: "NEW", // Default status
+        priority: "NORMAL", // Default priority
       },
     });
 
     return NextResponse.json(
       {
         success: true,
-        message: "Message saved successfully!",
+        message: "Message sent successfully! We'll get back to you soon.",
         data: saved,
       },
       { status: 201 }
@@ -39,7 +98,7 @@ export async function POST(request: Request) {
     console.error("API error:", e);
 
     return NextResponse.json(
-      { success: false, message: "Server error" },
+      { success: false, message: "Server error. Please try again later." },
       { status: 500 }
     );
   }

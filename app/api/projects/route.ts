@@ -48,6 +48,7 @@ export async function POST(req: NextRequest) {
         status: data.status || "COMPLETED",
         beneficiaries: data.beneficiaries ? parseInt(data.beneficiaries) : null,
         isPublished: data.isPublished !== undefined ? data.isPublished : true,
+        isFeatured: data.isFeatured !== undefined ? data.isFeatured : false,
         createdById: admin?.id,
         updatedById: admin?.id,
       },
