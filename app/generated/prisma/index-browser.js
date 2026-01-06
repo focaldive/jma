@@ -124,6 +124,7 @@ exports.Prisma.UserScalarFieldEnum = {
   id: 'id',
   name: 'name',
   email: 'email',
+  phone: 'phone',
   password: 'password',
   role: 'role',
   status: 'status',
@@ -219,6 +220,16 @@ exports.Prisma.NewsArticleScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.GalleryItemScalarFieldEnum = {
+  id: 'id',
+  src: 'src',
+  title: 'title',
+  description: 'description',
+  order: 'order',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.ProjectScalarFieldEnum = {
   id: 'id',
   title: 'title',
@@ -230,6 +241,7 @@ exports.Prisma.ProjectScalarFieldEnum = {
   currency: 'currency',
   amount: 'amount',
   status: 'status',
+  isFeatured: 'isFeatured',
   beneficiaries: 'beneficiaries',
   isPublished: 'isPublished',
   createdAt: 'createdAt',
@@ -237,6 +249,111 @@ exports.Prisma.ProjectScalarFieldEnum = {
   categoryId: 'categoryId',
   createdById: 'createdById',
   updatedById: 'updatedById'
+};
+
+exports.Prisma.ProjectCategoryScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  color: 'color',
+  icon: 'icon',
+  order: 'order'
+};
+
+exports.Prisma.ProjectImageScalarFieldEnum = {
+  id: 'id',
+  url: 'url',
+  alt: 'alt',
+  caption: 'caption',
+  order: 'order',
+  projectId: 'projectId'
+};
+
+exports.Prisma.EventScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  slug: 'slug',
+  category: 'category',
+  description: 'description',
+  date: 'date',
+  endDate: 'endDate',
+  time: 'time',
+  location: 'location',
+  address: 'address',
+  image: 'image',
+  isPublished: 'isPublished',
+  isFeatured: 'isFeatured',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  createdById: 'createdById',
+  updatedById: 'updatedById'
+};
+
+exports.Prisma.VideoScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  description: 'description',
+  thumbnail: 'thumbnail',
+  sourceType: 'sourceType',
+  youtubeUrl: 'youtubeUrl',
+  youtubeId: 'youtubeId',
+  videoFile: 'videoFile',
+  artist: 'artist',
+  duration: 'duration',
+  category: 'category',
+  order: 'order',
+  isActive: 'isActive',
+  isFeatured: 'isFeatured',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.TeamMemberScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  role: 'role',
+  department: 'department',
+  bio: 'bio',
+  phone: 'phone',
+  email: 'email',
+  image: 'image',
+  linkedin: 'linkedin',
+  twitter: 'twitter',
+  order: 'order',
+  isActive: 'isActive',
+  showOnSite: 'showOnSite',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.SystemLogScalarFieldEnum = {
+  id: 'id',
+  action: 'action',
+  resource: 'resource',
+  description: 'description',
+  details: 'details',
+  ipAddress: 'ipAddress',
+  userAgent: 'userAgent',
+  userId: 'userId',
+  isSecurityEvent: 'isSecurityEvent',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.JanazaNoticeScalarFieldEnum = {
+  id: 'id',
+  deceasedName: 'deceasedName',
+  age: 'age',
+  prayerDate: 'prayerDate',
+  prayerTime: 'prayerTime',
+  prayerLocation: 'prayerLocation',
+  burialLocation: 'burialLocation',
+  contactName: 'contactName',
+  contactPhone: 'contactPhone',
+  contactEmail: 'contactEmail',
+  notes: 'notes',
+  status: 'status',
+  isPublished: 'isPublished',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.SortOrder = {
@@ -288,6 +405,17 @@ exports.ProjectStatus = exports.$Enums.ProjectStatus = {
   CANCELLED: 'CANCELLED'
 };
 
+exports.VideoSourceType = exports.$Enums.VideoSourceType = {
+  YOUTUBE: 'YOUTUBE',
+  LOCAL: 'LOCAL'
+};
+
+exports.JanazaStatus = exports.$Enums.JanazaStatus = {
+  UPCOMING: 'UPCOMING',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED'
+};
+
 exports.Prisma.ModelName = {
   User: 'User',
   AdminUser: 'AdminUser',
@@ -295,7 +423,15 @@ exports.Prisma.ModelName = {
   NewsletterSubscriber: 'NewsletterSubscriber',
   Donation: 'Donation',
   NewsArticle: 'NewsArticle',
-  Project: 'Project'
+  GalleryItem: 'GalleryItem',
+  Project: 'Project',
+  ProjectCategory: 'ProjectCategory',
+  ProjectImage: 'ProjectImage',
+  Event: 'Event',
+  Video: 'Video',
+  TeamMember: 'TeamMember',
+  SystemLog: 'SystemLog',
+  JanazaNotice: 'JanazaNotice'
 };
 
 /**
