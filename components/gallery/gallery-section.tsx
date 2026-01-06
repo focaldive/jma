@@ -1,44 +1,42 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import YouTubeSection from "./youtube-section";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 
-const images = [
-  {
-    src: "https://jaffnamuslimuk.org/wp-content/uploads/2016/11/2016-11-02-PHOTO-00000472.jpg",
-    alt: "Gallery Image 1",
-  },
-  {
-    src: "https://jaffnamuslimuk.org/wp-content/uploads/2016/11/2016-11-02-PHOTO-00000466.jpg ",
-    alt: "Gallery Image 2",
-  },
-  {
-    src: "https://jaffnamuslimuk.org/wp-content/uploads/2016/11/2016-11-02-PHOTO-00000475.jpg",
-    alt: "Gallery Image 3",
-  },
-  {
-    src: "https://jaffnamuslimuk.org/wp-content/uploads/2016/11/IMG_5234.jpg",
-    alt: "Gallery Image 4",
-  },
-  {
-    src: "https://jaffnamuslimuk.org/wp-content/uploads/2016/11/IMG_5240.jpg",
-    alt: "Gallery Image 5",
-  },
-  {
-    src: "https://jaffnamuslimuk.org/wp-content/uploads/2020/10/IMG-20201005-WA0010.jpg",
-    alt: "Gallery Image 6",
-  },
-  {
-    src: "https://jaffnamuslimuk.org/wp-content/uploads/2020/10/IMG-20201005-WA0009.jpg",
-    alt: "Gallery Image 7",
-  },
-];
+type GalleryItem = {
+  id: string;
+  src: string;
+  title: string | null;
+  description: string | null;
+  order: number;
+};
 
 const GalleryPage = () => {
+  const [images, setImages] = useState<GalleryItem[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedId, setSelectedId] = useState<number | null>(null);
+
+  // Fetch gallery items from API
+  useEffect(() => {
+    const fetchGallery = async () => {
+      try {
+        const res = await fetch("/api/gallery");
+        const result = await res.json();
+        if (result.success) {
+          setImages(result.data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch gallery:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchGallery();
+  }, []);
 
   const handlePrevious = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -86,46 +84,75 @@ const GalleryPage = () => {
       <br />
       <br />
       <div className="max-w-7xl mx-auto">
-        <motion.div
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
-          initial="hidden"
-          animate="visible"
-          variants={{
-            hidden: { opacity: 0 },
-            visible: {
-              opacity: 1,
-              transition: {
-                staggerChildren: 0.1,
-              },
-            },
-          }}
-        >
-          {images.map((image, index) => (
-            <motion.div
-              key={index}
-              layoutId={`card-${index}`}
-              onClick={() => setSelectedId(index)}
-              variants={{
-                hidden: { opacity: 0, scale: 0.8 },
-                visible: { opacity: 1, scale: 1 },
-              }}
-              whileHover={{
-                scale: 1.05,
-                transition: { duration: 0.2 },
-              }}
-              className="bg-white rounded-lg shadow-lg overflow-hidden cursor-pointer"
-            >
-              <div className="relative h-64 sm:h-80">
-                <Image
-                  src={image.src}
-                  alt={image.alt}
-                  fill
-                  style={{ objectFit: "cover" }}
-                />
+        {loading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, i) => (
+              <div
+                key={i}
+                className="bg-white rounded-lg shadow-lg overflow-hidden animate-pulse"
+              >
+                <div className="h-64 sm:h-80 bg-gray-200"></div>
               </div>
-            </motion.div>
-          ))}
-        </motion.div>
+            ))}
+          </div>
+        ) : images.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-gray-500 text-lg">No images in gallery yet.</p>
+          </div>
+        ) : (
+          <motion.div
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+            initial="hidden"
+            animate="visible"
+            variants={{
+              hidden: { opacity: 0 },
+              visible: {
+                opacity: 1,
+                transition: {
+                  staggerChildren: 0.1,
+                },
+              },
+            }}
+          >
+            {images.map((image, index) => (
+              <motion.div
+                key={image.id}
+                layoutId={`card-${index}`}
+                onClick={() => setSelectedId(index)}
+                variants={{
+                  hidden: { opacity: 0, scale: 0.8 },
+                  visible: { opacity: 1, scale: 1 },
+                }}
+                whileHover={{
+                  scale: 1.05,
+                  transition: { duration: 0.2 },
+                }}
+                className="bg-white rounded-lg shadow-lg overflow-hidden cursor-pointer"
+              >
+                <div className="relative h-64 sm:h-80">
+                  <Image
+                    src={image.src}
+                    alt={image.title || "Gallery Image"}
+                    fill
+                    style={{ objectFit: "cover" }}
+                  />
+                </div>
+                {image.title && (
+                  <div className="p-4">
+                    <h3 className="font-semibold text-gray-900">
+                      {image.title}
+                    </h3>
+                    {image.description && (
+                      <p className="text-sm text-gray-600 mt-1">
+                        {image.description}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </motion.div>
+            ))}
+          </motion.div>
+        )}
       </div>
 
       <AnimatePresence>
@@ -145,7 +172,7 @@ const GalleryPage = () => {
               <div className="relative w-full h-full aspect-video">
                 <Image
                   src={images[selectedId].src}
-                  alt={images[selectedId].alt}
+                  alt={images[selectedId].title || "Gallery Image"}
                   fill
                   priority
                   style={{ objectFit: "contain" }}
