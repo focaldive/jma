@@ -11,6 +11,7 @@ model User {
   id        String   @id @default(uuid())
   name      String?
   email     String   @unique
+  phone     String? // NEW
   password  String // hashed password
   role      String? // e.g., "admin", "user", "editor"
   status    String? // e.g., "active", "inactive"
@@ -35,6 +36,9 @@ model AdminUser {
   assignedSubmissions ContactSubmission[] @relation("AssignedTo")
   createdProjects     Project[]           @relation("ProjectCreatedBy")
   updatedProjects     Project[]           @relation("ProjectUpdatedBy")
+  createdEvents       Event[]             @relation("EventCreatedBy")
+  updatedEvents       Event[]             @relation("EventUpdatedBy")
+  systemLogs          SystemLog[]
 }
 
 enum Role {
@@ -141,6 +145,16 @@ model NewsArticle {
   updatedAt     DateTime  @updatedAt
 }
 
+model GalleryItem {
+  id          String   @id @default(cuid())
+  src         String   @db.Text
+  title       String?
+  description String?  @db.Text
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
 model Project {
   id            String        @id @default(cuid())
   title         String? // NEW: Optional title
@@ -152,6 +166,7 @@ model Project {
   currency      String
   amount        Decimal       @db.Decimal(12, 2)
   status        ProjectStatus @default(COMPLETED) // NEW
+  isFeatured    Boolean       @default(false) // NEW: Is featured on homepage
   beneficiaries Int? // NEW: People helped
   isPublished   Boolean       @default(true) // NEW: Can hide
   createdAt     DateTime      @default(now())
@@ -159,11 +174,33 @@ model Project {
 
   // Relations
   categoryId  String?
-  
+  category    ProjectCategory? @relation(fields: [categoryId], references: [id])
+  images      ProjectImage[]
   createdById String?
   createdBy   AdminUser?       @relation("ProjectCreatedBy", fields: [createdById], references: [id])
   updatedById String?
   updatedBy   AdminUser?       @relation("ProjectUpdatedBy", fields: [updatedById], references: [id])
+}
+
+model ProjectCategory {
+  id    String  @id @default(cuid())
+  name  String  @unique
+  color String // Hex color for charts
+  icon  String? // Icon name
+  order Int     @default(0)
+
+  projects Project[]
+}
+
+model ProjectImage {
+  id      String  @id @default(cuid())
+  url     String
+  alt     String?
+  caption String? // NEW: Image caption
+  order   Int     @default(0) // NEW: Display order
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 }
 
 enum ProjectStatus {
@@ -173,4 +210,110 @@ enum ProjectStatus {
   CANCELLED
 }
 
+model Event {
+  id          String    @id @default(cuid())
+  title       String
+  slug        String    @unique // NEW: URL-friendly
+  category    String? // NEW: e.g., "Fundraiser", "Health", etc.
+  description String?   @db.Text
+  date        DateTime
+  endDate     DateTime? // NEW: For multi-day events
+  time        String? // NEW: Display time
+  location    String?
+  address     String?   @db.Text // NEW: Full address
+  image       String?
+  isPublished Boolean   @default(false)
+  isFeatured  Boolean   @default(false) // NEW: Show on homepage
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
+  createdById String?
+  createdBy   AdminUser? @relation("EventCreatedBy", fields: [createdById], references: [id])
+  updatedById String?
+  updatedBy   AdminUser? @relation("EventUpdatedBy", fields: [updatedById], references: [id])
+}
+
+enum VideoSourceType {
+  YOUTUBE
+  LOCAL
+}
+
+model Video {
+  id          String          @id @default(cuid())
+  title       String
+  description String?         @db.Text
+  thumbnail   String?
+  sourceType  VideoSourceType // NEW: YouTube or Local
+  youtubeUrl  String? // For YouTube videos
+  youtubeId   String? // Extracted from youtubeUrl
+  videoFile   String? // For local videos (path)
+  artist      String?
+  duration    String?
+  category    String?
+  order       Int             @default(0)
+  isActive    Boolean         @default(true)
+  isFeatured  Boolean         @default(false)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+}
+
+model TeamMember {
+  id         String   @id @default(cuid())
+  name       String
+  role       String
+  department String? // Group by department
+  bio        String?  @db.Text
+  phone      String?
+  email      String?
+  image      String?
+  linkedin   String? // LinkedIn profile URL
+  twitter    String? // Twitter profile URL
+  order      Int      @default(0)
+  isActive   Boolean  @default(true)
+  showOnSite Boolean  @default(true) // Can hide from public
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model SystemLog {
+  id              String     @id @default(cuid())
+  action          String // "Login", "Create", "Update", "Delete", etc.
+  resource        String // "Auth", "Users", "Events", "Settings", etc.
+  description     String
+  details         String?    @db.Text // JSON or detailed info
+  ipAddress       String?
+  userAgent       String?
+  userId          String?
+  adminUser       AdminUser? @relation(fields: [userId], references: [id])
+  isSecurityEvent Boolean    @default(false)
+  createdAt       DateTime   @default(now())
+
+  @@index([createdAt])
+  @@index([action])
+  @@index([resource])
+  @@index([userId])
+}
+
+model JanazaNotice {
+  id             String       @id @default(cuid())
+  deceasedName   String
+  age            Int?
+  prayerDate     DateTime?
+  prayerTime     String?
+  prayerLocation String?
+  burialLocation String?
+  contactName    String?
+  contactPhone   String?
+  contactEmail   String?
+  notes          String?      @db.Text
+  status         JanazaStatus @default(UPCOMING)
+  isPublished    Boolean      @default(true)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+enum JanazaStatus {
+  UPCOMING
+  COMPLETED
+  CANCELLED
+}
