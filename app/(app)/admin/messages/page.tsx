@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,122 +25,90 @@ import {
   MessageSquare,
   Eye,
   EyeOff,
+  Loader2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
-// Sample messages data
-const initialMessages = [
-  {
-    id: 1,
-    name: "Ahmed Hassan",
-    email: "ahmed.hassan@email.com",
-    subject: "Question about donation process",
-    status: "Unread",
-    receivedAt: "2024-12-28T14:30:00",
-  },
-  {
-    id: 2,
-    name: "Fatima Ibrahim",
-    email: "fatima.ibrahim@gmail.com",
-    subject: "Volunteer registration inquiry",
-    status: "Read",
-    receivedAt: "2024-12-27T10:15:00",
-  },
-  {
-    id: 3,
-    name: "Mohamed Ali",
-    email: "mohamed.ali@email.com",
-    subject: "Event sponsorship opportunity",
-    status: "Replied",
-    receivedAt: "2024-12-26T16:45:00",
-  },
-  {
-    id: 4,
-    name: "Aisha Khan",
-    email: "aisha.khan@outlook.com",
-    subject: "Requesting prayer times information",
-    status: "Unread",
-    receivedAt: "2024-12-28T09:00:00",
-  },
-  {
-    id: 5,
-    name: "Yusuf Rahman",
-    email: "yusuf.rahman@email.com",
-    subject: "Feedback on recent community event",
-    status: "Read",
-    receivedAt: "2024-12-25T11:30:00",
-  },
-  {
-    id: 6,
-    name: "Zainab Saleh",
-    email: "zainab.saleh@gmail.com",
-    subject: "Marriage hall booking inquiry",
-    status: "Unread",
-    receivedAt: "2024-12-28T08:00:00",
-  },
-  {
-    id: 7,
-    name: "Omar Faisal",
-    email: "omar.faisal@email.com",
-    subject: "Zakat distribution process",
-    status: "Read",
-    receivedAt: "2024-12-24T13:20:00",
-  },
-  {
-    id: 8,
-    name: "Mariam Begum",
-    email: "mariam.begum@outlook.com",
-    subject: "Islamic education classes for children",
-    status: "Replied",
-    receivedAt: "2024-12-23T15:00:00",
-  },
-  {
-    id: 9,
-    name: "Hassan Ibrahim",
-    email: "hassan.ibrahim@email.com",
-    subject: "Membership renewal query",
-    status: "Unread",
-    receivedAt: "2024-12-28T07:30:00",
-  },
-  {
-    id: 10,
-    name: "Khadija Hassan",
-    email: "khadija.hassan@gmail.com",
-    subject: "Thank you for the scholarship",
-    status: "Read",
-    receivedAt: "2024-12-22T10:00:00",
-  },
-];
-
-const statuses = ["Unread", "Read", "Replied"];
+// Enum matching Prisma schema
+enum MessageStatus {
+  NEW = "NEW",
+  READ = "READ",
+  REPLIED = "REPLIED",
+  ARCHIVED = "ARCHIVED",
+  SPAM = "SPAM",
+}
 
 const statusStyles: Record<string, string> = {
-  Unread: "bg-blue-100 text-blue-700",
-  Read: "bg-gray-100 text-gray-600",
-  Replied: "bg-green-100 text-green-700",
+  NEW: "bg-blue-100 text-blue-700",
+  READ: "bg-gray-100 text-gray-600",
+  REPLIED: "bg-green-100 text-green-700",
+  ARCHIVED: "bg-yellow-100 text-yellow-700",
+  SPAM: "bg-red-100 text-red-700",
 };
 
-type Message = {
-  id: number;
+const statusLabels: Record<string, string> = {
+  NEW: "Unread",
+  READ: "Read",
+  REPLIED: "Replied",
+  ARCHIVED: "Archived",
+  SPAM: "Spam",
+};
+
+type ContactSubmission = {
+  id: string; // Prisma uses Cuid (string)
   name: string;
   email: string;
-  subject: string;
-  status: string;
-  receivedAt: string;
+  phone: string | null;
+  subject: string | null;
+  message: string;
+  status: MessageStatus;
+  createdAt: string; // ISO Date string
+  priority: string;
 };
 
-const ITEMS_PER_PAGE = 6;
+const ITEMS_PER_PAGE = 10;
 
 export default function MessagesPage() {
   const router = useRouter();
-  const [messages, setMessages] = useState<Message[]>(initialMessages);
+  const [messages, setMessages] = useState<ContactSubmission[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
-  const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Filter messages
+  // Fetch messages from API
+  const fetchMessages = async () => {
+    try {
+      setLoading(true);
+      const url = new URL("/api/contact", window.location.origin);
+      if (statusFilter !== "all") {
+        url.searchParams.set("status", statusFilter);
+      }
+
+      const res = await fetch(url.toString());
+      const result = await res.json();
+
+      if (result.success) {
+        setMessages(result.data);
+      } else {
+        toast.error("Failed to fetch messages");
+      }
+    } catch (error) {
+      console.error("Error fetching messages:", error);
+      toast.error("Failed to load messages");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchMessages();
+  }, [statusFilter]); // Re-fetch when status filter changes (server-side filtering)
+
+  // Filter messages (Client-side search)
   const filteredMessages = useMemo(() => {
     let result = [...messages];
 
@@ -150,19 +118,14 @@ export default function MessagesPage() {
         (m) =>
           m.name.toLowerCase().includes(query) ||
           m.email.toLowerCase().includes(query) ||
-          m.subject.toLowerCase().includes(query)
+          (m.subject && m.subject.toLowerCase().includes(query))
       );
     }
 
-    if (statusFilter !== "all") {
-      result = result.filter((m) => m.status === statusFilter);
-    }
+    // Note: Status filtering is handled by API/useEffect, but client-side search refines it.
 
-    return result.sort(
-      (a, b) =>
-        new Date(b.receivedAt).getTime() - new Date(a.receivedAt).getTime()
-    );
-  }, [messages, searchQuery, statusFilter]);
+    return result; // Already sorted by createdAt desc from API
+  }, [messages, searchQuery]);
 
   // Pagination
   const totalPages = Math.ceil(filteredMessages.length / ITEMS_PER_PAGE);
@@ -171,11 +134,13 @@ export default function MessagesPage() {
     return filteredMessages.slice(start, start + ITEMS_PER_PAGE);
   }, [filteredMessages, currentPage]);
 
-  // Unread count
-  const unreadCount = messages.filter((m) => m.status === "Unread").length;
+  // Unread count (based on current fetch)
+  const unreadCount = messages.filter(
+    (m) => m.status === MessageStatus.NEW
+  ).length;
 
   // Selection
-  const toggleSelect = (id: number) => {
+  const toggleSelect = (id: string) => {
     setSelectedIds((prev) =>
       prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
     );
@@ -190,65 +155,31 @@ export default function MessagesPage() {
   };
 
   // View message - navigate to detail page
-  const openMessage = (id: number) => {
+  const openMessage = (id: string) => {
     router.push(`/admin/messages/${id}`);
   };
 
-  // Toggle read status
-  const toggleReadStatus = (id: number) => {
-    setMessages((prev) =>
-      prev.map((m) =>
-        m.id === id
-          ? { ...m, status: m.status === "Unread" ? "Read" : "Unread" }
-          : m
-      )
-    );
+  // Toggle read status (Placeholder logic until API endpoint exists)
+  const toggleReadStatus = async (id: string, currentStatus: MessageStatus) => {
+    // TODO: Implement PATCH API call
+    // For now, optimistic update or just alert
+    toast.info("Status update not yet implemented on backend");
   };
 
-  // Delete message
-  const handleDelete = (id: number) => {
-    setMessages((prev) => prev.filter((m) => m.id !== id));
-    setSelectedIds((prev) => prev.filter((i) => i !== id));
+  // Delete message (Placeholder logic until API endpoint exists)
+  const handleDelete = async (id: string) => {
+    if (!confirm("Are you sure?")) return;
+    // TODO: Implement DELETE API call
+    toast.info("Delete not yet implemented on backend");
   };
 
-  // Bulk delete
+  // Bulk actions (Placeholders)
   const handleBulkDelete = () => {
-    setMessages((prev) => prev.filter((m) => !selectedIds.includes(m.id)));
-    setSelectedIds([]);
+    toast.info("Bulk delete not yet implemented");
   };
 
-  // Bulk mark read/unread
   const handleBulkMarkRead = (read: boolean) => {
-    setMessages((prev) =>
-      prev.map((m) =>
-        selectedIds.includes(m.id)
-          ? { ...m, status: read ? "Read" : "Unread" }
-          : m
-      )
-    );
-  };
-
-  const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr);
-    const now = new Date();
-    const diff = now.getTime() - date.getTime();
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-
-    if (days === 0) {
-      return date.toLocaleTimeString("en-US", {
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-    } else if (days === 1) {
-      return "Yesterday";
-    } else if (days < 7) {
-      return date.toLocaleDateString("en-US", { weekday: "short" });
-    } else {
-      return date.toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-      });
-    }
+    toast.info("Bulk update not yet implemented");
   };
 
   return (
@@ -258,9 +189,7 @@ export default function MessagesPage() {
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Messages</h1>
           <p className="text-sm text-gray-500 mt-1">
-            {unreadCount > 0
-              ? `${unreadCount} unread messages`
-              : "No unread messages"}
+            Manage contact form submissions
           </p>
         </div>
       </div>
@@ -289,7 +218,9 @@ export default function MessagesPage() {
                 className="border-gray-200 rounded-xl min-w-[120px] justify-between"
               >
                 <span>
-                  {statusFilter === "all" ? "All Status" : statusFilter}
+                  {statusFilter === "all"
+                    ? "All Status"
+                    : statusLabels[statusFilter] || statusFilter}
                 </span>
                 <ChevronDown className="w-4 h-4 ml-2" />
               </Button>
@@ -308,7 +239,7 @@ export default function MessagesPage() {
                   >
                     All Status
                   </button>
-                  {statuses.map((s) => (
+                  {Object.values(MessageStatus).map((s) => (
                     <button
                       key={s}
                       onClick={() => {
@@ -321,7 +252,7 @@ export default function MessagesPage() {
                         statusFilter === s && "bg-blue-50 text-blue-600"
                       )}
                     >
-                      {s}
+                      {statusLabels[s] || s}
                     </button>
                   ))}
                 </div>
@@ -376,14 +307,22 @@ export default function MessagesPage() {
                 />
               </TableHead>
               <TableHead>Sender</TableHead>
-              <TableHead>Subject</TableHead>
+              <TableHead>Phone</TableHead>
               <TableHead className="w-24">Status</TableHead>
-              <TableHead className="w-28">Date</TableHead>
-              <TableHead className="w-28 text-right">Actions</TableHead>
+              <TableHead className="w-32">Date</TableHead>
+              <TableHead className="w-24">Time</TableHead>
+              <TableHead className="w-24 text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {paginatedMessages.length === 0 ? (
+            {loading ? (
+              <TableRow>
+                <TableCell colSpan={6} className="text-center py-12">
+                  <Loader2 className="w-8 h-8 animate-spin mx-auto text-blue-600" />
+                  <p className="text-gray-500 mt-2">Loading messages...</p>
+                </TableCell>
+              </TableRow>
+            ) : paginatedMessages.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={6} className="text-center py-12">
                   <MessageSquare className="w-12 h-12 text-gray-300 mx-auto mb-3" />
@@ -396,7 +335,7 @@ export default function MessagesPage() {
                   key={msg.id}
                   className={cn(
                     "cursor-pointer hover:bg-gray-50",
-                    msg.status === "Unread" && "bg-blue-50/30"
+                    msg.status === MessageStatus.NEW && "bg-blue-50/30"
                   )}
                   onClick={() => openMessage(msg.id)}
                 >
@@ -408,7 +347,7 @@ export default function MessagesPage() {
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-3">
-                      {msg.status === "Unread" ? (
+                      {msg.status === MessageStatus.NEW ? (
                         <Mail className="w-4 h-4 text-blue-600" />
                       ) : (
                         <MailOpen className="w-4 h-4 text-gray-400" />
@@ -417,7 +356,7 @@ export default function MessagesPage() {
                         <p
                           className={cn(
                             "text-sm",
-                            msg.status === "Unread"
+                            msg.status === MessageStatus.NEW
                               ? "font-semibold text-gray-900"
                               : "text-gray-700"
                           )}
@@ -429,42 +368,46 @@ export default function MessagesPage() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <p
-                      className={cn(
-                        "text-sm truncate max-w-[250px]",
-                        msg.status === "Unread"
-                          ? "font-medium text-gray-900"
-                          : "text-gray-600"
-                      )}
-                    >
-                      {msg.subject}
-                    </p>
+                    <p className="text-sm text-gray-600">{msg.phone || "-"}</p>
                   </TableCell>
                   <TableCell>
                     <Badge className={cn("text-xs", statusStyles[msg.status])}>
-                      {msg.status}
+                      {statusLabels[msg.status] || msg.status}
                     </Badge>
                   </TableCell>
                   <TableCell
                     className="text-sm text-gray-500"
                     suppressHydrationWarning
                   >
-                    {formatDate(msg.receivedAt)}
+                    {new Date(msg.createdAt).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                    })}
+                  </TableCell>
+                  <TableCell
+                    className="text-sm text-gray-500"
+                    suppressHydrationWarning
+                  >
+                    {new Date(msg.createdAt).toLocaleTimeString("en-US", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
                   </TableCell>
                   <TableCell onClick={(e) => e.stopPropagation()}>
                     <div className="flex items-center justify-end gap-1">
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => toggleReadStatus(msg.id)}
+                        onClick={() => toggleReadStatus(msg.id, msg.status)}
                         className="h-8 w-8 p-0 hover:bg-blue-50 hover:text-blue-600"
                         title={
-                          msg.status === "Unread"
+                          msg.status === MessageStatus.NEW
                             ? "Mark as Read"
                             : "Mark as Unread"
                         }
                       >
-                        {msg.status === "Unread" ? (
+                        {msg.status === MessageStatus.NEW ? (
                           <Eye className="w-4 h-4" />
                         ) : (
                           <EyeOff className="w-4 h-4" />
@@ -488,7 +431,7 @@ export default function MessagesPage() {
         </Table>
 
         {/* Pagination */}
-        {filteredMessages.length > 0 && (
+        {filteredMessages.length > 0 && !loading && (
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 py-4 border-t border-gray-100 bg-gray-50">
             <p className="text-sm text-gray-600">
               Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1} to{" "}

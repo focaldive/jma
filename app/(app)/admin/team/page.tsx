@@ -1,9 +1,17 @@
-"use client"
+"use client";
 
-import { useState, useMemo, useEffect } from "react"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -11,171 +19,206 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from "@/components/ui/table";
 import {
-  Search,
   Plus,
   Pencil,
   Trash2,
-  Eye,
+  Search,
+  Loader2,
   LayoutGrid,
   List,
-  ChevronDown,
   User,
-  Phone,
-  MapPin,
-  X,
-} from "lucide-react"
-import { cn } from "@/lib/utils"
+  Eye,
+  EyeOff,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+import Image from "next/image";
 
-// Sample staff data
-const initialStaff = [
-  { id: 1, name: "Ahmed Hassan", phone: "+94 77 123 4567", city: "Colombo", country: "Sri Lanka", image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face" },
-  { id: 2, name: "Fatima Ibrahim", phone: "+94 76 234 5678", city: "Kandy", country: "Sri Lanka", image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face" },
-  { id: 3, name: "Mohamed Ali", phone: "+94 71 345 6789", city: "Galle", country: "Sri Lanka", image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face" },
-  { id: 4, name: "Aisha Khan", phone: "+94 77 456 7890", city: "Jaffna", country: "Sri Lanka", image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face" },
-  { id: 5, name: "Yusuf Rahman", phone: "+94 76 567 8901", city: "Batticaloa", country: "Sri Lanka", image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face" },
-  { id: 6, name: "Zainab Saleh", phone: "+94 71 678 9012", city: "Negombo", country: "Sri Lanka", image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face" },
-  { id: 7, name: "Omar Faisal", phone: "+94 77 789 0123", city: "Kurunegala", country: "Sri Lanka", image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&h=150&fit=crop&crop=face" },
-  { id: 8, name: "Mariam Begum", phone: "+94 76 890 1234", city: "Colombo", country: "Sri Lanka", image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face" },
-]
-
-const cities = ["Colombo", "Kandy", "Galle", "Jaffna", "Batticaloa", "Negombo", "Kurunegala"]
-
-type Staff = {
-  id: number
-  name: string
-  phone: string
-  city: string
-  country: string
-  image: string
-}
+type TeamMember = {
+  id: string;
+  name: string;
+  role: string;
+  department: string | null;
+  bio: string | null;
+  phone: string | null;
+  email: string | null;
+  image: string | null;
+  linkedin: string | null;
+  twitter: string | null;
+  order: number;
+  isActive: boolean;
+  showOnSite: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
 
 export default function TeamPage() {
-  const router = useRouter()
-  const [staff] = useState<Staff[]>(initialStaff)
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
-  const [searchQuery, setSearchQuery] = useState("")
-  const [cityFilter, setCityFilter] = useState<string>("all")
-  const [showCityDropdown, setShowCityDropdown] = useState(false)
-  const [showViewModal, setShowViewModal] = useState(false)
-  const [selectedStaff, setSelectedStaff] = useState<Staff | null>(null)
+  const router = useRouter();
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [departmentFilter, setDepartmentFilter] = useState("all");
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const savedView = localStorage.getItem("staffViewMode")
+    const savedView = localStorage.getItem("teamViewMode");
     if (savedView === "grid" || savedView === "list") {
-      setViewMode(savedView)
+      setViewMode(savedView);
     }
-  }, [])
+    fetchTeamMembers();
+  }, []);
+
+  const fetchTeamMembers = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch("/api/team");
+      const result = await res.json();
+
+      if (result.success) {
+        setTeamMembers(result.data);
+      } else {
+        setError(result.message);
+      }
+    } catch (err) {
+      console.error("Error fetching team members:", err);
+      setError("Failed to fetch team members");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this team member?")) return;
+
+    try {
+      const res = await fetch(`/api/team/${id}`, { method: "DELETE" });
+      const result = await res.json();
+
+      if (result.success) {
+        fetchTeamMembers();
+        alert("Team member deleted successfully!");
+      } else {
+        alert(result.message || "Failed to delete team member");
+      }
+    } catch (err) {
+      alert("Failed to delete team member");
+    }
+  };
+
+  const toggleShowOnSite = async (member: TeamMember) => {
+    try {
+      const res = await fetch(`/api/team/${member.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ showOnSite: !member.showOnSite }),
+      });
+
+      const result = await res.json();
+
+      if (result.success) {
+        fetchTeamMembers();
+      } else {
+        alert(result.message || "Failed to update team member");
+      }
+    } catch (err) {
+      alert("Failed to update team member");
+    }
+  };
 
   const handleViewChange = (mode: "grid" | "list") => {
-    setViewMode(mode)
-    localStorage.setItem("staffViewMode", mode)
-  }
+    setViewMode(mode);
+    localStorage.setItem("teamViewMode", mode);
+  };
 
-  const filteredStaff = useMemo(() => {
-    let result = [...staff]
+  // Get unique departments
+  const departments = Array.from(
+    new Set(teamMembers.map((m) => m.department).filter(Boolean))
+  );
 
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase()
-      result = result.filter((s) =>
-        s.name.toLowerCase().includes(query) ||
-        s.phone.includes(query)
-      )
-    }
+  // Filter team members
+  const filteredMembers = teamMembers.filter((member) => {
+    const matchesSearch =
+      member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      member.role.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (member.email &&
+        member.email.toLowerCase().includes(searchQuery.toLowerCase()));
 
-    if (cityFilter !== "all") {
-      result = result.filter((s) => s.city === cityFilter)
-    }
+    const matchesDepartment =
+      departmentFilter === "all" || member.department === departmentFilter;
 
-    return result
-  }, [staff, searchQuery, cityFilter])
-
-  const handleEdit = (id: number) => {
-    router.push(`/admin/team/${id}/edit`)
-  }
-
-  const handleDelete = (id: number) => {
-    console.log("Deleting staff:", id)
-  }
-
-  const openViewModal = (member: Staff) => {
-    setSelectedStaff(member)
-    setShowViewModal(true)
-  }
+    return matchesSearch && matchesDepartment;
+  });
 
   return (
     <div className="space-y-6">
-      {/* Page Header */}
+      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Team</h1>
-          <p className="text-sm text-gray-500 mt-1">Manage your staff members</p>
+          <h1 className="text-2xl font-bold text-gray-900">Team Members</h1>
+          <p className="text-sm text-gray-500 mt-1">Manage your team members</p>
         </div>
         <Button
           onClick={() => router.push("/admin/team/new")}
           className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl"
         >
           <Plus className="w-4 h-4 mr-2" />
-          Add Staff
+          Add Team Member
         </Button>
       </div>
 
-      {/* Filters & View Toggle */}
+      {/* Filters */}
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
-        <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
-          <div className="flex flex-wrap gap-3 items-center">
-            <div className="relative w-full sm:w-64">
+        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+          <div className="flex flex-col sm:flex-row gap-4 flex-1 w-full sm:w-auto">
+            {/* Search */}
+            <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               <Input
-                placeholder="Search by name or phone..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 bg-gray-50 border-gray-200 rounded-xl"
+                placeholder="Search by name, role, or email..."
+                className="pl-10 rounded-xl bg-gray-50 border-gray-200"
               />
             </div>
 
-            <div className="relative">
-              <Button
-                variant="outline"
-                onClick={() => setShowCityDropdown(!showCityDropdown)}
-                className="border-gray-200 rounded-xl min-w-[130px] justify-between"
-              >
-                <span>{cityFilter === "all" ? "All Cities" : cityFilter}</span>
-                <ChevronDown className="w-4 h-4 ml-2" />
-              </Button>
-              {showCityDropdown && (
-                <div className="absolute left-0 top-full mt-2 w-40 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-20">
-                  <button
-                    onClick={() => { setCityFilter("all"); setShowCityDropdown(false) }}
-                    className={cn("w-full px-4 py-2 text-left text-sm hover:bg-gray-50", cityFilter === "all" && "bg-blue-50 text-blue-600")}
-                  >
-                    All Cities
-                  </button>
-                  {cities.map((c) => (
-                    <button
-                      key={c}
-                      onClick={() => { setCityFilter(c); setShowCityDropdown(false) }}
-                      className={cn("w-full px-4 py-2 text-left text-sm hover:bg-gray-50", cityFilter === c && "bg-blue-50 text-blue-600")}
-                    >
-                      {c}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+            {/* Department Filter */}
+            <Select
+              value={departmentFilter}
+              onValueChange={setDepartmentFilter}
+            >
+              <SelectTrigger className="w-full sm:w-48 rounded-xl bg-gray-50 border-gray-200">
+                <SelectValue placeholder="All Departments" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Departments</SelectItem>
+                {departments.map((dept) => (
+                  <SelectItem key={dept} value={dept!}>
+                    {dept}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
+          {/* View Toggle */}
           <div className="flex items-center gap-1 bg-gray-100 p-1 rounded-xl">
             <button
               onClick={() => handleViewChange("grid")}
-              className={cn("p-2 rounded-lg transition-colors", viewMode === "grid" ? "bg-white shadow-sm" : "hover:bg-gray-200")}
+              className={cn(
+                "p-2 rounded-lg transition-colors",
+                viewMode === "grid" ? "bg-white shadow-sm" : "hover:bg-gray-200"
+              )}
             >
               <LayoutGrid className="w-4 h-4" />
             </button>
             <button
               onClick={() => handleViewChange("list")}
-              className={cn("p-2 rounded-lg transition-colors", viewMode === "list" ? "bg-white shadow-sm" : "hover:bg-gray-200")}
+              className={cn(
+                "p-2 rounded-lg transition-colors",
+                viewMode === "list" ? "bg-white shadow-sm" : "hover:bg-gray-200"
+              )}
             >
               <List className="w-4 h-4" />
             </button>
@@ -183,49 +226,95 @@ export default function TeamPage() {
         </div>
       </div>
 
+      {/* Loading State */}
+      {loading && (
+        <div className="text-center py-12">
+          <Loader2 className="w-8 h-8 animate-spin mx-auto text-blue-600" />
+          <p className="text-gray-500 mt-2">Loading team members...</p>
+        </div>
+      )}
+
+      {/* Error State */}
+      {error && !loading && (
+        <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-red-700">
+          {error}
+        </div>
+      )}
+
       {/* Grid View */}
-      {viewMode === "grid" && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {filteredStaff.map((member) => (
+      {!loading && !error && viewMode === "grid" && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filteredMembers.map((member) => (
             <div
               key={member.id}
-              className="group bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow"
+              className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden"
             >
-              <div className="p-6 text-center">
-                <div className="relative w-20 h-20 mx-auto mb-4">
-                  <img
+              {/* Image */}
+              <div className="relative aspect-square overflow-hidden bg-gray-100">
+                {member.image ? (
+                  <Image
                     src={member.image}
                     alt={member.name}
-                    className="w-full h-full rounded-full object-cover ring-4 ring-gray-100"
+                    fill
+                    className="object-cover"
                   />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <User className="w-20 h-20 text-gray-300" />
+                  </div>
+                )}
+                <div className="absolute top-2 right-2 flex gap-2">
+                  {!member.isActive && (
+                    <Badge className="bg-red-100 text-red-700 text-xs">
+                      Inactive
+                    </Badge>
+                  )}
+                  {!member.showOnSite && (
+                    <Badge className="bg-gray-100 text-gray-700 text-xs">
+                      Hidden
+                    </Badge>
+                  )}
                 </div>
+              </div>
 
-                <h3 className="font-semibold text-gray-900">{member.name}</h3>
-                <p className="text-sm text-gray-500 mt-1">{member.phone}</p>
-                <p className="text-sm text-gray-400 mt-1">{member.city}, {member.country}</p>
+              {/* Info */}
+              <div className="p-4">
+                <h3 className="font-medium text-gray-900">{member.name}</h3>
+                <p className="text-sm text-gray-600">{member.role}</p>
+                {member.department && (
+                  <Badge variant="outline" className="text-xs mt-2">
+                    {member.department}
+                  </Badge>
+                )}
 
-                <div className="flex items-center justify-center gap-2 mt-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                {/* Actions */}
+                <div className="flex items-center gap-2 mt-4">
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => openViewModal(member)}
-                    className="h-9 w-9 p-0 hover:bg-green-50 hover:text-green-600 rounded-lg"
+                    onClick={() => router.push(`/admin/team/${member.id}/edit`)}
+                    className="flex-1 hover:bg-blue-50 hover:text-blue-600"
                   >
-                    <Eye className="w-4 h-4" />
+                    <Pencil className="w-4 h-4 mr-1" />
+                    Edit
                   </Button>
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => handleEdit(member.id)}
-                    className="h-9 w-9 p-0 hover:bg-blue-50 hover:text-blue-600 rounded-lg"
+                    onClick={() => toggleShowOnSite(member)}
+                    className="h-8 w-8 p-0 hover:bg-gray-100"
                   >
-                    <Pencil className="w-4 h-4" />
+                    {member.showOnSite ? (
+                      <Eye className="w-4 h-4" />
+                    ) : (
+                      <EyeOff className="w-4 h-4" />
+                    )}
                   </Button>
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => handleDelete(member.id)}
-                    className="h-9 w-9 p-0 hover:bg-red-50 hover:text-red-600 rounded-lg"
+                    className="h-8 w-8 p-0 hover:bg-red-50 hover:text-red-600"
                   >
                     <Trash2 className="w-4 h-4" />
                   </Button>
@@ -237,50 +326,93 @@ export default function TeamPage() {
       )}
 
       {/* List View */}
-      {viewMode === "list" && (
+      {!loading && !error && viewMode === "list" && (
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
           <Table>
             <TableHeader className="bg-gray-50">
               <TableRow>
                 <TableHead className="w-16"></TableHead>
                 <TableHead>Name</TableHead>
-                <TableHead>Phone</TableHead>
-                <TableHead>City</TableHead>
-                <TableHead>Country</TableHead>
+                <TableHead>Role</TableHead>
+                <TableHead>Department</TableHead>
+                <TableHead>Status</TableHead>
                 <TableHead className="w-32 text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredStaff.map((member) => (
+              {filteredMembers.map((member) => (
                 <TableRow key={member.id} className="hover:bg-gray-50">
                   <TableCell>
-                    <img
-                      src={member.image}
-                      alt={member.name}
-                      className="w-10 h-10 rounded-full object-cover"
-                    />
+                    <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-100">
+                      {member.image ? (
+                        <Image
+                          src={member.image}
+                          alt={member.name}
+                          width={48}
+                          height={48}
+                          className="object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <User className="w-6 h-6 text-gray-300" />
+                        </div>
+                      )}
+                    </div>
                   </TableCell>
-                  <TableCell className="font-medium text-gray-900">{member.name}</TableCell>
-                  <TableCell className="text-gray-600">{member.phone}</TableCell>
-                  <TableCell className="text-gray-600">{member.city}</TableCell>
-                  <TableCell className="text-gray-600">{member.country}</TableCell>
+                  <TableCell>
+                    <p className="font-medium text-gray-900">{member.name}</p>
+                    {member.email && (
+                      <p className="text-sm text-gray-500">{member.email}</p>
+                    )}
+                  </TableCell>
+                  <TableCell>{member.role}</TableCell>
+                  <TableCell>
+                    {member.department && (
+                      <Badge variant="outline">{member.department}</Badge>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex gap-2">
+                      <Badge
+                        className={cn(
+                          "text-xs",
+                          member.isActive
+                            ? "bg-green-100 text-green-700"
+                            : "bg-red-100 text-red-700"
+                        )}
+                      >
+                        {member.isActive ? "Active" : "Inactive"}
+                      </Badge>
+                      {!member.showOnSite && (
+                        <Badge className="bg-gray-100 text-gray-700 text-xs">
+                          Hidden
+                        </Badge>
+                      )}
+                    </div>
+                  </TableCell>
                   <TableCell>
                     <div className="flex items-center justify-end gap-2">
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => openViewModal(member)}
-                        className="h-8 w-8 p-0 hover:bg-green-50 hover:text-green-600"
+                        onClick={() =>
+                          router.push(`/admin/team/${member.id}/edit`)
+                        }
+                        className="h-8 w-8 p-0 hover:bg-blue-50 hover:text-blue-600"
                       >
-                        <Eye className="w-4 h-4" />
+                        <Pencil className="w-4 h-4" />
                       </Button>
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleEdit(member.id)}
-                        className="h-8 w-8 p-0 hover:bg-blue-50 hover:text-blue-600"
+                        onClick={() => toggleShowOnSite(member)}
+                        className="h-8 w-8 p-0 hover:bg-gray-100"
                       >
-                        <Pencil className="w-4 h-4" />
+                        {member.showOnSite ? (
+                          <Eye className="w-4 h-4" />
+                        ) : (
+                          <EyeOff className="w-4 h-4" />
+                        )}
                       </Button>
                       <Button
                         variant="ghost"
@@ -300,63 +432,17 @@ export default function TeamPage() {
       )}
 
       {/* Empty State */}
-      {filteredStaff.length === 0 && (
+      {!loading && !error && filteredMembers.length === 0 && (
         <div className="text-center py-12 bg-white rounded-2xl border border-gray-100">
           <User className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-          <p className="text-gray-500">No staff members found</p>
-        </div>
-      )}
-
-      {/* View Staff Modal */}
-      {showViewModal && selectedStaff && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl w-full max-w-sm overflow-hidden">
-            <div className="p-4 border-b border-gray-100">
-              <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-gray-900">Staff Details</h2>
-                <button onClick={() => setShowViewModal(false)} className="p-2 hover:bg-gray-100 rounded-lg">
-                  <X className="w-5 h-5 text-gray-500" />
-                </button>
-              </div>
-            </div>
-            <div className="p-6 text-center">
-              <img
-                src={selectedStaff.image}
-                alt={selectedStaff.name}
-                className="w-24 h-24 rounded-full object-cover mx-auto ring-4 ring-gray-100"
-              />
-              <h3 className="text-xl font-semibold text-gray-900 mt-4">{selectedStaff.name}</h3>
-              
-              <div className="mt-6 space-y-3 text-left">
-                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
-                  <div className="p-2 bg-white rounded-lg">
-                    <Phone className="w-4 h-4 text-gray-600" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-500">Phone</p>
-                    <p className="text-sm font-medium text-gray-900">{selectedStaff.phone}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
-                  <div className="p-2 bg-white rounded-lg">
-                    <MapPin className="w-4 h-4 text-gray-600" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-500">Location</p>
-                    <p className="text-sm font-medium text-gray-900">{selectedStaff.city}, {selectedStaff.country}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="p-4 border-t border-gray-100 flex justify-end gap-3">
-              <Button variant="outline" onClick={() => setShowViewModal(false)} className="rounded-xl">Close</Button>
-              <Button onClick={() => { setShowViewModal(false); handleEdit(selectedStaff.id) }} className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl">
-                <Pencil className="w-4 h-4 mr-2" /> Edit
-              </Button>
-            </div>
-          </div>
+          <p className="text-gray-500">No team members found</p>
+          <p className="text-sm text-gray-400 mt-1">
+            {searchQuery || departmentFilter !== "all"
+              ? "Try adjusting your filters"
+              : "Add your first team member to get started"}
+          </p>
         </div>
       )}
     </div>
-  )
+  );
 }

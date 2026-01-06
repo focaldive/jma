@@ -15,111 +15,8 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { ArrowLeft, Upload, Loader2, User } from "lucide-react";
 
-// Sample users data
-const usersData: Record<
-  string,
-  {
-    name: string;
-    email: string;
-    phone: string;
-    role: string;
-    status: string;
-    image: string;
-  }
-> = {
-  "1": {
-    name: "Ahmed Hassan",
-    email: "ahmed.hassan@jma.lk",
-    phone: "+94 77 123 4567",
-    role: "Admin",
-    status: "Active",
-    image:
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face",
-  },
-  "2": {
-    name: "Fatima Ibrahim",
-    email: "fatima.ibrahim@jma.lk",
-    phone: "+94 76 234 5678",
-    role: "Editor",
-    status: "Active",
-    image:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face",
-  },
-  "3": {
-    name: "Mohamed Ali",
-    email: "mohamed.ali@jma.lk",
-    phone: "+94 71 345 6789",
-    role: "User",
-    status: "Active",
-    image:
-      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face",
-  },
-  "4": {
-    name: "Aisha Khan",
-    email: "aisha.khan@jma.lk",
-    phone: "+94 77 456 7890",
-    role: "Editor",
-    status: "Disabled",
-    image:
-      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face",
-  },
-  "5": {
-    name: "Yusuf Rahman",
-    email: "yusuf.rahman@jma.lk",
-    phone: "+94 76 567 8901",
-    role: "User",
-    status: "Pending",
-    image:
-      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=face",
-  },
-  "6": {
-    name: "Zainab Saleh",
-    email: "zainab.saleh@jma.lk",
-    phone: "+94 71 678 9012",
-    role: "Admin",
-    status: "Active",
-    image:
-      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=face",
-  },
-  "7": {
-    name: "Omar Faisal",
-    email: "omar.faisal@jma.lk",
-    phone: "+94 77 789 0123",
-    role: "User",
-    status: "Active",
-    image:
-      "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop&crop=face",
-  },
-  "8": {
-    name: "Mariam Begum",
-    email: "mariam.begum@jma.lk",
-    phone: "+94 76 890 1234",
-    role: "Editor",
-    status: "Pending",
-    image:
-      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop&crop=face",
-  },
-  "9": {
-    name: "Hassan Ibrahim",
-    email: "hassan.ibrahim@jma.lk",
-    phone: "+94 77 901 2345",
-    role: "User",
-    status: "Disabled",
-    image:
-      "https://images.unsplash.com/photo-1519345182560-3f2917c472ef?w=100&h=100&fit=crop&crop=face",
-  },
-  "10": {
-    name: "Khadija Hassan",
-    email: "khadija.hassan@jma.lk",
-    phone: "+94 71 012 3456",
-    role: "User",
-    status: "Active",
-    image:
-      "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=100&h=100&fit=crop&crop=face",
-  },
-};
-
-const roles = ["Admin", "Editor", "User"];
+// Enum strict values
+const roles = ["ADMIN", "EDITOR", "VIEWER"];
 
 export default function EditUserPage() {
   const router = useRouter();
@@ -135,42 +32,45 @@ export default function EditUserPage() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    phone: "",
     newPassword: "",
     confirmPassword: "",
     role: "",
-    isActive: true,
+    isActive: true, // Default to true, will update from API
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     const loadUser = async () => {
+      if (!userId) return;
       setIsLoading(true);
-      await new Promise((r) => setTimeout(r, 300));
+      try {
+        const res = await fetch(`/api/users/${userId}`);
+        const data = await res.json();
 
-      const data = usersData[userId];
-      if (data) {
-        setFormData({
-          name: data.name,
-          email: data.email,
-          phone: data.phone,
-          newPassword: "",
-          confirmPassword: "",
-          role: data.role,
-          isActive: data.status === "Active",
-        });
-        setFormImage(data.image);
-        setNotFound(false);
-      } else {
+        if (data.success && data.user) {
+          setFormData({
+            name: data.user.name || "",
+            email: data.user.email,
+            newPassword: "",
+            confirmPassword: "",
+            role: data.user.role,
+            isActive: data.user.isActive,
+          });
+          setFormImage(data.user.avatar);
+          setNotFound(false);
+        } else {
+          setNotFound(true);
+        }
+      } catch (error) {
+        console.error("Failed to load user:", error);
         setNotFound(true);
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     };
 
-    if (userId) {
-      loadUser();
-    }
+    loadUser();
   }, [userId]);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -201,10 +101,38 @@ export default function EditUserPage() {
   const handleSubmit = async () => {
     if (!validate()) return;
     setIsSubmitting(true);
-    console.log("Saving user:", { id: userId, ...formData, image: formImage });
-    await new Promise((r) => setTimeout(r, 1000));
-    setIsSubmitting(false);
-    router.push("/admin/settings/users");
+
+    try {
+      const payload = {
+        name: formData.name,
+        email: formData.email,
+        role: formData.role,
+        isActive: formData.isActive,
+        image: formImage,
+        // Only send newPassword if it's set
+        ...(formData.newPassword ? { newPassword: formData.newPassword } : {}),
+      };
+
+      const res = await fetch(`/api/users/${userId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await res.json();
+
+      if (!result.success) {
+        throw new Error(result.message || "Failed to update user");
+      }
+
+      router.push("/admin/settings/users");
+      router.refresh(); // Ensure the list updates
+    } catch (err: any) {
+      console.error(err);
+      alert("Error updating user: " + err.message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (isLoading) {
@@ -345,17 +273,7 @@ export default function EditUserPage() {
             )}
           </div>
 
-          <div>
-            <Label className="text-sm font-medium text-gray-700">Phone</Label>
-            <Input
-              value={formData.phone}
-              onChange={(e) =>
-                setFormData({ ...formData, phone: e.target.value })
-              }
-              placeholder="+94 77 123 4567"
-              className="mt-2 rounded-xl bg-gray-50 border-gray-200"
-            />
-          </div>
+          {/* Phone field removed */}
 
           <div>
             <Label className="text-sm font-medium text-gray-700">
@@ -424,7 +342,7 @@ export default function EditUserPage() {
               <SelectContent>
                 {roles.map((r) => (
                   <SelectItem key={r} value={r}>
-                    {r}
+                    {r.charAt(0) + r.slice(1).toLowerCase()}
                   </SelectItem>
                 ))}
               </SelectContent>

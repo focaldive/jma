@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,163 +26,63 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-// Sample Janaza data
-const janazaData = [
-  {
-    id: 1,
-    deceasedName: "Mohamed Cassim",
-    age: 72,
-    prayerDate: "2024-12-28",
-    prayerTime: "14:00",
-    prayerLocation: "Masjid Al-Noor, Colombo",
-    burialLocation: "Kanatte Muslim Cemetery",
-    contactName: "Ahmed Cassim",
-    contactPhone: "+94 77 123 4567",
-    contactEmail: "ahmed.cassim@email.com",
-    notes: "Former community elder and philanthropist",
-    status: "Scheduled",
-    isPublished: true,
-    createdAt: "2024-12-27T10:30:00",
-    updatedAt: "2024-12-27T14:15:00",
-  },
-  {
-    id: 2,
-    deceasedName: "Fathima Noor",
-    age: 65,
-    prayerDate: "2024-12-27",
-    prayerTime: "15:30",
-    prayerLocation: "Masjid Al-Rahman, Kandy",
-    burialLocation: "Kandy Muslim Cemetery",
-    contactName: "Ibrahim Noor",
-    contactPhone: "+94 76 234 5678",
-    contactEmail: "ibrahim.noor@email.com",
-    notes: "Beloved mother and grandmother",
-    status: "Completed",
-    isPublished: true,
-    createdAt: "2024-12-26T08:00:00",
-    updatedAt: "2024-12-27T16:00:00",
-  },
-  {
-    id: 3,
-    deceasedName: "Abdul Hameed",
-    age: 80,
-    prayerDate: "2024-12-29",
-    prayerTime: "13:00",
-    prayerLocation: "JMA Main Mosque, Galle",
-    burialLocation: "Galle Muslim Cemetery",
-    contactName: "Yusuf Hameed",
-    contactPhone: "+94 71 345 6789",
-    contactEmail: "yusuf.hameed@email.com",
-    notes: "Retired teacher, served the community for 40 years",
-    status: "Scheduled",
-    isPublished: true,
-    createdAt: "2024-12-28T09:00:00",
-    updatedAt: "2024-12-28T09:00:00",
-  },
-  {
-    id: 4,
-    deceasedName: "Zainab Begum",
-    age: 58,
-    prayerDate: "2024-12-26",
-    prayerTime: "14:30",
-    prayerLocation: "Masjid Al-Falah, Jaffna",
-    burialLocation: "Jaffna Muslim Cemetery",
-    contactName: "Hassan Ali",
-    contactPhone: "+94 77 456 7890",
-    contactEmail: "hassan.ali@email.com",
-    notes: "",
-    status: "Completed",
-    isPublished: true,
-    createdAt: "2024-12-25T11:30:00",
-    updatedAt: "2024-12-26T15:00:00",
-  },
-  {
-    id: 5,
-    deceasedName: "Ismail Khan",
-    age: 45,
-    prayerDate: "2024-12-30",
-    prayerTime: "12:00",
-    prayerLocation: "Central Mosque, Batticaloa",
-    burialLocation: "Batticaloa Muslim Cemetery",
-    contactName: "Amina Khan",
-    contactPhone: "+94 76 567 8901",
-    contactEmail: "amina.khan@email.com",
-    notes: "Unexpected passing, prayer arrangements pending confirmation",
-    status: "Pending",
-    isPublished: false,
-    createdAt: "2024-12-28T16:00:00",
-    updatedAt: "2024-12-28T16:00:00",
-  },
-  {
-    id: 6,
-    deceasedName: "Mariam Saleh",
-    age: 88,
-    prayerDate: "2024-12-25",
-    prayerTime: "15:00",
-    prayerLocation: "Masjid Al-Taqwa, Negombo",
-    burialLocation: "Negombo Muslim Cemetery",
-    contactName: "Omar Saleh",
-    contactPhone: "+94 71 678 9012",
-    contactEmail: "omar.saleh@email.com",
-    notes: "Respected community matriarch",
-    status: "Completed",
-    isPublished: true,
-    createdAt: "2024-12-24T07:00:00",
-    updatedAt: "2024-12-25T16:00:00",
-  },
-  {
-    id: 7,
-    deceasedName: "Rashid Ahmed",
-    age: 67,
-    prayerDate: "2024-12-31",
-    prayerTime: "14:00",
-    prayerLocation: "JMA Main Mosque, Colombo",
-    burialLocation: "Kanatte Muslim Cemetery",
-    contactName: "Fatima Ahmed",
-    contactPhone: "+94 77 789 0123",
-    contactEmail: "fatima.ahmed@email.com",
-    notes: "Long-time JMA volunteer",
-    status: "Scheduled",
-    isPublished: true,
-    createdAt: "2024-12-29T10:00:00",
-    updatedAt: "2024-12-29T10:00:00",
-  },
-  {
-    id: 8,
-    deceasedName: "Khadija Hassan",
-    age: 75,
-    prayerDate: "2024-12-24",
-    prayerTime: "13:30",
-    prayerLocation: "Masjid Al-Huda, Kurunegala",
-    burialLocation: "Kurunegala Muslim Cemetery",
-    contactName: "Yusuf Hassan",
-    contactPhone: "+94 76 890 1234",
-    contactEmail: "yusuf.hassan@email.com",
-    notes: "",
-    status: "Completed",
-    isPublished: true,
-    createdAt: "2024-12-23T14:00:00",
-    updatedAt: "2024-12-24T14:00:00",
-  },
-];
-
-const statuses = ["Scheduled", "Completed", "Pending", "Cancelled"];
+const statuses = ["UPCOMING", "COMPLETED", "CANCELLED"];
 
 const statusStyles: Record<string, string> = {
-  Scheduled: "bg-blue-100 text-blue-700 hover:bg-blue-100",
-  Completed: "bg-gray-100 text-gray-700 hover:bg-gray-100",
-  Pending: "bg-yellow-100 text-yellow-700 hover:bg-yellow-100",
-  Cancelled: "bg-red-100 text-red-700 hover:bg-red-100",
+  UPCOMING: "bg-blue-100 text-blue-700 hover:bg-blue-100",
+  COMPLETED: "bg-gray-100 text-gray-700 hover:bg-gray-100",
+  CANCELLED: "bg-red-100 text-red-700 hover:bg-red-100",
 };
 
 const ITEMS_PER_PAGE = 6;
 
+// Define the Janaza interface based on Prism schema
+interface JanazaNotice {
+  id: string;
+  deceasedName: string;
+  age: number | null;
+  prayerDate: string | null;
+  prayerTime: string | null;
+  prayerLocation: string | null;
+  burialLocation: string | null;
+  contactName: string | null;
+  contactPhone: string | null;
+  contactEmail: string | null;
+  notes: string | null;
+  status: string;
+  isPublished: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export default function JanazaPage() {
   const router = useRouter();
+  const [janazaData, setJanazaData] = useState<JanazaNotice[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+
+  // Fetch data
+  useEffect(() => {
+    const fetchJanazaAndSet = async () => {
+      try {
+        const response = await fetch("/api/janaza", {
+          cache: "no-store", // Ensure fresh data
+        });
+        const data = await response.json();
+        if (data.success) {
+          setJanazaData(data.notices);
+        }
+      } catch (error) {
+        console.error("Failed to fetch janaza notices", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchJanazaAndSet();
+  }, []);
 
   // Filter data
   const filteredJanaza = useMemo(() => {
@@ -193,8 +93,9 @@ export default function JanazaPage() {
       result = result.filter(
         (item) =>
           item.deceasedName.toLowerCase().includes(query) ||
-          item.prayerLocation.toLowerCase().includes(query) ||
-          item.contactName.toLowerCase().includes(query)
+          (item.prayerLocation &&
+            item.prayerLocation.toLowerCase().includes(query)) ||
+          (item.contactName && item.contactName.toLowerCase().includes(query))
       );
     }
 
@@ -202,14 +103,8 @@ export default function JanazaPage() {
       result = result.filter((item) => item.status === statusFilter);
     }
 
-    // Sort by prayer date (upcoming first)
-    result.sort(
-      (a, b) =>
-        new Date(b.prayerDate).getTime() - new Date(a.prayerDate).getTime()
-    );
-
     return result;
-  }, [searchQuery, statusFilter]);
+  }, [janazaData, searchQuery, statusFilter]); // Sorted by createdAt desc from API by default
 
   // Pagination
   const totalPages = Math.ceil(filteredJanaza.length / ITEMS_PER_PAGE);
@@ -218,19 +113,37 @@ export default function JanazaPage() {
     return filteredJanaza.slice(start, start + ITEMS_PER_PAGE);
   }, [filteredJanaza, currentPage]);
 
-  const handleView = (id: number) => {
+  const handleView = (id: string) => {
     router.push(`/admin/janaza/${id}`);
   };
 
-  const handleEdit = (id: number) => {
+  const handleEdit = (id: string) => {
     router.push(`/admin/janaza/new/${id}/edit`);
   };
 
-  const handleDelete = (id: number) => {
-    console.log("Deleting janaza:", id);
+  const handleDelete = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this notice?")) return;
+
+    try {
+      const response = await fetch(`/api/janaza/${id}`, {
+        method: "DELETE",
+      });
+      const data = await response.json();
+
+      if (data.success) {
+        setJanazaData((prev) => prev.filter((item) => item.id !== id));
+        // Optional: Show toast success
+      } else {
+        alert("Failed to delete notice");
+      }
+    } catch (error) {
+      console.error("Error deleting notice:", error);
+      alert("Error deleting notice");
+    }
   };
 
-  const formatDate = (dateStr: string) => {
+  const formatDate = (dateStr: string | null) => {
+    if (!dateStr) return "-";
     return new Date(dateStr).toLocaleDateString("en-US", {
       year: "numeric",
       month: "short",
@@ -238,7 +151,8 @@ export default function JanazaPage() {
     });
   };
 
-  const formatTime = (timeStr: string) => {
+  const formatTime = (timeStr: string | null) => {
+    if (!timeStr) return "-";
     const [hours, minutes] = timeStr.split(":");
     const hour = parseInt(hours);
     const ampm = hour >= 12 ? "PM" : "AM";

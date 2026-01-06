@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
-import { useState, useCallback, useRef } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Checkbox } from "@/components/ui/checkbox"
+import { useState, useCallback, useRef, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Upload,
   X,
@@ -16,168 +16,275 @@ import {
   Plus,
   Check,
   Loader2,
-} from "lucide-react"
-import { cn } from "@/lib/utils"
-
-// Sample gallery data
-const initialGalleryData = [
-  { id: 1, src: "https://images.unsplash.com/photo-1519817650390-64a93db51149?w=400&h=300&fit=crop", title: "Community Iftar 2024", description: "Ramadan iftar gathering at JMA main hall" },
-  { id: 2, src: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop", title: "Health Camp", description: "Free medical checkup camp for the community" },
-  { id: 3, src: "https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?w=400&h=300&fit=crop", title: "Charity Distribution", description: "Distribution of essentials to families in need" },
-  { id: 4, src: "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=400&h=300&fit=crop", title: "Youth Workshop", description: "Leadership workshop for young community members" },
-  { id: 5, src: "https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=400&h=300&fit=crop", title: "Eid Celebration", description: "Eid prayers and celebration at the mosque" },
-  { id: 6, src: "https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?w=400&h=300&fit=crop", title: "Food Drive", description: "Community food drive for Ramadan" },
-  { id: 7, src: "https://images.unsplash.com/photo-1593113598332-cd288d649433?w=400&h=300&fit=crop", title: "Education Program", description: "Scholarship award ceremony for students" },
-  { id: 8, src: "https://images.unsplash.com/photo-1491438590914-bc09fcaaf77a?w=400&h=300&fit=crop", title: "Community Gathering", description: "Annual community gathering event" },
-]
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 
 type GalleryItem = {
-  id: number
-  src: string
-  title: string
-  description: string
-}
+  id: string;
+  src: string;
+  title: string | null;
+  description: string | null;
+  order: number;
+};
 
 export default function GalleryPage() {
-  const [gallery, setGallery] = useState<GalleryItem[]>(initialGalleryData)
-  const [selectedItems, setSelectedItems] = useState<number[]>([])
-  const [editingItem, setEditingItem] = useState<GalleryItem | null>(null)
-  const [isDragging, setIsDragging] = useState(false)
-  const [draggedItem, setDraggedItem] = useState<number | null>(null)
-  const [isUploading, setIsUploading] = useState(false)
-  const [uploadProgress, setUploadProgress] = useState(0)
-  const [showUploadModal, setShowUploadModal] = useState(false)
-  const [pendingUploads, setPendingUploads] = useState<{ file: File; preview: string }[]>([])
-  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [gallery, setGallery] = useState<GalleryItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const [editingItem, setEditingItem] = useState<GalleryItem | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [draggedItem, setDraggedItem] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [pendingUploads, setPendingUploads] = useState<
+    { file: File; preview: string; title: string; description: string }[]
+  >([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Fetch gallery items
+  const fetchGallery = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch("/api/gallery");
+      const result = await res.json();
+      if (result.success) {
+        setGallery(result.data);
+      } else {
+        setError(result.message || "Failed to fetch gallery items");
+      }
+    } catch (err) {
+      setError("An error occurred while fetching gallery");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchGallery();
+  }, []);
 
   // Handle file selection
   const handleFileSelect = (files: FileList | null) => {
-    if (!files) return
-    const newUploads: { file: File; preview: string }[] = []
+    if (!files) return;
+    const newUploads: {
+      file: File;
+      preview: string;
+      title: string;
+      description: string;
+    }[] = [];
+
+    const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB limit for base64
+    let hasLargeFiles = false;
+
     Array.from(files).forEach((file) => {
       if (file.type.startsWith("image/")) {
-        const reader = new FileReader()
-        reader.onload = () => {
-          newUploads.push({ file, preview: reader.result as string })
-          if (newUploads.length === files.length) {
-            setPendingUploads((prev) => [...prev, ...newUploads])
-          }
+        // Check file size
+        if (file.size > MAX_FILE_SIZE) {
+          hasLargeFiles = true;
+          console.warn(
+            `File ${file.name} is too large: ${(
+              file.size /
+              1024 /
+              1024
+            ).toFixed(2)}MB`
+          );
+          return; // Skip this file
         }
-        reader.readAsDataURL(file)
+
+        const reader = new FileReader();
+        reader.onload = () => {
+          newUploads.push({
+            file,
+            preview: reader.result as string,
+            title: file.name.split(".")[0], // Default title from filename
+            description: "",
+          });
+          if (
+            newUploads.length ===
+            Array.from(files).filter(
+              (f) => f.size <= MAX_FILE_SIZE && f.type.startsWith("image/")
+            ).length
+          ) {
+            setPendingUploads((prev) => [...prev, ...newUploads]);
+          }
+        };
+        reader.readAsDataURL(file);
       }
-    })
-    setShowUploadModal(true)
-  }
+    });
+
+    if (hasLargeFiles) {
+      alert(
+        "Some files were skipped because they are larger than 2MB. Please use smaller images or compress them first."
+      );
+    }
+
+    setShowUploadModal(true);
+  };
 
   // Drag and drop for upload
   const handleUploadDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault()
-    setIsDragging(true)
-  }, [])
+    e.preventDefault();
+    setIsDragging(true);
+  }, []);
 
   const handleUploadDragLeave = useCallback((e: React.DragEvent) => {
-    e.preventDefault()
-    setIsDragging(false)
-  }, [])
+    e.preventDefault();
+    setIsDragging(false);
+  }, []);
 
   const handleUploadDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault()
-    setIsDragging(false)
-    handleFileSelect(e.dataTransfer.files)
-  }, [])
+    e.preventDefault();
+    setIsDragging(false);
+    handleFileSelect(e.dataTransfer.files);
+  }, []);
 
   // Remove pending upload
   const removePendingUpload = (index: number) => {
-    setPendingUploads((prev) => prev.filter((_, i) => i !== index))
-  }
+    setPendingUploads((prev) => prev.filter((_, i) => i !== index));
+  };
 
   // Upload images
   const handleUpload = async () => {
-    if (pendingUploads.length === 0) return
-    setIsUploading(true)
-    setUploadProgress(0)
+    if (pendingUploads.length === 0) return;
+    setIsUploading(true);
+    setUploadProgress(0);
 
-    // Simulate upload progress
-    for (let i = 0; i <= 100; i += 10) {
-      await new Promise((resolve) => setTimeout(resolve, 100))
-      setUploadProgress(i)
+    try {
+      const total = pendingUploads.length;
+      for (const [index, upload] of pendingUploads.entries()) {
+        const response = await fetch("/api/gallery", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            src: upload.preview,
+            title: upload.title,
+            description: upload.description,
+            order: gallery.length + index,
+          }),
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(
+            result.message || result.error || "Failed to upload image"
+          );
+        }
+
+        setUploadProgress(((index + 1) / total) * 100);
+      }
+
+      fetchGallery();
+      setPendingUploads([]);
+      setShowUploadModal(false);
+    } catch (err: any) {
+      console.error("Upload error:", err);
+      alert(err.message || "Failed to upload images");
+    } finally {
+      setIsUploading(false);
+      setUploadProgress(0);
     }
-
-    // Add to gallery
-    const newItems = pendingUploads.map((upload, index) => ({
-      id: Date.now() + index,
-      src: upload.preview,
-      title: `New Image ${gallery.length + index + 1}`,
-      description: "Click to edit description",
-    }))
-
-    setGallery((prev) => [...prev, ...newItems])
-    setPendingUploads([])
-    setShowUploadModal(false)
-    setIsUploading(false)
-    setUploadProgress(0)
-  }
+  };
 
   // Select/deselect item
-  const toggleSelect = (id: number) => {
+  const toggleSelect = (id: string) => {
     setSelectedItems((prev) =>
       prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
-    )
-  }
+    );
+  };
 
   // Select all
   const selectAll = () => {
     if (selectedItems.length === gallery.length) {
-      setSelectedItems([])
+      setSelectedItems([]);
     } else {
-      setSelectedItems(gallery.map((item) => item.id))
+      setSelectedItems(gallery.map((item) => item.id));
     }
-  }
+  };
 
   // Delete selected
-  const deleteSelected = () => {
-    setGallery((prev) => prev.filter((item) => !selectedItems.includes(item.id)))
-    setSelectedItems([])
-  }
+  const deleteSelected = async () => {
+    if (selectedItems.length === 0) return;
+    if (
+      !confirm(`Are you sure you want to delete ${selectedItems.length} items?`)
+    )
+      return;
+
+    try {
+      for (const id of selectedItems) {
+        await fetch(`/api/gallery/${id}`, { method: "DELETE" });
+      }
+      fetchGallery();
+      setSelectedItems([]);
+    } catch (err) {
+      alert("Failed to delete some items");
+    }
+  };
 
   // Delete single item
-  const deleteItem = (id: number) => {
-    setGallery((prev) => prev.filter((item) => item.id !== id))
-  }
+  const deleteItem = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this image?")) return;
+
+    try {
+      const res = await fetch(`/api/gallery/${id}`, { method: "DELETE" });
+      if (res.ok) {
+        fetchGallery();
+      }
+    } catch (err) {
+      alert("Failed to delete image");
+    }
+  };
 
   // Edit item metadata
-  const saveEdit = () => {
-    if (!editingItem) return
-    setGallery((prev) =>
-      prev.map((item) => (item.id === editingItem.id ? editingItem : item))
-    )
-    setEditingItem(null)
-  }
+  const saveEdit = async () => {
+    if (!editingItem) return;
+    try {
+      const res = await fetch(`/api/gallery/${editingItem.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: editingItem.title,
+          description: editingItem.description,
+        }),
+      });
+
+      if (res.ok) {
+        setGallery((prev) =>
+          prev.map((item) => (item.id === editingItem.id ? editingItem : item))
+        );
+        setEditingItem(null);
+      }
+    } catch (err) {
+      alert("Failed to save changes");
+    }
+  };
 
   // Drag and drop reorder
-  const handleDragStart = (e: React.DragEvent, id: number) => {
-    setDraggedItem(id)
-    e.dataTransfer.effectAllowed = "move"
-  }
+  const handleDragStart = (e: React.DragEvent, id: string) => {
+    setDraggedItem(id);
+    e.dataTransfer.effectAllowed = "move";
+  };
 
-  const handleDragOver = (e: React.DragEvent, id: number) => {
-    e.preventDefault()
-    if (draggedItem === null || draggedItem === id) return
+  const handleDragOver = (e: React.DragEvent, id: string) => {
+    e.preventDefault();
+    if (draggedItem === null || draggedItem === id) return;
 
-    const draggedIndex = gallery.findIndex((item) => item.id === draggedItem)
-    const targetIndex = gallery.findIndex((item) => item.id === id)
+    const draggedIndex = gallery.findIndex((item) => item.id === draggedItem);
+    const targetIndex = gallery.findIndex((item) => item.id === id);
 
     if (draggedIndex !== targetIndex) {
-      const newGallery = [...gallery]
-      const [removed] = newGallery.splice(draggedIndex, 1)
-      newGallery.splice(targetIndex, 0, removed)
-      setGallery(newGallery)
+      const newGallery = [...gallery];
+      const [removed] = newGallery.splice(draggedIndex, 1);
+      newGallery.splice(targetIndex, 0, removed);
+      setGallery(newGallery);
     }
-  }
+  };
 
   const handleDragEnd = () => {
-    setDraggedItem(null)
-  }
+    setDraggedItem(null);
+  };
 
   return (
     <div className="space-y-6">
@@ -185,7 +292,9 @@ export default function GalleryPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Gallery</h1>
-          <p className="text-sm text-gray-500 mt-1">Manage your image gallery</p>
+          <p className="text-sm text-gray-500 mt-1">
+            Manage your image gallery
+          </p>
         </div>
         <div className="flex items-center gap-3">
           {selectedItems.length > 0 && (
@@ -235,7 +344,8 @@ export default function GalleryPage() {
           </div>
           <div>
             <p className="text-sm font-medium text-gray-700">
-              Drag and drop images here, or <span className="text-blue-600">browse</span>
+              Drag and drop images here, or{" "}
+              <span className="text-blue-600">browse</span>
             </p>
             <p className="text-xs text-gray-500 mt-1">
               PNG, JPG, GIF up to 10MB each
@@ -249,7 +359,9 @@ export default function GalleryPage() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Checkbox
-              checked={selectedItems.length === gallery.length && gallery.length > 0}
+              checked={
+                selectedItems.length === gallery.length && gallery.length > 0
+              }
               onCheckedChange={selectAll}
             />
             <span className="text-sm text-gray-600">
@@ -258,9 +370,7 @@ export default function GalleryPage() {
                 : `${gallery.length} images`}
             </span>
           </div>
-          <p className="text-sm text-gray-500">
-            Drag images to reorder
-          </p>
+          <p className="text-sm text-gray-500">Drag images to reorder</p>
         </div>
       </div>
 
@@ -283,10 +393,10 @@ export default function GalleryPage() {
             <div className="relative aspect-[4/3] overflow-hidden">
               <img
                 src={item.src}
-                alt={item.title}
+                alt={item.title ?? undefined}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
               />
-              
+
               {/* Selection checkbox */}
               <div className="absolute top-3 left-3">
                 <Checkbox
@@ -308,8 +418,8 @@ export default function GalleryPage() {
                 <Button
                   size="sm"
                   onClick={(e) => {
-                    e.stopPropagation()
-                    setEditingItem(item)
+                    e.stopPropagation();
+                    setEditingItem(item);
                   }}
                   className="bg-white hover:bg-gray-100 text-gray-700 rounded-lg"
                 >
@@ -318,8 +428,8 @@ export default function GalleryPage() {
                 <Button
                   size="sm"
                   onClick={(e) => {
-                    e.stopPropagation()
-                    deleteItem(item.id)
+                    e.stopPropagation();
+                    deleteItem(item.id);
                   }}
                   className="bg-white hover:bg-red-50 text-red-600 rounded-lg"
                 >
@@ -330,8 +440,12 @@ export default function GalleryPage() {
 
             {/* Info */}
             <div className="p-4">
-              <h3 className="font-medium text-gray-900 truncate">{item.title}</h3>
-              <p className="text-sm text-gray-500 truncate mt-1">{item.description}</p>
+              <h3 className="font-medium text-gray-900 truncate">
+                {item.title}
+              </h3>
+              <p className="text-sm text-gray-500 truncate mt-1">
+                {item.description}
+              </p>
             </div>
           </div>
         ))}
@@ -342,7 +456,9 @@ export default function GalleryPage() {
         <div className="text-center py-12">
           <ImageIcon className="w-12 h-12 text-gray-300 mx-auto mb-3" />
           <p className="text-gray-500">No images in gallery</p>
-          <p className="text-sm text-gray-400 mt-1">Upload some images to get started</p>
+          <p className="text-sm text-gray-400 mt-1">
+            Upload some images to get started
+          </p>
         </div>
       )}
 
@@ -352,11 +468,13 @@ export default function GalleryPage() {
           <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[60vh] overflow-hidden">
             <div className="p-4 border-b border-gray-100">
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-gray-900">Upload Images</h2>
+                <h2 className="text-lg font-semibold text-gray-900">
+                  Upload Images
+                </h2>
                 <button
                   onClick={() => {
-                    setShowUploadModal(false)
-                    setPendingUploads([])
+                    setShowUploadModal(false);
+                    setPendingUploads([]);
                   }}
                   className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
                 >
@@ -387,7 +505,10 @@ export default function GalleryPage() {
               ) : (
                 <div className="grid grid-cols-3 gap-4">
                   {pendingUploads.map((upload, index) => (
-                    <div key={index} className="relative aspect-square rounded-xl overflow-hidden">
+                    <div
+                      key={index}
+                      className="relative aspect-square rounded-xl overflow-hidden"
+                    >
                       <img
                         src={upload.preview}
                         alt={`Preview ${index + 1}`}
@@ -424,8 +545,8 @@ export default function GalleryPage() {
               <Button
                 variant="outline"
                 onClick={() => {
-                  setShowUploadModal(false)
-                  setPendingUploads([])
+                  setShowUploadModal(false);
+                  setPendingUploads([]);
                 }}
                 disabled={isUploading}
                 className="rounded-xl"
@@ -460,7 +581,9 @@ export default function GalleryPage() {
           <div className="bg-white rounded-2xl w-full max-w-md overflow-hidden">
             <div className="p- border-b border-gray-100">
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-gray-900">Edit Image Details</h2>
+                <h2 className="text-lg font-semibold text-gray-900">
+                  Edit Image Details
+                </h2>
                 <button
                   onClick={() => setEditingItem(null)}
                   className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
@@ -475,19 +598,22 @@ export default function GalleryPage() {
               <div className="aspect-video rounded-xl overflow-hidden">
                 <img
                   src={editingItem.src}
-                  alt={editingItem.title}
+                  alt={editingItem.title ?? undefined}
                   className="w-full h-full object-cover"
                 />
               </div>
 
               {/* Title */}
               <div>
-                <Label htmlFor="edit-title" className="text-sm font-medium text-gray-700">
+                <Label
+                  htmlFor="edit-title"
+                  className="text-sm font-medium text-gray-700"
+                >
                   Title
                 </Label>
                 <Input
                   id="edit-title"
-                  value={editingItem.title}
+                  value={editingItem.title ?? ""}
                   onChange={(e) =>
                     setEditingItem({ ...editingItem, title: e.target.value })
                   }
@@ -497,14 +623,20 @@ export default function GalleryPage() {
 
               {/* Description */}
               <div>
-                <Label htmlFor="edit-description" className="text-sm font-medium text-gray-700">
+                <Label
+                  htmlFor="edit-description"
+                  className="text-sm font-medium text-gray-700"
+                >
                   Description
                 </Label>
                 <Textarea
                   id="edit-description"
-                  value={editingItem.description}
+                  value={editingItem.description ?? ""}
                   onChange={(e) =>
-                    setEditingItem({ ...editingItem, description: e.target.value })
+                    setEditingItem({
+                      ...editingItem,
+                      description: e.target.value,
+                    })
                   }
                   rows={3}
                   className="mt-2 rounded-xl bg-gray-50 border-gray-200 resize-none"
@@ -532,5 +664,5 @@ export default function GalleryPage() {
         </div>
       )}
     </div>
-  )
+  );
 }

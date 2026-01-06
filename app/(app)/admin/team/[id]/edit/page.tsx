@@ -1,140 +1,229 @@
-"use client"
+"use client";
 
-import { useState, useRef, useEffect } from "react"
-import { useRouter, useParams } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { ArrowLeft, Upload, Loader2, User } from "lucide-react"
+import { useState, useRef, useEffect } from "react";
+import { useRouter, useParams } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import { ArrowLeft, Upload, Loader2, User, Trash2 } from "lucide-react";
 
-// Sample staff data
-const staffData: Record<string, {
-  name: string
-  phone: string
-  city: string
-  country: string
-  image: string
-}> = {
-  "1": { name: "Ahmed Hassan", phone: "+94 77 123 4567", city: "Colombo", country: "Sri Lanka", image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face" },
-  "2": { name: "Fatima Ibrahim", phone: "+94 76 234 5678", city: "Kandy", country: "Sri Lanka", image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face" },
-  "3": { name: "Mohamed Ali", phone: "+94 71 345 6789", city: "Galle", country: "Sri Lanka", image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face" },
-  "4": { name: "Aisha Khan", phone: "+94 77 456 7890", city: "Jaffna", country: "Sri Lanka", image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face" },
-  "5": { name: "Yusuf Rahman", phone: "+94 76 567 8901", city: "Batticaloa", country: "Sri Lanka", image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face" },
-  "6": { name: "Zainab Saleh", phone: "+94 71 678 9012", city: "Negombo", country: "Sri Lanka", image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face" },
-  "7": { name: "Omar Faisal", phone: "+94 77 789 0123", city: "Kurunegala", country: "Sri Lanka", image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&h=150&fit=crop&crop=face" },
-  "8": { name: "Mariam Begum", phone: "+94 76 890 1234", city: "Colombo", country: "Sri Lanka", image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face" },
-}
+type TeamMember = {
+  id: string;
+  name: string;
+  role: string;
+  department: string | null;
+  bio: string | null;
+  phone: string | null;
+  email: string | null;
+  image: string | null;
+  linkedin: string | null;
+  twitter: string | null;
+  order: number;
+  isActive: boolean;
+  showOnSite: boolean;
+};
 
-export default function EditStaffPage() {
-  const router = useRouter()
-  const params = useParams()
-  const staffId = params.id as string
+export default function EditTeamMemberPage() {
+  const router = useRouter();
+  const params = useParams();
+  const memberId = params.id as string;
 
-  const [isLoading, setIsLoading] = useState(true)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [notFound, setNotFound] = useState(false)
-  const [formImage, setFormImage] = useState<string | null>(null)
-  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [notFound, setNotFound] = useState(false);
+  const [formImage, setFormImage] = useState<string | null>(null);
+  const [uploadedImagePath, setUploadedImagePath] = useState<string | null>(
+    null
+  );
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [formData, setFormData] = useState({
     name: "",
+    role: "",
+    department: "",
+    bio: "",
     phone: "",
-    city: "",
-    country: "",
-  })
+    email: "",
+    linkedin: "",
+    twitter: "",
+    order: 0,
+    isActive: true,
+    showOnSite: true,
+  });
 
-  const [errors, setErrors] = useState<Record<string, string>>({})
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   // Load existing data
   useEffect(() => {
-    const loadStaff = async () => {
-      setIsLoading(true)
-      await new Promise((resolve) => setTimeout(resolve, 500))
+    const loadMember = async () => {
+      try {
+        setIsLoading(true);
+        const res = await fetch(`/api/team/${memberId}`);
+        const result = await res.json();
 
-      const data = staffData[staffId]
-      if (data) {
-        setFormData({
-          name: data.name,
-          phone: data.phone,
-          city: data.city,
-          country: data.country,
-        })
-        setFormImage(data.image)
-        setNotFound(false)
-      } else {
-        setNotFound(true)
+        if (result.success) {
+          const member: TeamMember = result.data;
+          setFormData({
+            name: member.name,
+            role: member.role,
+            department: member.department || "",
+            bio: member.bio || "",
+            phone: member.phone || "",
+            email: member.email || "",
+            linkedin: member.linkedin || "",
+            twitter: member.twitter || "",
+            order: member.order,
+            isActive: member.isActive,
+            showOnSite: member.showOnSite,
+          });
+          setFormImage(member.image);
+          setUploadedImagePath(member.image);
+          setNotFound(false);
+        } else {
+          setNotFound(true);
+        }
+      } catch (err) {
+        console.error("Error loading team member:", err);
+        setNotFound(true);
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(false)
-    }
+    };
 
-    if (staffId) {
-      loadStaff()
+    if (memberId) {
+      loadMember();
     }
-  }, [staffId])
+  }, [memberId]);
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (file && file.type.startsWith("image/")) {
-      const reader = new FileReader()
+      // Show preview
+      const reader = new FileReader();
       reader.onload = () => {
-        setFormImage(reader.result as string)
+        setFormImage(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+
+      // Upload to server
+      const formData = new FormData();
+      formData.append("file", file);
+
+      try {
+        const res = await fetch("/api/upload-image", {
+          method: "POST",
+          body: formData,
+        });
+
+        const result = await res.json();
+
+        if (result.success) {
+          setUploadedImagePath(result.filePath);
+        } else {
+          alert(result.message || "Failed to upload image");
+        }
+      } catch (err) {
+        console.error("Error uploading image:", err);
+        alert("Failed to upload image");
       }
-      reader.readAsDataURL(file)
     }
-  }
+  };
 
   const validate = () => {
-    const newErrors: Record<string, string> = {}
-    if (!formData.name.trim()) newErrors.name = "Name is required"
-    if (!formData.phone.trim()) newErrors.phone = "Phone is required"
-    if (!formData.city.trim()) newErrors.city = "City is required"
-    if (!formData.country.trim()) newErrors.country = "Country is required"
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
+    const newErrors: Record<string, string> = {};
+    if (!formData.name.trim()) newErrors.name = "Name is required";
+    if (!formData.role.trim()) newErrors.role = "Role is required";
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = async () => {
-    if (!validate()) return
-    setIsSubmitting(true)
-    
-    console.log("Saving staff:", { id: staffId, ...formData, image: formImage })
-    
-    setTimeout(() => {
-      setIsSubmitting(false)
-      router.push("/admin/team")
-    }, 1000)
-  }
+    if (!validate()) return;
+    setIsSubmitting(true);
+
+    try {
+      const res = await fetch(`/api/team/${memberId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...formData,
+          image: uploadedImagePath,
+        }),
+      });
+
+      const result = await res.json();
+
+      if (result.success) {
+        alert("Team member updated successfully!");
+        router.push("/admin/team");
+      } else {
+        alert(result.message || "Failed to update team member");
+      }
+    } catch (err) {
+      console.error("Error updating team member:", err);
+      alert("Failed to update team member");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!confirm("Are you sure you want to delete this team member?")) return;
+
+    try {
+      const res = await fetch(`/api/team/${memberId}`, { method: "DELETE" });
+      const result = await res.json();
+
+      if (result.success) {
+        alert("Team member deleted successfully!");
+        router.push("/admin/team");
+      } else {
+        alert(result.message || "Failed to delete team member");
+      }
+    } catch (err) {
+      alert("Failed to delete team member");
+    }
+  };
 
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="flex items-center gap-3 text-gray-600">
           <Loader2 className="w-5 h-5 animate-spin" />
-          <span>Loading staff details...</span>
+          <span>Loading team member...</span>
         </div>
       </div>
-    )
+    );
   }
 
   if (notFound) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Staff Not Found</h2>
-          <p className="text-gray-600 mb-4">The staff member with ID &quot;{staffId}&quot; does not exist.</p>
-          <Button onClick={() => router.push("/admin/team")} className="bg-blue-600 hover:bg-blue-700 text-white">
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">
+            Team Member Not Found
+          </h2>
+          <p className="text-gray-600 mb-4">
+            The team member with ID &quot;{memberId}&quot; does not exist.
+          </p>
+          <Button
+            onClick={() => router.push("/admin/team")}
+            className="bg-blue-600 hover:bg-blue-700 text-white"
+          >
             Back to Team
           </Button>
         </div>
       </div>
-    )
+    );
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Top Bar */}
       <div className="sticky top-0 z-10 bg-white border-b border-gray-200 shadow-sm">
-        <div className="max-w-2xl mx-auto px-4 sm:px-6 py-4">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
               <Button
@@ -146,28 +235,40 @@ export default function EditStaffPage() {
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back
               </Button>
-              <h1 className="text-xl font-semibold text-gray-900">Edit Staff</h1>
+              <h1 className="text-xl font-semibold text-gray-900">
+                Edit Team Member
+              </h1>
             </div>
-            <Button
-              onClick={handleSubmit}
-              disabled={isSubmitting}
-              className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl"
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Saving...
-                </>
-              ) : (
-                "Save Changes"
-              )}
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={handleDelete}
+                className="border-red-200 text-red-600 hover:bg-red-50 rounded-xl"
+              >
+                <Trash2 className="w-4 h-4 mr-2" />
+                Delete
+              </Button>
+              <Button
+                onClick={handleSubmit}
+                disabled={isSubmitting}
+                className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl"
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  "Save Changes"
+                )}
+              </Button>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Form Content */}
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
           {/* Image Upload */}
           <div className="flex flex-col items-center mb-6">
@@ -176,7 +277,11 @@ export default function EditStaffPage() {
               className="relative w-28 h-28 rounded-full bg-gray-100 flex items-center justify-center cursor-pointer hover:bg-gray-200 transition-colors overflow-hidden"
             >
               {formImage ? (
-                <img src={formImage} alt="" className="w-full h-full object-cover" />
+                <img
+                  src={formImage}
+                  alt=""
+                  className="w-full h-full object-cover"
+                />
               ) : (
                 <User className="w-10 h-10 text-gray-400" />
               )}
@@ -195,6 +300,7 @@ export default function EditStaffPage() {
           </div>
 
           <div className="space-y-4">
+            {/* Name */}
             <div>
               <Label className="text-sm font-medium text-gray-700">
                 Full Name <span className="text-red-500">*</span>
@@ -202,66 +308,193 @@ export default function EditStaffPage() {
               <Input
                 value={formData.name}
                 onChange={(e) => {
-                  setFormData({ ...formData, name: e.target.value })
-                  if (errors.name) setErrors({ ...errors, name: "" })
+                  setFormData({ ...formData, name: e.target.value });
+                  if (errors.name) setErrors({ ...errors, name: "" });
                 }}
                 placeholder="Enter full name"
-                className={`mt-2 rounded-xl bg-gray-50 border-gray-200 ${errors.name ? "border-red-500" : ""}`}
+                className={`mt-2 rounded-xl bg-gray-50 border-gray-200 ${
+                  errors.name ? "border-red-500" : ""
+                }`}
               />
-              {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
+              {errors.name && (
+                <p className="text-red-500 text-sm mt-1">{errors.name}</p>
+              )}
             </div>
 
+            {/* Role */}
             <div>
               <Label className="text-sm font-medium text-gray-700">
-                Phone Number <span className="text-red-500">*</span>
+                Role/Position <span className="text-red-500">*</span>
               </Label>
               <Input
-                value={formData.phone}
+                value={formData.role}
                 onChange={(e) => {
-                  setFormData({ ...formData, phone: e.target.value })
-                  if (errors.phone) setErrors({ ...errors, phone: "" })
+                  setFormData({ ...formData, role: e.target.value });
+                  if (errors.role) setErrors({ ...errors, role: "" });
                 }}
-                placeholder="+94 77 123 4567"
-                className={`mt-2 rounded-xl bg-gray-50 border-gray-200 ${errors.phone ? "border-red-500" : ""}`}
+                placeholder="e.g., Executive Director, Volunteer Coordinator"
+                className={`mt-2 rounded-xl bg-gray-50 border-gray-200 ${
+                  errors.role ? "border-red-500" : ""
+                }`}
               />
-              {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
+              {errors.role && (
+                <p className="text-red-500 text-sm mt-1">{errors.role}</p>
+              )}
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            {/* Department */}
+            <div>
+              <Label className="text-sm font-medium text-gray-700">
+                Department
+              </Label>
+              <Input
+                value={formData.department}
+                onChange={(e) =>
+                  setFormData({ ...formData, department: e.target.value })
+                }
+                placeholder="e.g., Administration, Programs, Fundraising"
+                className="mt-2 rounded-xl bg-gray-50 border-gray-200"
+              />
+            </div>
+
+            {/* Bio */}
+            <div>
+              <Label className="text-sm font-medium text-gray-700">
+                Biography
+              </Label>
+              <Textarea
+                value={formData.bio}
+                onChange={(e) =>
+                  setFormData({ ...formData, bio: e.target.value })
+                }
+                placeholder="Brief description about the team member..."
+                rows={4}
+                className="mt-2 rounded-xl bg-gray-50 border-gray-200 resize-none"
+              />
+            </div>
+
+            {/* Contact Info */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <Label className="text-sm font-medium text-gray-700">
-                  City <span className="text-red-500">*</span>
+                  Phone Number
                 </Label>
                 <Input
-                  value={formData.city}
-                  onChange={(e) => {
-                    setFormData({ ...formData, city: e.target.value })
-                    if (errors.city) setErrors({ ...errors, city: "" })
-                  }}
-                  placeholder="City"
-                  className={`mt-2 rounded-xl bg-gray-50 border-gray-200 ${errors.city ? "border-red-500" : ""}`}
+                  value={formData.phone}
+                  onChange={(e) =>
+                    setFormData({ ...formData, phone: e.target.value })
+                  }
+                  placeholder="+94 77 123 4567"
+                  className="mt-2 rounded-xl bg-gray-50 border-gray-200"
                 />
-                {errors.city && <p className="text-red-500 text-sm mt-1">{errors.city}</p>}
               </div>
               <div>
                 <Label className="text-sm font-medium text-gray-700">
-                  Country <span className="text-red-500">*</span>
+                  Email
                 </Label>
                 <Input
-                  value={formData.country}
-                  onChange={(e) => {
-                    setFormData({ ...formData, country: e.target.value })
-                    if (errors.country) setErrors({ ...errors, country: "" })
-                  }}
-                  placeholder="Country"
-                  className={`mt-2 rounded-xl bg-gray-50 border-gray-200 ${errors.country ? "border-red-500" : ""}`}
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
+                  placeholder="email@example.com"
+                  className="mt-2 rounded-xl bg-gray-50 border-gray-200"
                 />
-                {errors.country && <p className="text-red-500 text-sm mt-1">{errors.country}</p>}
+              </div>
+            </div>
+
+            {/* Social Media */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <Label className="text-sm font-medium text-gray-700">
+                  LinkedIn URL
+                </Label>
+                <Input
+                  value={formData.linkedin}
+                  onChange={(e) =>
+                    setFormData({ ...formData, linkedin: e.target.value })
+                  }
+                  placeholder="https://linkedin.com/in/username"
+                  className="mt-2 rounded-xl bg-gray-50 border-gray-200"
+                />
+              </div>
+              <div>
+                <Label className="text-sm font-medium text-gray-700">
+                  Twitter URL
+                </Label>
+                <Input
+                  value={formData.twitter}
+                  onChange={(e) =>
+                    setFormData({ ...formData, twitter: e.target.value })
+                  }
+                  placeholder="https://twitter.com/username"
+                  className="mt-2 rounded-xl bg-gray-50 border-gray-200"
+                />
+              </div>
+            </div>
+
+            {/* Order */}
+            <div>
+              <Label className="text-sm font-medium text-gray-700">
+                Display Order
+              </Label>
+              <Input
+                type="number"
+                value={formData.order}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    order: parseInt(e.target.value) || 0,
+                  })
+                }
+                placeholder="0"
+                className="mt-2 rounded-xl bg-gray-50 border-gray-200"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Lower numbers appear first
+              </p>
+            </div>
+
+            {/* Toggles */}
+            <div className="space-y-4 pt-4 border-t border-gray-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label className="text-sm font-medium text-gray-700">
+                    Active Status
+                  </Label>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Inactive members won't be shown anywhere
+                  </p>
+                </div>
+                <Switch
+                  checked={formData.isActive}
+                  onCheckedChange={(checked) =>
+                    setFormData({ ...formData, isActive: checked })
+                  }
+                />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label className="text-sm font-medium text-gray-700">
+                    Show on Public Site
+                  </Label>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Control visibility on the public website
+                  </p>
+                </div>
+                <Switch
+                  checked={formData.showOnSite}
+                  onCheckedChange={(checked) =>
+                    setFormData({ ...formData, showOnSite: checked })
+                  }
+                />
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
