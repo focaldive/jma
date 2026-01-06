@@ -4,16 +4,15 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 
-const images = [
-  "https://jaffnamuslimuk.org/wp-content/uploads/2023/10/WhatsApp-Image-2023-10-31-at-16.44.32-3.jpeg",
-  "https://jaffnamuslimuk.org/wp-content/uploads/2023/10/WhatsApp-Image-2023-10-31-at-16.44.32-2.jpeg",
-  "https://jaffnamuslimuk.org/wp-content/uploads/2023/10/WhatsApp-Image-2023-10-31-at-16.42.51-2.jpeg",
-  "https://jaffnamuslimuk.org/wp-content/uploads/2023/10/WhatsApp-Image-2023-10-31-at-16.39.37-2.jpeg",
-  "https://jaffnamuslimuk.org/wp-content/uploads/2023/10/WhatsApp-Image-2023-10-31-at-16.38.09.jpeg",
-  "https://jaffnamuslimuk.org/wp-content/uploads/2023/10/WhatsApp-Image-2023-10-31-at-16.36.19.jpeg",
-];
+interface ProjectGalleryProps {
+  images: string[];
+}
 
-export function ProjectGallery() {
+export function ProjectGallery({ images }: ProjectGalleryProps) {
+  if (!images || images.length === 0) {
+    return null;
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0 }}

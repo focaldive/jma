@@ -5,8 +5,18 @@ import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 import { ArrowRight, Users, Heart, Globe } from "lucide-react";
 import Image from "next/image";
+import { Project, JanazaNotice } from "@/app/generated/prisma";
 
-const years = [2023, 2022, 2021, 2020];
+interface ProjectsPageProps {
+  years: number[];
+  featuredProjects: Project[];
+  janazaNotices: JanazaNotice[];
+  impactStats: {
+    beneficiaries: number;
+    fundsRaised: number;
+    countriesReached: number;
+  };
+}
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -14,37 +24,54 @@ const fadeInUp = {
   transition: { duration: 0.5 },
 };
 
-const stats = [
-  { icon: Users, value: "10,000+", label: "People Helped" },
-  { icon: Heart, value: "£500,000+", label: "Funds Raised" },
-  { icon: Globe, value: "20+", label: "Countries Reached" },
-];
+// const featuredProjects = [
+//   {
+//     title: "Education Support",
+//     description:
+//       "Providing scholarships and educational resources to underprivileged students.",
+//     image:
+//       "https://media.istockphoto.com/id/1141695665/photo/a-difficult-moment-during-a-breakout-session.jpg?s=612x612&w=0&k=20&c=vkSfclzckAp6Jihj1-mXU1A-awZoaMqniRDKZjs6diY=",
+//   },
+//   {
+//     title: "Healthcare Initiatives",
+//     description:
+//       "Organizing medical camps and providing essential healthcare services.",
+//     image:
+//       "https://media.istockphoto.com/id/1586911323/photo/close-up-of-african-woman-hands-holding-red-heart-in-solidarity.jpg?s=612x612&w=0&k=20&c=of0vz5Ddd-BPWrbUy1g51hzBD8qf842zwPj-7VR4cpU=",
+//   },
+//   {
+//     title: "Community Development",
+//     description:
+//       "Building infrastructure and supporting local businesses in Jaffna.",
+//     image:
+//       "https://media.istockphoto.com/id/2062046492/photo/cul-de-sac-street-dead-end-at-sunset-and-private-residential-houses-in-rural-suburban-sprawl.jpg?s=612x612&w=0&k=20&c=R312WHXXQ5ZWtCw9hrgOvbFC0UNjDwaKK72yoQ-YnoQ=",
+//   },
+// ];
 
-const featuredProjects = [
-  {
-    title: "Education Support",
-    description:
-      "Providing scholarships and educational resources to underprivileged students.",
-    image:
-      "https://media.istockphoto.com/id/1141695665/photo/a-difficult-moment-during-a-breakout-session.jpg?s=612x612&w=0&k=20&c=vkSfclzckAp6Jihj1-mXU1A-awZoaMqniRDKZjs6diY=",
-  },
-  {
-    title: "Healthcare Initiatives",
-    description:
-      "Organizing medical camps and providing essential healthcare services.",
-    image:
-      "https://media.istockphoto.com/id/1586911323/photo/close-up-of-african-woman-hands-holding-red-heart-in-solidarity.jpg?s=612x612&w=0&k=20&c=of0vz5Ddd-BPWrbUy1g51hzBD8qf842zwPj-7VR4cpU=",
-  },
-  {
-    title: "Community Development",
-    description:
-      "Building infrastructure and supporting local businesses in Jaffna.",
-    image:
-      "https://media.istockphoto.com/id/2062046492/photo/cul-de-sac-street-dead-end-at-sunset-and-private-residential-houses-in-rural-suburban-sprawl.jpg?s=612x612&w=0&k=20&c=R312WHXXQ5ZWtCw9hrgOvbFC0UNjDwaKK72yoQ-YnoQ=",
-  },
-];
+export default function ProjectsPage({
+  years,
+  featuredProjects,
+  janazaNotices,
+  impactStats,
+}: ProjectsPageProps) {
+  const stats = [
+    {
+      icon: Users,
+      value: `${impactStats.beneficiaries.toLocaleString()}+`,
+      label: "People Helped",
+    },
+    {
+      icon: Heart,
+      value: `£${impactStats.fundsRaised.toLocaleString()}+`,
+      label: "Funds Raised",
+    },
+    {
+      icon: Globe,
+      value: `${impactStats.countriesReached}+`,
+      label: "Countries Reached",
+    },
+  ];
 
-export default function ProjectsPage() {
   return (
     <div className="bg-gray-50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-20 lg:py-40">
@@ -76,28 +103,30 @@ export default function ProjectsPage() {
 
           {/* Years Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {years.map((year, index) => (
-              <motion.div
-                key={year}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <Link href={`/projects/${year}`}>
-                  <Card className="group cursor-pointer hover:shadow-lg transition-all">
-                    <CardContent className="p-6 flex items-center justify-between">
-                      <div>
-                        <h2 className="text-2xl font-bold">{year}</h2>
-                        <p className="text-sm text-muted-foreground">
-                          View projects
-                        </p>
-                      </div>
-                      <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:translate-x-1 transition-transform" />
-                    </CardContent>
-                  </Card>
-                </Link>
-              </motion.div>
-            ))}
+            {years
+              .sort((a, b) => b - a)
+              .map((year, index) => (
+                <motion.div
+                  key={year}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                >
+                  <Link href={`/projects/${year}`}>
+                    <Card className="group cursor-pointer hover:shadow-lg transition-all">
+                      <CardContent className="p-6 flex items-center justify-between">
+                        <div>
+                          <h2 className="text-2xl font-bold">{year}</h2>
+                          <p className="text-sm text-muted-foreground">
+                            View projects
+                          </p>
+                        </div>
+                        <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:translate-x-1 transition-transform" />
+                      </CardContent>
+                    </Card>
+                  </Link>
+                </motion.div>
+              ))}
           </div>
 
           {/* Impact Statistics */}
@@ -138,22 +167,24 @@ export default function ProjectsPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {featuredProjects.map((project, index) => (
                 <motion.div
-                  key={index}
+                  key={project.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.6 + index * 0.1 }}
                   className="bg-white rounded-lg shadow-md overflow-hidden"
                 >
-                  <Image
-                    src={project.image}
-                    alt={project.title}
-                    width={300}
-                    height={200}
-                    className="w-full h-48 object-cover"
-                  />
+                  {project.image && (
+                    <Image
+                      src={project.image}
+                      alt={project.title || "Project Image"}
+                      width={300}
+                      height={200}
+                      className="w-full h-48 object-cover"
+                    />
+                  )}
                   <div className="p-6">
                     <h3 className="text-xl font-bold mb-2">{project.title}</h3>
-                    <p className="text-muted-foreground">
+                    <p className="text-muted-foreground line-clamp-3">
                       {project.description}
                     </p>
                   </div>
@@ -172,7 +203,8 @@ export default function ProjectsPage() {
             <div className="text-center">
               <h2 className="text-5xl font-bold">Janaza Services</h2>
               <p className="text-muted-foreground max-w-2xl mx-auto mt-4">
-                Supporting our community during times of loss with dignified funeral services and assistance
+                Supporting our community during times of loss with dignified
+                funeral services and assistance
               </p>
             </div>
 
@@ -201,9 +233,12 @@ export default function ProjectsPage() {
                         <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path>
                       </svg>
                     </div>
-                    <h3 className="text-xl font-bold">About Our Janaza Services</h3>
+                    <h3 className="text-xl font-bold">
+                      About Our Janaza Services
+                    </h3>
                     <p className="text-muted-foreground">
-                      Our Janaza Project provides comprehensive support for bereaved families, including:
+                      Our Janaza Project provides comprehensive support for
+                      bereaved families, including:
                     </p>
                     <ul className="space-y-2 text-muted-foreground">
                       <li className="flex items-start">
@@ -297,7 +332,9 @@ export default function ProjectsPage() {
                 <Card className="h-full">
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between mb-6">
-                      <h3 className="text-xl font-bold">Recent Janaza Notices</h3>
+                      <h3 className="text-xl font-bold">
+                        Recent Janaza Notices
+                      </h3>
                       <Link
                         href="/janaza-notices"
                         className="text-sm text-primary hover:underline inline-flex items-center"
@@ -308,91 +345,71 @@ export default function ProjectsPage() {
                     </div>
 
                     <div className="space-y-4">
-                      {/* Notice 1 */}
-                      <div className="border-b pb-4">
-                        <div className="flex justify-between items-start mb-2">
-                          <h4 className="font-semibold">Mohammed Ismail</h4>
-                          <span className="text-xs bg-slate-100 px-2 py-1 rounded">3 days ago</span>
-                        </div>
-                        <p className="text-sm text-muted-foreground mb-2">
-                          Janaza prayers will be held at Jaffna Grand Mosque on Friday, March 8th at 1:30 PM.
-                        </p>
-                        <div className="flex items-center text-xs text-muted-foreground">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="h-4 w-4 mr-1"
-                          >
-                            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="12" cy="7" r="4"></circle>
-                          </svg>
-                          <span>Contact: Ismail Family (077-123-4567)</span>
-                        </div>
-                      </div>
-
-                      {/* Notice 2 */}
-                      <div className="border-b pb-4">
-                        <div className="flex justify-between items-start mb-2">
-                          <h4 className="font-semibold">Fatima Zahra</h4>
-                          <span className="text-xs bg-slate-100 px-2 py-1 rounded">1 week ago</span>
-                        </div>
-                        <p className="text-sm text-muted-foreground mb-2">
-                          Janaza prayers were held at Colombo Masjid on March 1st. May Allah grant her Jannah.
-                        </p>
-                        <div className="flex items-center text-xs text-muted-foreground">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="h-4 w-4 mr-1"
-                          >
-                            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="12" cy="7" r="4"></circle>
-                          </svg>
-                          <span>Contact: Zahra Family (077-987-6543)</span>
-                        </div>
-                      </div>
-
-                      {/* Notice 3 */}
-                      <div>
-                        <div className="flex justify-between items-start mb-2">
-                          <h4 className="font-semibold">Abdul Rahman</h4>
-                          <span className="text-xs bg-slate-100 px-2 py-1 rounded">2 weeks ago</span>
-                        </div>
-                        <p className="text-sm text-muted-foreground mb-2">
-                          Janaza prayers were held at Kandy Central Mosque on February 25th. May Allah have mercy on him.
-                        </p>
-                        <div className="flex items-center text-xs text-muted-foreground">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="h-4 w-4 mr-1"
-                          >
-                            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="12" cy="7" r="4"></circle>
-                          </svg>
-                          <span>Contact: Rahman Family (077-456-7890)</span>
-                        </div>
+                      <div className="space-y-4">
+                        {janazaNotices.length > 0 ? (
+                          janazaNotices.map((notice) => (
+                            <div
+                              key={notice.id}
+                              className="border-b pb-4 last:border-0"
+                            >
+                              <div className="flex justify-between items-start mb-2">
+                                <h4 className="font-semibold">
+                                  {notice.deceasedName}
+                                </h4>
+                                <span className="text-xs bg-slate-100 px-2 py-1 rounded">
+                                  {new Date(
+                                    notice.createdAt
+                                  ).toLocaleDateString()}
+                                </span>
+                              </div>
+                              <p className="text-sm text-muted-foreground mb-2">
+                                {notice.prayerLocation &&
+                                  `Janaza prayers ${
+                                    new Date(
+                                      notice.prayerDate || ""
+                                    ).getTime() > Date.now()
+                                      ? "will be"
+                                      : "were"
+                                  } held at ${notice.prayerLocation}`}
+                                {notice.prayerDate &&
+                                  ` on ${new Date(
+                                    notice.prayerDate
+                                  ).toLocaleDateString()}`}
+                                {notice.prayerTime &&
+                                  ` at ${notice.prayerTime}`}
+                                .
+                                {notice.status === "COMPLETED" &&
+                                  " May Allah grant them Jannah."}
+                              </p>
+                              <div className="flex items-center text-xs text-muted-foreground">
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="24"
+                                  height="24"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  className="h-4 w-4 mr-1"
+                                >
+                                  <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+                                  <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                                <span>
+                                  Contact: {notice.contactName}{" "}
+                                  {notice.contactPhone &&
+                                    `(${notice.contactPhone})`}
+                                </span>
+                              </div>
+                            </div>
+                          ))
+                        ) : (
+                          <p className="text-muted-foreground text-center py-4">
+                            No recent notices.
+                          </p>
+                        )}
                       </div>
                     </div>
 
@@ -417,7 +434,8 @@ export default function ProjectsPage() {
                         Need Assistance?
                       </h4>
                       <p className="text-sm text-muted-foreground mb-3">
-                        For janaza services or to report a death in the community, please contact our 24/7 helpline.
+                        For janaza services or to report a death in the
+                        community, please contact our 24/7 helpline.
                       </p>
                       <div className="flex flex-col sm:flex-row gap-3">
                         <Link
@@ -456,7 +474,13 @@ export default function ProjectsPage() {
                             strokeLinejoin="round"
                             className="h-4 w-4 mr-2"
                           >
-                            <rect width="18" height="18" x="3" y="3" rx="2"></rect>
+                            <rect
+                              width="18"
+                              height="18"
+                              x="3"
+                              y="3"
+                              rx="2"
+                            ></rect>
                             <path d="M3 9h18"></path>
                             <path d="M9 21V9"></path>
                           </svg>

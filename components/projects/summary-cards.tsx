@@ -4,34 +4,46 @@ import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LandPlot, Users, School, Heart } from "lucide-react";
 
-const summaryItems = [
-  {
-    title: "Total Amount (LKR)",
-    value: "7,846,356.00",
-    icon: LandPlot,
-    color: "text-blue-500",
-  },
-  {
-    title: "Total Amount (GBP)",
-    value: "3,848.12",
-    icon: Users,
-    color: "text-green-500",
-  },
-  {
-    title: "Total Projects",
-    value: "45",
-    icon: School,
-    color: "text-orange-500",
-  },
-  {
-    title: "Beneficiaries",
-    value: "1,200+",
-    icon: Heart,
-    color: "text-red-500",
-  },
-];
+interface SummaryCardsProps {
+  totalLkr: string;
+  totalGbp: string;
+  projectCount: number;
+  beneficiaries: string;
+}
 
-export function SummaryCards() {
+export function SummaryCards({
+  totalLkr,
+  totalGbp,
+  projectCount,
+  beneficiaries,
+}: SummaryCardsProps) {
+  const summaryItems = [
+    {
+      title: "Total Amount (LKR)",
+      value: totalLkr,
+      icon: LandPlot,
+      color: "text-blue-500",
+    },
+    {
+      title: "Total Amount (GBP)",
+      value: totalGbp,
+      icon: Users,
+      color: "text-green-500",
+    },
+    {
+      title: "Total Projects",
+      value: projectCount,
+      icon: School,
+      color: "text-orange-500",
+    },
+    {
+      title: "Beneficiaries",
+      value: beneficiaries,
+      icon: Heart,
+      color: "text-red-500",
+    },
+  ];
+
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       {summaryItems.map((item, index) => (
