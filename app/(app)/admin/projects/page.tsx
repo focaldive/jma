@@ -14,6 +14,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { toast } from "sonner";
+
 import {
   Search,
   Plus,
@@ -130,45 +132,61 @@ export default function ProjectsPage() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this project?")) return;
+  const deleteProject = async (id: string) => {
     try {
-      const res = await fetch(`/api/projects?id=${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/projects/${id}`, { method: "DELETE" });
       const data = await res.json();
+
       if (data.success) {
-        setProjects(projects.filter((p) => p.id !== id));
-        setSelectedIds(selectedIds.filter((sid) => sid !== id));
+        setProjects((prev) => prev.filter((p) => p.id !== id));
+        setSelectedIds((prev) => prev.filter((sid) => sid !== id));
+        toast.success("Project deleted successfully");
+      } else {
+        toast.error("Failed to delete project");
       }
     } catch (err) {
       console.error("Delete failed", err);
+      toast.error("Something went wrong while deleting");
     }
+  };
+
+  const handleDelete = (id: string) => {
+    toast("Are you sure you want to delete this project?", {
+      action: {
+        label: "Delete",
+        onClick: () => deleteProject(id),
+      },
+      cancel: {
+        label: "Cancel",
+        onClick: () => {},
+      },
+    });
   };
 
   const isAllSelected =
     paginatedProjects.length > 0 &&
     paginatedProjects.every((project) => selectedIds.includes(project.id));
 
- const formatAmount = (amount: number | string, currency: string) => {
-  const normalized = (currency || "USD").toUpperCase();
+  const formatAmount = (amount: number | string, currency: string) => {
+    const normalized = (currency || "USD").toUpperCase();
 
-  const currencyMap: Record<string, string> = {
-    RS: "LKR", // Sri Lankan Rupees
-    INR: "INR",
-    LKR: "LKR",
-    USD: "USD",
-    GBP: "GBP",
-    EUR: "EUR",
+    const currencyMap: Record<string, string> = {
+      RS: "LKR", // Sri Lankan Rupees
+      INR: "INR",
+      LKR: "LKR",
+      USD: "USD",
+      GBP: "GBP",
+      EUR: "EUR",
+    };
+
+    const finalCurrency = currencyMap[normalized] || "USD";
+
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: finalCurrency,
+      minimumFractionDigits: 0,
+    }).format(typeof amount === "string" ? parseFloat(amount) : amount);
   };
-
-  const finalCurrency = currencyMap[normalized] || "USD";
-
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: finalCurrency,
-    minimumFractionDigits: 0,
-  }).format(typeof amount === "string" ? parseFloat(amount) : amount);
-};
-
 
   if (isLoading) {
     return (

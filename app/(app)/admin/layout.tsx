@@ -1,3 +1,5 @@
+// server component
+
 import Prisma from "@/lib/prisma";
 import {
   AdminClientLayout,

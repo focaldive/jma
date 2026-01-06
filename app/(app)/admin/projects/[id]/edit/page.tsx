@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { toast } from "sonner";
 import {
   ArrowLeft,
   Loader2,
@@ -160,12 +161,11 @@ export default function EditProjectPage() {
         throw new Error(result.message || "Failed to update project");
       }
 
-      setSuccess(true);
-      setTimeout(() => {
-        router.push("/admin/projects");
-      }, 1500);
+      toast.success("Project updated successfully!");
+      router.push("/admin/projects");
     } catch (err: any) {
       setError(err.message || "Failed to update project");
+      toast.error(err.message || "Failed to update project");
     } finally {
       setIsSubmitting(false);
     }
@@ -230,13 +230,6 @@ export default function EditProjectPage() {
               {error && (
                 <Alert variant="destructive">
                   <AlertDescription>{error}</AlertDescription>
-                </Alert>
-              )}
-              {success && (
-                <Alert className="bg-green-50 text-green-800 border-green-200">
-                  <AlertDescription>
-                    Project updated successfully!
-                  </AlertDescription>
                 </Alert>
               )}
 
