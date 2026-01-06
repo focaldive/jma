@@ -97,7 +97,7 @@ export function Footer() {
           </div>
         </div>
         <div className="mt-6 border-t border-white/10 pt-6 text-center text-xs text-slate-400 sm:mt-8 sm:pt-8 sm:text-sm">
-          <p>
+          <p suppressHydrationWarning>
             &copy; {new Date().getFullYear()} Jaffna Muslim Association. All
             rights reserved.
           </p>
