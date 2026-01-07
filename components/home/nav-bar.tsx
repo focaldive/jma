@@ -11,21 +11,28 @@ export function NavBar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isScrollingDown, setIsScrollingDown] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const [passedHero, setPassedHero] = useState(false);
 
   // Handle scroll effect with direction detection
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
+      const heroHeight = window.innerHeight; // Hero section is typically full viewport height
 
       // Check if scrolled from top
       setIsScrolled(currentScrollY > 0);
 
-      // Detect scroll direction
-      if (currentScrollY > lastScrollY && currentScrollY > 100) {
-        // Scrolling down
+      // Check if passed hero section
+      const hasPassed = currentScrollY > heroHeight * 0.8; // Trigger at 80% of hero height
+      setPassedHero(hasPassed);
+
+      // Detect scroll direction and position
+      // Keep navbar scrolled state based on position, not direction
+      if (hasPassed) {
+        // Past hero section - use scrolled down state
         setIsScrollingDown(true);
       } else {
-        // Scrolling up
+        // Back in hero section - return to expanded state
         setIsScrollingDown(false);
       }
 
@@ -37,7 +44,6 @@ export function NavBar() {
   }, [lastScrollY]);
 
   const navItems = [
-    { href: "/", label: "HOME" },
     { href: "/about", label: "ABOUT" },
     // { href: "/general-meetings", label: "GENERAL MEETINGS" },
     { href: "/news", label: "NEWS" },
@@ -48,20 +54,22 @@ export function NavBar() {
 
   return (
     <header
-      className={`fixed text-white top-4 w-full  z-[1000] transition-x-all duration-500  ${
+      className={`fixed text-white top-4 w-full  z-[1000] transition-all duration-500  ${
         isScrolled ? "" : "bg-transparent"
       }`}
     >
-      <div className=" container w-full mx-auto px-4 ga-6">
+      <div className="container w-full mx-auto px-4 gap-6">
         <nav
-          className={`flex w-[1300px] items-center justify-between   p-4 rounded-full transition-all duration-500 ${
-            isScrollingDown ? "bg-black/45 backdrop-blur-sm shadow-sm h-20" : ""
+          className={`flex mx-auto items-center justify-between p-4 rounded-full transition-all duration-500 ${
+            isScrollingDown
+              ? "bg-black/55 backdrop-blur-sm shadow-sm h-20 w-[1100px]"
+              : "w-[1300px]"
           }`}
         >
           {/* Logo */}
           <Link
             href="/"
-            className="flex items-center space-x-3 transition-all duration-500"
+            className="flex items-center space-x-4 transition-all duration-500"
           >
             <Image
               src="/assets/logo.png"
@@ -69,12 +77,11 @@ export function NavBar() {
               width={50}
               height={40}
               priority
-             
             />
             <span
               className={`font-bold text-black text-xl   ${
-            isScrollingDown ? " text-white" : "text-white"
-          }`}
+                isScrollingDown ? " text-white" : "text-white"
+              }`}
             >
               Jaffna Muslim Association UK
             </span>
@@ -82,21 +89,17 @@ export function NavBar() {
 
           {/* Desktop and Tablet Navigation */}
           <div className="hidden md:flex items-center">
-            <div className="flex items-center font-bold space-x-6 mr-48">
+            <div className="flex items-center font-bold space-x-6 ">
               {navItems.map((item) => (
-                <Link
-                  key={item.label}
-                  href={item.href}
-                 
-                >
+                <Link key={item.label} href={item.href}>
                   {item.label}
                 </Link>
               ))}
             </div>
+          </div>
+          <div>
             <Link href="/donate" className="">
-              <Button
-                className="bg-blue-600 hover:bg-blue-700 text-white w-full transition-all duration-800"
-              >
+              <Button className="bg-blue-600 hover:bg-blue-700 text-white w-full transition-all duration-800">
                 DONATE
               </Button>
             </Link>
