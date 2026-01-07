@@ -9,15 +9,32 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 export function NavBar() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isScrollingDown, setIsScrollingDown] = useState(false);
+  const [lastScrollY, setLastScrollY] = useState(0);
 
-  // Handle scroll effect
+  // Handle scroll effect with direction detection
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 0);
+      const currentScrollY = window.scrollY;
+
+      // Check if scrolled from top
+      setIsScrolled(currentScrollY > 0);
+
+      // Detect scroll direction
+      if (currentScrollY > lastScrollY && currentScrollY > 100) {
+        // Scrolling down
+        setIsScrollingDown(true);
+      } else {
+        // Scrolling up
+        setIsScrollingDown(false);
+      }
+
+      setLastScrollY(currentScrollY);
     };
-    window.addEventListener("scroll", handleScroll);
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [lastScrollY]);
 
   const navItems = [
     { href: "/", label: "HOME" },
@@ -31,41 +48,55 @@ export function NavBar() {
 
   return (
     <header
-      className={`fixed top-0 w-full z-[1000] transition-all duration-300 ${isScrolled ? "bg-white/95 backdrop-blur-sm shadow-sm" : "bg-white"
-        }`}
+      className={`fixed text-white top-4 w-full  z-[1000] transition-x-all duration-500  ${
+        isScrolled ? "" : "bg-transparent"
+      }`}
     >
-      <div className="container mx-auto px-4">
-        <nav className="flex items-center justify-between h-20">
+      <div className=" container w-full mx-auto px-4 ga-6">
+        <nav
+          className={`flex w-[1300px] items-center justify-between   p-4 rounded-full transition-all duration-500 ${
+            isScrollingDown ? "bg-black/45 backdrop-blur-sm shadow-sm h-20" : ""
+          }`}
+        >
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-3">
+          <Link
+            href="/"
+            className="flex items-center space-x-3 transition-all duration-500"
+          >
             <Image
               src="/assets/logo.png"
               alt="Jaffna Muslim Assoc Logo"
               width={50}
               height={40}
               priority
-              className="w-auto h-10"
+             
             />
-            <span className="text-lg font-bold text-[#1F294A]">
-            Jaffna Muslim Association UK
+            <span
+              className={`font-bold text-black text-xl   ${
+            isScrollingDown ? " text-white" : "text-white"
+          }`}
+            >
+              Jaffna Muslim Association UK
             </span>
           </Link>
 
           {/* Desktop and Tablet Navigation */}
           <div className="hidden md:flex items-center">
-            <div className="flex items-center space-x-6 mr-6">
+            <div className="flex items-center font-bold space-x-6 mr-48">
               {navItems.map((item) => (
                 <Link
                   key={item.label}
                   href={item.href}
-                  className="text-sm font-medium text-[#1F294A] hover:text-[#2a3761] transition-colors whitespace-nowrap"
+                 
                 >
                   {item.label}
                 </Link>
               ))}
             </div>
             <Link href="/donate" className="">
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white w-full" size={"lg"}>
+              <Button
+                className="bg-blue-600 hover:bg-blue-700 text-white w-full transition-all duration-800"
+              >
                 DONATE
               </Button>
             </Link>
