@@ -55,13 +55,13 @@ export function NavBar() {
 
   return (
     <header
-      className={`fixed text-white top-2 sm:top-4 w-full z-[1000] transition-all duration-500 ${
-        isScrolled ? "" : "bg-transparent"
+      className={`fixed text-white top-2 sm:top-4 w-full  z-[1000] rounded-full  transition-all duration-500 ${
+        isScrolled ? "" : "bg-black/55 backdrop-blur-sm"
       }`}
     >
       <div className="container w-full mx-auto px-2 sm:px-4">
         <nav
-          className={`flex mx-auto items-center justify-between p-2 sm:p-3 md:p-4 rounded-full transition-all duration-500 ${
+          className={`flex mx-auto items-center justify-between p-2 sm:p-3 md:p-2 rounded-full transition-all duration-500 ${
             isScrollingDown
               ? "bg-black/55 backdrop-blur-sm shadow-sm h-16 sm:h-18 md:h-20 w-full sm:w-[95%] md:w-[90%] lg:w-[1100px]"
               : "w-full sm:w-[90%] md:w-[90%] lg:w-[1300px]"
@@ -78,7 +78,7 @@ export function NavBar() {
               width={50}
               height={40}
               priority
-              className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12"
+              className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 mx-2"
             />
             <span
               className={`font-bold text-sm sm:text-base md:text-lg lg:text-xl transition-all duration-500 ${
@@ -110,7 +110,7 @@ export function NavBar() {
           {/* Donate Button - Hidden on mobile, visible on md+ */}
           <div className="hidden md:block">
             <Link href="/donate">
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white transition-all duration-500 text-xs md:text-sm lg:text-base px-3 md:px-4 lg:px-6 py-1.5 md:py-2">
+              <Button className="bg-blue-600 hover:bg-blue-700  mx-2 rounded-full text-white transition-all duration-500 text-xs md:text-sm lg:text-base px-3 md:px-4 lg:px-6 py-1.5 md:py-2">
                 DONATE
               </Button>
             </Link>
