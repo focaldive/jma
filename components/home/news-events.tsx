@@ -93,7 +93,7 @@ export function NewsEvents() {
         </div>
 
         {/* Main Content - Two Column Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-4">
           {/* Left Column - Featured Card */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
@@ -104,13 +104,13 @@ export function NewsEvents() {
           >
             <div className="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 h-full flex flex-col">
               {/* Featured Image */}
-              <div className="relative h-64 md:h-80 lg:h-96 overflow-hidden">
+              <div className="relative h-64 md:h-80 lg:h-72 overflow-hidden">
                 <Image
                   src={featuredNews.image}
                   alt={featuredNews.title}
                   fill
                   className="object-cover transition-transform duration-500 group-hover:scale-110"
-                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 600px"
+                  
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
               </div>
