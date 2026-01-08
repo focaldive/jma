@@ -34,26 +34,26 @@ const impactStats = [
   {
     icon: Briefcase,
     value: "50+",
-    label: "Projects Completed",
-    description: "Successfully delivered initiatives",
+    label: "Amplify Intelligence",
+    description: "Projects Completed",
   },
   {
     icon: Users,
     value: "10K+",
-    label: "Lives Impacted",
-    description: "Community members helped",
+    label: "Empower Communities",
+    description: "Lives Impacted",
   },
   {
     icon: Handshake,
     value: "25+",
-    label: "Community Partners",
-    description: "Organizations we work with",
+    label: "Foster Partnerships",
+    description: "Community Partners",
   },
   {
     icon: DollarSign,
     value: "$250K+",
-    label: "Donations",
-    description: "Total donations received",
+    label: "Drive Impact",
+    description: "Total Donations",
   },
 ];
 
@@ -69,7 +69,7 @@ export function Projects() {
           transition={{ duration: 0.6 }}
           className="text-center mb-10 md:mb-14 lg:mb-16"
         >
-          <h2 className="text-3xl md:text-4xl lg:text-6xl font-bold text-black mb-4">
+          <h2 className="text-3xl md:text-4xl lg:text-6xl font-medium text-black mb-4">
             Our <span className="">Projects</span>
           </h2>
           <p className="text-base md:text-lg max-w-2xl mx-auto">
@@ -102,7 +102,7 @@ export function Projects() {
 
               {/* Floating Content Box */}
               <div className="absolute bottom-0 my-0 left-4 right-4 bg-white rounded-3xl p-6 shadow-xl border border-gray-100 space-y-3">
-                <h3 className="text-xl md:text-2xl font-extrabold text-gray-900 leading-tight">
+                <h3 className="text-xl md:text-2xl font-medium text-gray-900 leading-tight">
                   {project.title}
                 </h3>
 
@@ -115,7 +115,7 @@ export function Projects() {
                   href={`/donate?project=${encodeURIComponent(project.title)}`}
                   className="block pt-2"
                 >
-                  <Button className="w-fit px-8 bg-blue-600 hover:bg-blue-700 text-white rounded-xl py-5 text-sm font-bold transition-all duration-300">
+                  <Button className="w-fit px-8 bg-blue-600 hover:bg-blue-700 text-white rounded-xl py-5 text-sm font-medium transition-all duration-300">
                     Donation Now
                   </Button>
                 </Link>
@@ -133,7 +133,7 @@ export function Projects() {
           className="mt-16 md:mt-20 lg:mt-24"
         >
           <div className="text-center mb-10 md:mb-12">
-            <h3 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-3">
+            <h3 className="text-2xl md:text-3xl lg:text-4xl font-medium text-gray-900 mb-3">
               Our Impact
             </h3>
             <p className="text-gray-600 text-base md:text-lg">
@@ -141,7 +141,7 @@ export function Projects() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-2  md:h-96">
             {impactStats.map((stat, index) => (
               <motion.div
                 key={index}
@@ -151,16 +151,18 @@ export function Projects() {
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 className="relative group"
               >
-                <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-6 md:p-8 text-center shadow-lg hover:shadow-xl transition-all duration-300 border border-blue-200/50 hover:border-blue-300 h-full">
-                  {/* Icon */}
-                  <div className="inline-flex items-center justify-center w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                    <stat.icon className="w-8 h-8 md:w-10 md:h-10 text-white" />
-                  </div>
-
-                  <div className="text-4xl md:text-5xl font-extrabold text-blue-600 mb-3">
+                <div className="bg- rounded-2xl p-6 md:p-2 text-left shadow-lg hover:shadow-xl transition-all duration-300  h-full">
+                  {/* Value */}
+                  <div className="text-5xl md:text-3xl font-medium text-gray-900 ">
                     {stat.value}
                   </div>
-                  <div className="text-lg md:text-xl font-bold text-gray-900 mb-2">
+
+                  {/* Icon */}
+                  <div className="inline-flex items-center justify-center w-12 h-12 md:w-8 md:h-8 bg-gray-300 rounded-md mb-4 mt-52 group-hover:scale-110 transition-transform duration-300 shadow-xl">
+                    <stat.icon className="w-4 h-4 md:w-5 md:h-5 text-black " />
+                  </div>
+
+                  <div className="text-2xl md:text-xl font-bold text-gray-900 mb-2">
                     {stat.label}
                   </div>
                   <div className="text-sm text-gray-600">
