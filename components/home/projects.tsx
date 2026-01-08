@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
-import { Briefcase, Users, Handshake, Heart } from "lucide-react";
+import { Briefcase, Users, Handshake, DollarSign } from "lucide-react";
 
 const projects = [
   {
@@ -50,10 +50,10 @@ const impactStats = [
     description: "Organizations we work with",
   },
   {
-    icon: Heart,
-    value: "500+",
-    label: "Volunteers",
-    description: "Dedicated team members",
+    icon: DollarSign,
+    value: "$250K+",
+    label: "Donations",
+    description: "Total donations received",
   },
 ];
 
