@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Facebook,
   Twitter,
@@ -6,101 +8,201 @@ import {
   Phone,
   MapPin,
 } from "lucide-react";
+import Link from "next/link";
 
 export function Footer() {
+  const footerSections = {
+    explore: [
+      { label: "Home", href: "/" },
+      { label: "About", href: "/about" },
+      { label: "Projects", href: "/projects" },
+      { label: "Events", href: "/events" },
+      { label: "Gallery", href: "/gallery" },
+      { label: "Contact", href: "/contact" },
+    ],
+    resources: [
+      { label: "Donations", href: "/donate" },
+      { label: "Janaza Notices", href: "/janaza" },
+      { label: "Community Support", href: "/community" },
+      { label: "Volunteer", href: "/volunteer" },
+    ],
+    company: [
+      { label: "About Us", href: "/about" },
+      { label: "Our Team", href: "/team" },
+      { label: "Mission & Vision", href: "/mission" },
+      { label: "Annual Reports", href: "/reports" },
+    ],
+    legal: [
+      { label: "Privacy Policy", href: "/privacy" },
+      { label: "Terms of Service", href: "/terms" },
+      { label: "Responsible Disclosure", href: "/disclosure" },
+      { label: "GDPR Info", href: "/gdpr" },
+    ],
+  };
+
   return (
-    <footer className="bg-slate-900 py-8 text-white sm:py-12">
-      <div className="container px-4 mx-auto">
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-          <div>
-            <h3 className="mb-3 text-base font-semibold sm:mb-4 sm:text-lg">
-              About Us
-            </h3>
-            <p className="text-sm text-slate-300 sm:text-base">
+    <footer className="bg-gradient-to-br from-teal-800 via-teal-900 to-slate-900 text-white">
+      <div className="container mx-auto px-14 py-12 md:py-16 lg:py-20">
+        {/* Main Footer Content */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+          {/* JMA Brand Section - Left Side */}
+          <div className="w-3/4 ">
+            <h3 className="text-xl md:text-2xl font-bold mb-4">JMA</h3>
+            <p className="text-teal-100 text-sm leading-relaxed mb-6">
               Jaffna Muslim Association is dedicated to serving the community
               through various initiatives and programs.
             </p>
-          </div>
-          <div>
-            <h3 className="mb-3 text-base font-semibold sm:mb-4 sm:text-lg">
-              Contact
-            </h3>
-            <div className="space-y-2 text-sm text-slate-300 sm:text-base">
+
+            {/* Contact Info */}
+            <div className="space-y-3 text-sm text-teal-100">
               <p className="flex items-center gap-2">
-                <Mail className="h-4 w-4" />
-                contact@jaffnamuslim.org
+                <Mail className="h-4 w-4 flex-shrink-0" />
+                <span className="break-all">contact@jaffnamuslim.org</span>
               </p>
               <p className="flex items-center gap-2">
-                <Phone className="h-4 w-4" />
+                <Phone className="h-4 w-4 flex-shrink-0" />
                 +94 123 456 789
               </p>
               <p className="flex items-center gap-2">
-                <MapPin className="h-4 w-4" />
+                <MapPin className="h-4 w-4 flex-shrink-0" />
                 Jaffna, Sri Lanka
               </p>
             </div>
-          </div>
-          <div>
-            <h3 className="mb-3 text-base font-semibold sm:mb-4 sm:text-lg">
-              Quick Links
-            </h3>
-            <ul className="space-y-2 text-sm text-slate-300 sm:text-base">
-              <li>
-                <a href="#" className="hover:text-white">
-                  Home
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-white">
-                  About
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-white">
-                  Projects
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-white">
-                  Contact
-                </a>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h3 className="mb-3 text-base font-semibold sm:mb-4 sm:text-lg">
-              Follow Us
-            </h3>
-            <div className="flex gap-4">
-              <a
+
+            {/* Social Media */}
+            <div className="flex gap-3 mt-6">
+              <Link
                 href="#"
-                className="rounded-full bg-white/10 p-2 transition-colors hover:bg-white/20"
+                className="rounded-full bg-white/10 p-2.5 transition-all hover:bg-white/20 hover:scale-110"
                 aria-label="Facebook"
               >
-                <Facebook className="h-4 w-4 sm:h-5 sm:w-5" />
-              </a>
-              <a
+                <Facebook className="h-4 w-4" />
+              </Link>
+              <Link
                 href="#"
-                className="rounded-full bg-white/10 p-2 transition-colors hover:bg-white/20"
+                className="rounded-full bg-white/10 p-2.5 transition-all hover:bg-white/20 hover:scale-110"
                 aria-label="Twitter"
               >
-                <Twitter className="h-4 w-4 sm:h-5 sm:w-5" />
-              </a>
-              <a
+                <Twitter className="h-4 w-4" />
+              </Link>
+              <Link
                 href="#"
-                className="rounded-full bg-white/10 p-2 transition-colors hover:bg-white/20"
+                className="rounded-full bg-white/10 p-2.5 transition-all hover:bg-white/20 hover:scale-110"
                 aria-label="Instagram"
               >
-                <Instagram className="h-4 w-4 sm:h-5 sm:w-5" />
-              </a>
+                <Instagram className="h-4 w-4" />
+              </Link>
+            </div>
+          </div>
+
+          {/* Right Side - All Navigation Sections */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-8">
+            {/* EXPLORE Section */}
+            <div>
+              <h4 className="text-xs font-bold uppercase tracking-wider text-teal-300 mb-4">
+                EXPLORE
+              </h4>
+              <ul className="space-y-3">
+                {footerSections.explore.map((link) => (
+                  <li key={link.label}>
+                    <Link
+                      href={link.href}
+                      className="text-sm text-teal-100 hover:text-white transition-colors duration-200 hover:translate-x-1 inline-block"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* RESOURCES Section */}
+            <div>
+              <h4 className="text-xs font-bold uppercase tracking-wider text-teal-300 mb-4">
+                RESOURCES
+              </h4>
+              <ul className="space-y-3">
+                {footerSections.resources.map((link) => (
+                  <li key={link.label}>
+                    <Link
+                      href={link.href}
+                      className="text-sm text-teal-100 hover:text-white transition-colors duration-200 hover:translate-x-1 inline-block"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* COMPANY Section */}
+            <div>
+              <h4 className="text-xs font-bold uppercase tracking-wider text-teal-300 mb-4">
+                COMPANY
+              </h4>
+              <ul className="space-y-3">
+                {footerSections.company.map((link) => (
+                  <li key={link.label}>
+                    <Link
+                      href={link.href}
+                      className="text-sm text-teal-100 hover:text-white transition-colors duration-200 hover:translate-x-1 inline-block"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* LEGAL Section */}
+            <div>
+              <h4 className="text-xs font-bold uppercase tracking-wider text-teal-300 mb-4">
+                LEGAL
+              </h4>
+              <ul className="space-y-3">
+                {footerSections.legal.map((link) => (
+                  <li key={link.label}>
+                    <Link
+                      href={link.href}
+                      className="text-sm text-teal-100 hover:text-white transition-colors duration-200 hover:translate-x-1 inline-block"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
         </div>
-        <div className="mt-6 border-t border-white/10 pt-6 text-center text-xs text-slate-400 sm:mt-8 sm:pt-8 sm:text-sm">
-          <p suppressHydrationWarning>
-            &copy; {new Date().getFullYear()} Jaffna Muslim Association. All
-            rights reserved.
-          </p>
+
+        {/* Bottom Bar */}
+        <div className="mt-12 pt-8 border-t border-white/10">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+            <p className="text-sm text-teal-200" suppressHydrationWarning>
+              © {new Date().getFullYear()} Jaffna Muslim Association. All rights
+              reserved.
+            </p>
+            <div className="flex gap-6 text-sm text-teal-200">
+              <Link
+                href="/privacy"
+                className="hover:text-white transition-colors"
+              >
+                Privacy
+              </Link>
+              <Link
+                href="/terms"
+                className="hover:text-white transition-colors"
+              >
+                Terms
+              </Link>
+              <Link
+                href="/cookies"
+                className="hover:text-white transition-colors"
+              >
+                Cookies
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     </footer>
