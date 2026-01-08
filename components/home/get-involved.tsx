@@ -51,9 +51,9 @@ export function GetInvolved() {
       <div className="container mx-auto px-4 md:px-6 lg:px-14">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-4">
           {/* LAYOUT 1: Title/Description + 1 Featured Card */}
-          <div className="space-y-3">
+          <div className="space-y-4">
             {/* Title and Description */}
-            <div className=" ">
+            <div className="space-y-6">
               <motion.h2
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -83,7 +83,7 @@ export function GetInvolved() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="group relative h-[450px] overflow-hidden rounded-3xl shadow-2xl hover:shadow-3xl transition-all duration-300"
+              className="group relative h-[420px] overflow-hidden rounded-3xl shadow-2xl hover:shadow-3xl transition-all duration-300"
             >
               <Image
                 src={featuredCause.image}
