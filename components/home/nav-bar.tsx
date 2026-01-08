@@ -56,15 +56,15 @@ export function NavBar() {
   return (
     <header
       className={`fixed text-white top-2 sm:top-4 w-full  z-[1000] rounded-full  transition-all duration-500 ${
-        isScrolled ? "" : "bg-black/55 backdrop-blur-sm"
+        isScrolled ? "" : "bg-black/55 backdrop-blur-sm "
       }`}
     >
       <div className="container w-full mx-auto px-2 sm:px-4">
         <nav
           className={`flex mx-auto items-center justify-between p-2 sm:p-3 md:p-2 rounded-full transition-all duration-500 ${
             isScrollingDown
-              ? "bg-black/55 backdrop-blur-sm shadow-sm h-16 sm:h-18 md:h-20 w-full sm:w-[95%] md:w-[90%] lg:w-[1100px]"
-              : "w-full sm:w-[90%] md:w-[90%] lg:w-[1300px]"
+              ? "bg-black/55 backdrop-blur-sm shadow-sm h-16 sm:h-18 md:h-20 w-full sm:w-[95%] md:w-[90%] lg:w-[1000px]"
+              : "w-full sm:w-[90%] md:w-[90%] lg:w-[1100px]"
           }`}
         >
           {/* Logo */}
@@ -86,7 +86,7 @@ export function NavBar() {
               }`}
             >
               <span className="hidden sm:inline">
-                Jaffna Muslim Association UK
+                JMA UK
               </span>
               <span className="sm:hidden">JMA UK</span>
             </span>

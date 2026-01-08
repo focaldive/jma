@@ -7,7 +7,7 @@ import Link from "next/link";
 
 export default function AboutSection() {
   return (
-    <section className="py-12 md:py-16 lg:py-24 bg-gradient-to-b from-white to-gray-50">
+    <section className="py-12 md:py-16 lg:py-24 bg-gray-100">
       <div className="container mx-auto px-4 md:px-6 lg:px-14">
         {/* About Us Badge */}
         <div className="text-sm md:text-base lg:text-lg font-medium bg-green-300 text-green-700 rounded-full w-28 md:w-32 lg:w-36 px-3 md:px-4 py-1.5 md:py-2 mb-6 md:mb-8 text-center">

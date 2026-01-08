@@ -51,7 +51,7 @@ const newsList = [
 
 export function NewsEvents() {
   return (
-    <section className="py-12 md:py-16 lg:py-24 bg-white">
+    <section className="py-12 md:py-16 lg:py-24 bg-gray-100">
       <div className="container mx-auto px-4 md:px-6 lg:px-14">
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-8 md:mb-12 lg:mb-14">

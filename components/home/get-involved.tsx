@@ -47,7 +47,7 @@ export function GetInvolved() {
   const gridCauses = causes.slice(1, 5); // 4 cards for Layout 2 (2x2 grid)
 
   return (
-    <section className="py-12 md:py-16 lg:py-24 bg-white">
+    <section className="py-12 md:py-16 lg:py-24 bg-gray-100">
       <div className="container mx-auto px-4 md:px-6 lg:px-14">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-4">
           {/* LAYOUT 1: Title/Description + 1 Featured Card */}

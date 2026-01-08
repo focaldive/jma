@@ -59,7 +59,7 @@ const impactStats = [
 
 export function Projects() {
   return (
-    <section className="py-12 md:py-16 lg:py-24 bg-gray-50">
+    <section className="py-12 md:py-16 lg:py-24 bg-gray-100">
       <div className="container mx-auto px-4 md:px-6 lg:px-14">
         {/* Title Section */}
         <motion.div
@@ -151,9 +151,9 @@ export function Projects() {
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 className="relative group"
               >
-                <div className="bg- rounded-2xl p-6 md:p-2 text-left shadow-lg hover:shadow-xl transition-all duration-300  h-full">
+                <div className="bg- rounded-2xl p-6 text-left shadow-lg hover:shadow-xl transition-all duration-300  h-full">
                   {/* Value */}
-                  <div className="text-5xl md:text-3xl font-medium text-gray-900 ">
+                  <div className="text-5xl md:text-5xl font-medium text-gray-900 tracking-tighter">
                     {stat.value}
                   </div>
 
@@ -162,7 +162,7 @@ export function Projects() {
                     <stat.icon className="w-4 h-4 md:w-5 md:h-5 text-black " />
                   </div>
 
-                  <div className="text-2xl md:text-xl font-medium text-gray-900 mb-2">
+                  <div className="text-2xl md:text-xl font-medium text-gray-900 mb-2 tracking-tighter">
                     {stat.label}
                   </div>
                   <div className="text-sm text-gray-600">
