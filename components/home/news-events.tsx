@@ -61,7 +61,7 @@ export function NewsEvents() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
-              className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-3"
+              className="text-3xl md:text-4xl lg:text-5xl font-medium text-gray-900 mb-3"
             >
               Latest <span className="text-blue-600">News & Events</span>
             </motion.h2>
@@ -126,7 +126,7 @@ export function NewsEvents() {
                 </div>
 
                 {/* Title */}
-                <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4 group-hover:text-blue-600 transition-colors">
+                <h3 className="text-2xl md:text-3xl font-medium text-gray-900 mb-4 group-hover:text-blue-600 transition-colors">
                   {featuredNews.title}
                 </h3>
 

@@ -59,7 +59,7 @@ export function GetInvolved() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6 }}
-                className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-2"
+                className="text-3xl md:text-4xl lg:text-5xl font-medium text-gray-900 mb-2"
               >
                 Get Involved &{" "}
                 <span className="text-blue-600">Make a Difference</span>
@@ -93,7 +93,7 @@ export function GetInvolved() {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
                 <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8 text-white">
-                  <h3 className="text-2xl md:text-3xl font-bold mb-3">
+                  <h3 className="text-2xl md:text-3xl font-medium mb-3">
                     {featuredCause.title}
                   </h3>
                   <p className="text-sm md:text-base text-white/90 mb-4">
@@ -132,7 +132,7 @@ export function GetInvolved() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   <div className="absolute bottom-0 left-0 right-0 p-4 md:p-5 text-white">
-                    <h3 className="text-base md:text-lg font-bold mb-2">
+                    <h3 className="text-base md:text-lg font-medium mb-2">
                       {cause.title}
                     </h3>
                     <p className="text-xs md:text-sm text-white/90 line-clamp-2 mb-3">

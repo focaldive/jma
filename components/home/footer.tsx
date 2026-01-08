@@ -47,7 +47,7 @@ export function Footer() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
           {/* JMA Brand Section - Left Side */}
           <div className="w-3/4 ">
-            <h3 className="text-xl md:text-2xl font-bold mb-4">JMA</h3>
+            <h3 className="text-xl md:text-2xl font-medium mb-4">JMA</h3>
             <p className="text-teal-100 text-sm leading-relaxed mb-6">
               Jaffna Muslim Association is dedicated to serving the community
               through various initiatives and programs.
@@ -99,7 +99,7 @@ export function Footer() {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-8">
             {/* EXPLORE Section */}
             <div>
-              <h4 className="text-xs font-bold uppercase tracking-wider text-teal-300 mb-4">
+              <h4 className="text-xs font-medium uppercase tracking-wider text-teal-300 mb-4">
                 EXPLORE
               </h4>
               <ul className="space-y-3">
@@ -118,7 +118,7 @@ export function Footer() {
 
             {/* RESOURCES Section */}
             <div>
-              <h4 className="text-xs font-bold uppercase tracking-wider text-teal-300 mb-4">
+              <h4 className="text-xs font-medium uppercase tracking-wider text-teal-300 mb-4">
                 RESOURCES
               </h4>
               <ul className="space-y-3">
@@ -137,7 +137,7 @@ export function Footer() {
 
             {/* COMPANY Section */}
             <div>
-              <h4 className="text-xs font-bold uppercase tracking-wider text-teal-300 mb-4">
+              <h4 className="text-xs font-medium uppercase tracking-wider text-teal-300 mb-4">
                 COMPANY
               </h4>
               <ul className="space-y-3">
@@ -156,7 +156,7 @@ export function Footer() {
 
             {/* LEGAL Section */}
             <div>
-              <h4 className="text-xs font-bold uppercase tracking-wider text-teal-300 mb-4">
+              <h4 className="text-xs font-medium uppercase tracking-wider text-teal-300 mb-4">
                 LEGAL
               </h4>
               <ul className="space-y-3">

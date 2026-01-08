@@ -60,7 +60,7 @@ export default function NewsletterSection() {
           <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
             <CheckCircle className="w-8 h-8 text-green-600" />
           </div>
-          <h3 className="text-2xl font-bold text-gray-900">You're all set!</h3>
+          <h3 className="text-2xl font-medium text-gray-900">You're all set!</h3>
           <p className="text-gray-600 max-w-md mx-auto">
             Thank you for subscribing to our newsletter. We've added{" "}
             <span className="font-semibold text-gray-900">{email}</span> to our
@@ -87,7 +87,7 @@ export default function NewsletterSection() {
               <Mail className="w-3.5 h-3.5" />
               <span>Stay Updated</span>
             </div>
-            <h2 className="text-3xl font-bold text-gray-900 tracking-tight">
+            <h2 className="text-3xl font-medium text-gray-900 tracking-tight">
               Join our community
             </h2>
             <p className="text-gray-500 text-lg leading-relaxed max-w-md">

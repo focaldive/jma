@@ -81,7 +81,7 @@ export function NavBar() {
               className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 mx-2"
             />
             <span
-              className={`font-bold text-sm sm:text-base md:text-lg lg:text-xl transition-all duration-500 ${
+              className={`font-medium text-sm sm:text-base md:text-lg lg:text-xl transition-all duration-500 ${
                 isScrollingDown ? "text-white" : "text-white"
               }`}
             >
@@ -94,7 +94,7 @@ export function NavBar() {
 
           {/* Desktop and Tablet Navigation */}
           <div className="hidden lg:flex items-center">
-            <div className="flex items-center font-bold space-x-4 xl:space-x-6 text-sm xl:text-base">
+            <div className="flex items-center font-medium space-x-4 xl:space-x-6 text-sm xl:text-base">
               {navItems.map((item) => (
                 <Link
                   key={item.label}

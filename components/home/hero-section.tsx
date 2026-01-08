@@ -140,7 +140,7 @@ export function HeroSection() {
                     FEATURED INITIATIVE
                   </motion.div>
 
-                  <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white leading-tight tracking-tight">
+                  <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-medium text-white leading-tight tracking-tight">
                     {heroContent[currentIndex].title}
                   </h1>
 
@@ -209,7 +209,7 @@ export function HeroSection() {
               {/* Glassmorphic Container */}
               <div className="bg-white w-[340px] rounded-2xl md:rounded-3xl p-1 shadow-2xl">
                 <div className="bg-white rounded-[22px] p-5 md:p-6 space-y-4 md:space-y-5">
-                  <h2 className="text-lg md:text-xl font-bold text-gray-900 text-center">
+                  <h2 className="text-lg md:text-xl font-medium text-gray-900 text-center">
                     Make a Donation
                   </h2>
 
@@ -285,7 +285,7 @@ export function HeroSection() {
                   </div>
 
                   {/* Donate Button */}
-                  <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] text-sm">
+                  <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] text-sm">
                     Donate Now
                   </button>
 

@@ -162,7 +162,7 @@ export function Projects() {
                     <stat.icon className="w-4 h-4 md:w-5 md:h-5 text-black " />
                   </div>
 
-                  <div className="text-2xl md:text-xl font-bold text-gray-900 mb-2">
+                  <div className="text-2xl md:text-xl font-medium text-gray-900 mb-2">
                     {stat.label}
                   </div>
                   <div className="text-sm text-gray-600">
