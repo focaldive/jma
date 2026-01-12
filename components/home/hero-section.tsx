@@ -7,6 +7,7 @@ import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { DonationInfo } from "@/components/donate/donation-info";
+import { PayPalDonateButton } from "@/components/paypal/paypal-donate-button-sdk";
 
 const heroContent = [
   {
@@ -49,6 +50,20 @@ export function HeroSection() {
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const autoPlayRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Donation form state
+  const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
+  const [customAmount, setCustomAmount] = useState("");
+  const [donorName, setDonorName] = useState("");
+  const [donorEmail, setDonorEmail] = useState("");
+  const [showPayPal, setShowPayPal] = useState(false);
+
+  // Error state
+  const [errors, setErrors] = useState({
+    name: "",
+    email: "",
+    amount: "",
+  });
+
   const startAutoPlay = () => {
     if (autoPlayRef.current) clearInterval(autoPlayRef.current);
 
@@ -86,6 +101,88 @@ export function HeroSection() {
   const handleDotClick = (index: number) => {
     setIsAutoPlaying(false);
     setCurrentIndex(index);
+  };
+
+  const handleAmountSelect = (amount: number) => {
+    setSelectedAmount(amount);
+    setCustomAmount(""); // Clear custom amount when preset is selected
+  };
+
+  const handleDonateClick = () => {
+    // Reset errors
+    const newErrors = { name: "", email: "", amount: "" };
+    let hasError = false;
+
+    // Validate form
+    if (!donorName.trim()) {
+      newErrors.name = "Please enter your name";
+      hasError = true;
+    }
+
+    if (!donorEmail.trim()) {
+      newErrors.email = "Please enter your email";
+      hasError = true;
+    }
+
+    const finalAmount = customAmount
+      ? parseFloat(customAmount)
+      : selectedAmount;
+    if (!finalAmount || finalAmount <= 0) {
+      newErrors.amount = "Please select or enter a donation amount";
+      hasError = true;
+    }
+
+    setErrors(newErrors);
+
+    if (hasError) {
+      return;
+    }
+
+    // Show PayPal button
+    setShowPayPal(true);
+  };
+
+  const handleDonationComplete = async (details: any) => {
+    console.log("Donation completed:", details);
+
+    try {
+      // Split name into first and last
+      const nameParts = donorName.split(" ");
+      const firstName = nameParts[0];
+      const lastName = nameParts.slice(1).join(" ") || "";
+
+      const response = await fetch("/api/donations", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          amount: customAmount ? parseFloat(customAmount) : selectedAmount,
+          firstName,
+          lastName,
+          email: donorEmail,
+          paymentMethod: "PayPal",
+          status: "COMPLETED",
+          notes: `PayPal Order ID: ${details.id}`,
+        }),
+      });
+
+      if (!response.ok) {
+        console.error("Failed to save donation to database");
+      }
+    } catch (error) {
+      console.error("Error saving donation:", error);
+    }
+
+    alert(`Thank you ${donorName} for your donation!`);
+
+    // Reset form
+    setDonorName("");
+    setDonorEmail("");
+    setSelectedAmount(null);
+    setCustomAmount("");
+    setShowPayPal(false);
+    setErrors({ name: "", email: "", amount: "" });
   };
 
   return (
@@ -210,84 +307,252 @@ export function HeroSection() {
               <div className="bg-white w-[340px] rounded-2xl md:rounded-3xl p-1 shadow-2xl">
                 <div className="bg-white rounded-[22px] p-5 md:p-6 space-y-4 md:space-y-5">
                   <h2 className="text-lg md:text-xl font-medium text-gray-900 text-center">
-                    Make a Donation
+                    {showPayPal ? "Complete Donation" : "Make a Donation"}
                   </h2>
 
-                  {/* Name Field */}
-                  <div className="space-y-2">
-                    <label
-                      htmlFor="donor-name"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      Name
-                    </label>
-                    <input
-                      id="donor-name"
-                      type="text"
-                      placeholder="Your full name"
-                      className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all text-sm md:text-base"
-                    />
-                  </div>
+                  {/* Form Fields - Only show when NOT in PayPal mode */}
+                  {!showPayPal ? (
+                    <>
+                      {/* Name Field */}
+                      <div className="space-y-2">
+                        <label
+                          htmlFor="donor-name"
+                          className="block text-sm font-medium text-gray-700"
+                        >
+                          Name
+                        </label>
+                        <input
+                          id="donor-name"
+                          type="text"
+                          placeholder="Your full name"
+                          value={donorName}
+                          onChange={(e) => {
+                            setDonorName(e.target.value);
+                            if (errors.name) setErrors({ ...errors, name: "" });
+                          }}
+                          className={`w-full px-4 py-3 rounded-lg border-2 outline-none transition-all text-sm md:text-base ${
+                            errors.name
+                              ? "border-red-500 focus:ring-2 focus:ring-red-500"
+                              : "border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          }`}
+                        />
+                        {errors.name && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {errors.name}
+                          </p>
+                        )}
+                      </div>
 
-                  {/* Email Field */}
-                  <div className="space-y-2">
-                    <label
-                      htmlFor="donor-email"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      Email
-                    </label>
-                    <input
-                      id="donor-email"
-                      type="email"
-                      placeholder="your@email.com"
-                      className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all text-sm md:text-base"
-                    />
-                  </div>
+                      {/* Email Field */}
+                      <div className="space-y-2">
+                        <label
+                          htmlFor="donor-email"
+                          className="block text-sm font-medium text-gray-700"
+                        >
+                          Email
+                        </label>
+                        <input
+                          id="donor-email"
+                          type="email"
+                          placeholder="your@email.com"
+                          value={donorEmail}
+                          onChange={(e) => {
+                            setDonorEmail(e.target.value);
+                            if (errors.email)
+                              setErrors({ ...errors, email: "" });
+                          }}
+                          className={`w-full px-4 py-3 rounded-lg border-2 outline-none transition-all text-sm md:text-base ${
+                            errors.email
+                              ? "border-red-500 focus:ring-2 focus:ring-red-500"
+                              : "border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          }`}
+                        />
+                        {errors.email && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {errors.email}
+                          </p>
+                        )}
+                      </div>
 
-                  {/* Custom Amount Field */}
-                  <div className="space-y-2">
-                    <label
-                      htmlFor="custom-amount"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      Enter Custom Amount
-                    </label>
-                    <div className="relative">
-                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium text-sm md:text-base">
-                        $
-                      </span>
-                      <input
-                        id="custom-amount"
-                        type="text"
-                        placeholder="0.00"
-                        className="w-full pl-7 pr-3 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all text-sm"
+                      {/* Custom Amount Field */}
+                      <div className="space-y-2">
+                        <label
+                          htmlFor="custom-amount"
+                          className="block text-sm font-medium text-gray-700"
+                        >
+                          Enter Custom Amount
+                        </label>
+                        <div className="relative">
+                          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium text-sm md:text-base">
+                            $
+                          </span>
+                          <input
+                            id="custom-amount"
+                            type="text"
+                            placeholder="0.00"
+                            value={customAmount}
+                            onChange={(e) => {
+                              setCustomAmount(e.target.value);
+                              setSelectedAmount(null);
+                              if (errors.amount)
+                                setErrors({ ...errors, amount: "" });
+                            }}
+                            className={`w-full pl-7 pr-3 py-2.5 rounded-lg border-2 outline-none transition-all text-sm ${
+                              errors.amount
+                                ? "border-red-500 focus:ring-2 focus:ring-red-500"
+                                : "border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            }`}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Amount Buttons */}
+                      <div className="space-y-2">
+                        <label className="block text-sm font-medium text-gray-700">
+                          Select Amount
+                        </label>
+                        {errors.amount &&
+                          customAmount === "" &&
+                          selectedAmount === null && (
+                            <p className="text-red-500 text-xs">
+                              {errors.amount}
+                            </p>
+                          )}
+                        <div className="grid grid-cols-3 gap-2 md:gap-3">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              handleAmountSelect(50);
+                              if (errors.amount)
+                                setErrors({ ...errors, amount: "" });
+                            }}
+                            className={`px-2.5 md:px-3 py-2 md:py-2.5 rounded-lg border-2 font-semibold transition-all duration-300 text-xs md:text-sm ${
+                              selectedAmount === 50
+                                ? "border-blue-600 bg-blue-600 text-white"
+                                : errors.amount &&
+                                  !customAmount &&
+                                  !selectedAmount
+                                ? "border-red-500 bg-white text-gray-700 hover:border-blue-600 hover:bg-blue-50 hover:text-blue-600"
+                                : "border-gray-300 bg-white text-gray-700 hover:border-blue-600 hover:bg-blue-50 hover:text-blue-600"
+                            }`}
+                          >
+                            $50
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              handleAmountSelect(100);
+                              if (errors.amount)
+                                setErrors({ ...errors, amount: "" });
+                            }}
+                            className={`px-3 md:px-4 py-2.5 md:py-3 rounded-lg border-2 font-semibold transition-all duration-300 text-sm md:text-base ${
+                              selectedAmount === 100
+                                ? "border-blue-600 bg-blue-600 text-white"
+                                : errors.amount &&
+                                  !customAmount &&
+                                  !selectedAmount
+                                ? "border-red-500 bg-white text-gray-700 hover:border-blue-600 hover:bg-blue-50 hover:text-blue-600"
+                                : "border-gray-300 bg-white text-gray-700 hover:border-blue-600 hover:bg-blue-50 hover:text-blue-600"
+                            }`}
+                          >
+                            $100
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              handleAmountSelect(1000);
+                              if (errors.amount)
+                                setErrors({ ...errors, amount: "" });
+                            }}
+                            className={`px-3 md:px-4 py-2.5 md:py-3 rounded-lg border-2 font-semibold transition-all duration-300 text-sm md:text-base ${
+                              selectedAmount === 1000
+                                ? "border-blue-600 bg-blue-600 text-white"
+                                : errors.amount &&
+                                  !customAmount &&
+                                  !selectedAmount
+                                ? "border-red-500 bg-white text-gray-700 hover:border-blue-600 hover:bg-blue-50 hover:text-blue-600"
+                                : "border-gray-300 bg-white text-gray-700 hover:border-blue-600 hover:bg-blue-50 hover:text-blue-600"
+                            }`}
+                          >
+                            $1000
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Donate Action */}
+                      <button
+                        type="button"
+                        onClick={handleDonateClick}
+                        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] text-sm"
+                      >
+                        Donate Now
+                      </button>
+                    </>
+                  ) : (
+                    <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                      {/* Donation Summary */}
+                      <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="text-gray-500 text-xs uppercase tracking-wider font-semibold">
+                            Total Donation
+                          </span>
+                          <span className="text-2xl font-bold text-blue-600">
+                            ${customAmount || selectedAmount}
+                          </span>
+                        </div>
+                        <div className="border-t border-gray-200 my-2 pt-2 space-y-1">
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-600">Donor:</span>
+                            <span className="font-medium text-gray-900">
+                              {donorName}
+                            </span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-600">Email:</span>
+                            <span className="font-medium text-gray-900">
+                              {donorEmail}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="text-center text-sm text-gray-600 mb-2">
+                        Click below to proceed to PayPal checkout:
+                      </div>
+
+                      <PayPalDonateButton
+                        hostedButtonId="YOUR_HOSTED_BUTTON_ID"
+                        onComplete={handleDonationComplete}
+                        sandbox={true}
+                        className="w-full"
+                        amount={
+                          customAmount
+                            ? parseFloat(customAmount)
+                            : selectedAmount || 10
+                        }
+                        donorName={donorName}
+                        donorEmail={donorEmail}
                       />
-                    </div>
-                  </div>
 
-                  {/* Amount Buttons */}
-                  <div className="space-y-2">
-                    <label className="block text-sm font-medium text-gray-700">
-                      Select Amount
-                    </label>
-                    <div className="grid grid-cols-3 gap-2 md:gap-3">
-                      <button className="px-2.5 md:px-3 py-2 md:py-2.5 rounded-lg border-2 border-blue-600 bg-blue-50 text-blue-600 font-semibold hover:bg-blue-600 hover:text-white transition-all duration-300 text-xs md:text-sm">
-                        $50
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleDonationComplete({ id: `TEST-${Date.now()}` })
+                        }
+                        className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 rounded-lg shadow mt-2 text-sm transition-colors"
+                      >
+                        [TEST] Save to Database
                       </button>
-                      <button className="px-3 md:px-4 py-2.5 md:py-3 rounded-lg border-2 border-gray-300 text-gray-700 font-semibold hover:border-blue-600 hover:bg-blue-50 hover:text-blue-600 transition-all duration-300 text-sm md:text-base">
-                        $100
-                      </button>
-                      <button className="px-3 md:px-4 py-2.5 md:py-3 rounded-lg border-2 border-gray-300 text-gray-700 font-semibold hover:border-blue-600 hover:bg-blue-50 hover:text-blue-600 transition-all duration-300 text-sm md:text-base">
-                        $1000
+
+                      <button
+                        type="button"
+                        onClick={() => setShowPayPal(false)}
+                        className="w-full text-gray-500 hover:text-gray-800 text-sm font-medium py-2 transition-colors hover:underline"
+                      >
+                        ← Back to details
                       </button>
                     </div>
-                  </div>
-
-                  {/* Donate Button */}
-                  <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] text-sm">
-                    Donate Now
-                  </button>
+                  )}
 
                   <p className="text-xs text-gray-500 text-center">
                     Your donation is secure and tax-deductible
