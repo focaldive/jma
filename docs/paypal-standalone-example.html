@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PayPal Donate Button - Complete Example</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 500px;
+        width: 100%;
+      }
+
+      .card {
+        background: white;
+        border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        animation: slideUp 0.5s ease-out;
+      }
+
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      .logo {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 50%;
+        margin: 0 auto 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 30px;
+      }
+
+      h1 {
+        font-size: 28px;
+        color: #1a202c;
+        margin-bottom: 10px;
+        font-weight: 700;
+      }
+
+      .subtitle {
+        color: #718096;
+        font-size: 16px;
+        line-height: 1.6;
+      }
+
+      .donation-section {
+        margin: 30px 0;
+      }
+
+      .section-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: #4a5568;
+        margin-bottom: 15px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      #paypal-donate-button-container {
+        min-height: 50px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 20px 0;
+      }
+
+      .info-box {
+        background: #f7fafc;
+        border-left: 4px solid #667eea;
+        padding: 15px;
+        border-radius: 8px;
+        margin-top: 20px;
+      }
+
+      .info-box p {
+        color: #4a5568;
+        font-size: 14px;
+        line-height: 1.6;
+      }
+
+      .features {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+        margin-top: 30px;
+      }
+
+      .feature {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 14px;
+        color: #4a5568;
+      }
+
+      .feature-icon {
+        width: 24px;
+        height: 24px;
+        background: #e6fffa;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #319795;
+        font-size: 12px;
+        flex-shrink: 0;
+      }
+
+      .success-message {
+        background: #c6f6d5;
+        border: 2px solid #48bb78;
+        color: #22543d;
+        padding: 15px;
+        border-radius: 10px;
+        text-align: center;
+        font-weight: 600;
+        margin-top: 20px;
+        display: none;
+        animation: slideDown 0.3s ease-out;
+      }
+
+      @keyframes slideDown {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .success-message.show {
+        display: block;
+      }
+
+      .loading {
+        text-align: center;
+        color: #718096;
+        font-size: 14px;
+        padding: 20px;
+      }
+
+      .spinner {
+        border: 3px solid #e2e8f0;
+        border-top: 3px solid #667eea;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 10px;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .footer {
+        text-align: center;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid #e2e8f0;
+      }
+
+      .footer p {
+        color: #a0aec0;
+        font-size: 12px;
+      }
+
+      @media (max-width: 600px) {
+        .card {
+          padding: 30px 20px;
+        }
+
+        h1 {
+          font-size: 24px;
+        }
+
+        .features {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="card">
+        <!-- Header -->
+        <div class="header">
+          <div class="logo">❤️</div>
+          <h1>Support Our Mission</h1>
+          <p class="subtitle">
+            Your generous donation helps us make a positive impact in
+            communities worldwide.
+          </p>
+        </div>
+
+        <!-- Donation Section -->
+        <div class="donation-section">
+          <h2 class="section-title">Make a Donation</h2>
+
+          <!-- Loading State -->
+          <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Loading payment options...</p>
+          </div>
+
+          <!-- PayPal Button Container -->
+          <div id="paypal-donate-button-container"></div>
+
+          <!-- Success Message -->
+          <div id="success-message" class="success-message">
+            ✓ Thank you for your generous donation! 🙏
+          </div>
+        </div>
+
+        <!-- Info Box -->
+        <div class="info-box">
+          <p>
+            <strong>🔒 Secure Payment:</strong> All transactions are processed
+            securely through PayPal. Your financial information is never stored
+            on our servers.
+          </p>
+        </div>
+
+        <!-- Features -->
+        <div class="features">
+          <div class="feature">
+            <div class="feature-icon">✓</div>
+            <span>Tax Deductible</span>
+          </div>
+          <div class="feature">
+            <div class="feature-icon">✓</div>
+            <span>100% Secure</span>
+          </div>
+          <div class="feature">
+            <div class="feature-icon">✓</div>
+            <span>Instant Receipt</span>
+          </div>
+          <div class="feature">
+            <div class="feature-icon">✓</div>
+            <span>No Hidden Fees</span>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+          <p>© 2026 Your Organization. All rights reserved.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PayPal SDK Script -->
+    <!-- 
+    IMPORTANT: Replace 'test' with your actual client ID for production
+    For sandbox testing, use 'test'
+    For live production, use your live client ID from PayPal Developer Dashboard
+  -->
+    <script src="https://www.paypal.com/sdk/js?client-id=test&components=hosted-buttons&disable-funding=credit,card"></script>
+
+    <script>
+      // Configuration
+      const CONFIG = {
+        // REPLACE THIS with your actual hosted button ID
+        hostedButtonId: "YOUR_HOSTED_BUTTON_ID",
+
+        // Set to true for sandbox testing, false for production
+        isSandbox: true,
+      };
+
+      // Hide loading, show button
+      function hideLoading() {
+        const loading = document.getElementById("loading");
+        if (loading) loading.style.display = "none";
+      }
+
+      // Show success message
+      function showSuccessMessage() {
+        const successMsg = document.getElementById("success-message");
+        if (successMsg) {
+          successMsg.classList.add("show");
+
+          // Hide after 5 seconds
+          setTimeout(() => {
+            successMsg.classList.remove("show");
+          }, 5000);
+        }
+      }
+
+      // Send donation data to backend
+      function sendToBackend(details) {
+        // Extract donation information
+        const donationData = {
+          transactionId: details.id,
+          amount: details.purchase_units?.[0]?.amount?.value,
+          currency: details.purchase_units?.[0]?.amount?.currency_code,
+          donorEmail: details.payer?.email_address,
+          donorName:
+            details.payer?.name?.given_name +
+            " " +
+            details.payer?.name?.surname,
+          timestamp: new Date().toISOString(),
+          environment: CONFIG.isSandbox ? "sandbox" : "production",
+        };
+
+        console.log("Donation Data:", donationData);
+
+        // Send to your backend API
+        fetch("/api/donations", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(donationData),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            console.log("Backend response:", data);
+          })
+          .catch((error) => {
+            console.error("Error sending to backend:", error);
+          });
+      }
+
+      // Track donation with analytics
+      function trackDonation(details) {
+        // Google Analytics (if available)
+        if (typeof gtag !== "undefined") {
+          gtag("event", "donation", {
+            transaction_id: details.id,
+            value: details.purchase_units?.[0]?.amount?.value,
+            currency: details.purchase_units?.[0]?.amount?.currency_code,
+            items: [
+              {
+                item_name: "Donation",
+                item_category: "Fundraising",
+              },
+            ],
+          });
+        }
+
+        // Facebook Pixel (if available)
+        if (typeof fbq !== "undefined") {
+          fbq("track", "Donate", {
+            value: details.purchase_units?.[0]?.amount?.value,
+            currency: details.purchase_units?.[0]?.amount?.currency_code,
+          });
+        }
+
+        console.log("Donation tracked in analytics");
+      }
+
+      // Initialize PayPal Button
+      function initPayPalButton() {
+        if (!window.paypal) {
+          console.error("PayPal SDK not loaded");
+          document.getElementById("loading").innerHTML =
+            '<p style="color: #e53e3e;">Failed to load PayPal. Please refresh the page.</p>';
+          return;
+        }
+
+        // Render PayPal Hosted Button
+        paypal
+          .HostedButtons({
+            hostedButtonId: CONFIG.hostedButtonId,
+          })
+          .render("#paypal-donate-button-container")
+          .then(() => {
+            console.log("PayPal button rendered successfully");
+            hideLoading();
+          })
+          .catch((error) => {
+            console.error("Error rendering PayPal button:", error);
+            hideLoading();
+            document.getElementById(
+              "paypal-donate-button-container"
+            ).innerHTML =
+              '<p style="color: #e53e3e; text-align: center;">Failed to load donation button. Please try again.</p>';
+          });
+
+        // Handle donation completion (if available)
+        // Note: This may not work with all hosted buttons
+        if (paypal.Donation) {
+          paypal.Donation({
+            onComplete: function (details) {
+              console.log("Donation completed successfully!", details);
+
+              // Show success message
+              showSuccessMessage();
+
+              // Send to backend
+              sendToBackend(details);
+
+              // Track in analytics
+              trackDonation(details);
+
+              // Optional: Redirect to thank you page
+              // setTimeout(() => {
+              //   window.location.href = '/thank-you';
+              // }, 2000);
+            },
+          });
+        }
+      }
+
+      // Initialize when DOM is ready
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initPayPalButton);
+      } else {
+        initPayPalButton();
+      }
+    </script>
+  </body>
+</html>
